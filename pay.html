@@ -316,6 +316,7 @@ main.container.pay-container {
         <img src="/images/blankqr.svg" alt="QR code" />
       </div>
       <button class="pay-btn">Төлбөр шалгах</button>
+      <button id="test-mail-btn" class="button">📧 Туршилтын имэйл илгээх</button>
     </div>
   </div>
 </div>
@@ -387,5 +388,28 @@ main.container.pay-container {
   }
 })();
 </script>
+<button id="test-mail-btn" class="button">📧 Туршилтын имэйл илгээх</button>
+
+<script>
+  document.getElementById("test-mail-btn").addEventListener("click", async () => {
+    const res = await fetch("/api/sendReport", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Test User",
+        email: "таны-имэйл@example.com", // өөрийн имэйлээ оруул
+        testName: "Burnout Test",
+        score: "82%",
+        risk: "High",
+        topAnswers: ["Нойр муу", "Өрийн дарамт өндөр"],
+      }),
+    });
+
+    const data = await res.json();
+    console.log("✅ API response:", data);
+    alert(data.success ? "Имэйл амжилттай илгээгдлээ!" : "Алдаа гарлаа.");
+  });
+</script>
+
 </body>
 </html>
