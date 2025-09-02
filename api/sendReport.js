@@ -9,14 +9,24 @@ export default async function handler(req, res) {
   }
 
   const {
-    name,
-    email,
-    testName,
-    testKey = "burnout",
-    score,
-    risk = "low",
-    topAnswers = []
-  } = req.body;
+  name,
+  email,
+  testName,
+  testKey = "burnout",
+  score,
+  risk = "low",
+  topAnswers = []
+} = req.body;
+
+// ReportContent block
+const block = REPORT_CONTENT?.[testKey]?.[risk] || {
+  analysis: "—",
+  advice: "—",
+  conclusion: "—",
+  motivation: "—",
+  disclaimer: "—"
+};
+
 
   try {
     // === FONT register ===
@@ -61,39 +71,38 @@ export default async function handler(req, res) {
       res.status(200).json({ success: true, message: "Report emailed" });
     });
 
-    // === Cover sheet ===
-    doc.font("Nunito").fontSize(20).fillColor("#f97316").text("LifeCheck Report", { align: "center" });
-    doc.moveDown();
-    doc.fontSize(14).fillColor("black").text(`Тест: ${testName}`);
-    doc.text(`Нэр: ${name || "-"}`);
-    doc.text(`Имэйл: ${email || "-"}`);
-    doc.text(`Оноо: ${score || "-"}`);
-    doc.text(`Risk level: ${risk || "-"}`);
+    // Cover sheet
+doc.font("Nunito").fontSize(20).fillColor("#f97316").text("LifeCheck Report", { align: "center" });
+doc.moveDown();
+doc.fontSize(14).fillColor("black").text(`Тест: ${testName}`);
+doc.text(`Нэр: ${name || "-"}`);
+doc.text(`Имэйл: ${email || "-"}`);
+doc.text(`Оноо: ${score || "-"}`);
+doc.text(`Risk level: ${risk || "-"}`);
 
-    if (topAnswers.length) {
-      doc.moveDown().fontSize(14).text("Хамгийн чухал хариултууд:");
-      topAnswers.forEach((ans, i) => doc.text(`${i + 1}. ${ans}`));
-    }
+if (topAnswers.length) {
+  doc.moveDown().text("Хамгийн чухал хариултууд:");
+  topAnswers.forEach((ans, i) => doc.text(`${i + 1}. ${ans}`));
+}
 
-    // === Report content ===
-    const block = REPORT_CONTENT?.[testKey]?.[risk] || {};
-    doc.addPage();
+// Report content
+doc.addPage();
+doc.font("Nunito").fontSize(16).fillColor("#f97316").text("Дэлгэрэнгүй шинжилгээ");
+doc.fontSize(12).fillColor("black").text(block.analysis, { align: "justify" });
 
-    doc.font("Nunito").fontSize(16).fillColor("#f97316").text("Дэлгэрэнгүй шинжилгээ", { underline: true });
-    doc.moveDown(0.5).fontSize(12).fillColor("black").text(block.analysis || "", { align: "justify" });
+doc.moveDown().fontSize(16).fillColor("#f97316").text("Хувийн зөвлөмжүүд");
+doc.fontSize(12).fillColor("black").text(block.advice, { align: "justify" });
 
-    doc.moveDown().fontSize(16).fillColor("#f97316").text("Хувийн зөвлөмжүүд", { underline: true });
-    doc.moveDown(0.5).fontSize(12).fillColor("black").text(block.advice || "", { align: "justify" });
+doc.moveDown().fontSize(16).fillColor("#f97316").text("Дүгнэлт");
+doc.fontSize(12).fillColor("black").text(block.conclusion, { align: "justify" });
 
-    doc.moveDown().fontSize(16).fillColor("#f97316").text("Дүгнэлт", { underline: true });
-    doc.moveDown(0.5).fontSize(12).fillColor("black").text(block.conclusion || "", { align: "justify" });
+doc.moveDown().fontSize(16).fillColor("#f97316").text("Motivation boost");
+doc.fontSize(12).fillColor("black").text(block.motivation, { align: "justify" });
 
-    doc.moveDown().fontSize(16).fillColor("#f97316").text("Motivation boost", { underline: true });
-    doc.moveDown(0.5).fontSize(12).fillColor("black").text(block.motivation || "", { align: "justify" });
+if (block.disclaimer) {
+  doc.moveDown().font("Nunito-Italic").fontSize(10).fillColor("gray").text(block.disclaimer, { align: "justify" });
+}
 
-    if (block.disclaimer) {
-      doc.moveDown().font("Nunito-Italic").fontSize(10).fillColor("gray").text(block.disclaimer, { align: "justify" });
-    }
 
     doc.end();
   } catch (err) {

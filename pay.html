@@ -391,18 +391,20 @@ main.container.pay-container {
 <script>
   document.getElementById("test-mail-btn").addEventListener("click", async () => {
   const payload = {
-    name: localStorage.getItem("lc_name"),
-    email: localStorage.getItem("lc_email"),
-    testName: localStorage.getItem("lc_testName") || "LifeCheck Test",
-    score: localStorage.getItem("lc_score"),
-    risk: localStorage.getItem("lc_risk"),
-    topAnswers: JSON.parse(localStorage.getItem("lc_topAnswers") || "[]"),
-  };
-  const res = await fetch("/api/sendReport", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  name: localStorage.getItem("lc_name") || "",
+  email: localStorage.getItem("lc_email") || "",
+  testName: localStorage.getItem("lc_testName") || "LifeCheck Test",
+  testKey: localStorage.getItem("lc_test") || "burnout",
+  score: localStorage.getItem("lc_score") || "",
+  risk: localStorage.getItem("lc_risk") || "low",
+  topAnswers: JSON.parse(localStorage.getItem("lc_topAnswers") || "[]"),
+};
+await fetch("/api/sendReport", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload),
+});
+
   const data = await res.json();
   alert(data.success ? "✅ Имэйл явлаа" : "❌ Алдаа: " + data.error);
 });
