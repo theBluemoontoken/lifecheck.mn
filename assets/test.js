@@ -586,14 +586,12 @@ try {
 // localStorage.setItem('lc_name',  ...)
 // localStorage.setItem('lc_email', ...)
 
-const qs = new URLSearchParams({
-  test: testKey,
-  risk: riskKey,
-  score: String(scoreVal),
-  testName: testName
-});
+try {
+  localStorage.setItem('lc_test', testKey);
+  localStorage.setItem('lc_risk', riskKey);
+  localStorage.setItem('lc_score', String(scoreVal));
+  localStorage.setItem('lc_testName', testName);
+} catch(_) {}
 
-// Report preview рүү оруулна (PDF татах товч тэнд байгаа)
-window.location.href = `/report.html?${qs.toString()}`;
 
 
