@@ -202,5 +202,28 @@
      lucide.createIcons();
       </script>
       <script src="/assets/test.js"></script>
+    <script>
+  async function testSendReport() {
+    const res = await fetch("/api/sendReport", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Boldoo",
+        email: "boldoo@example.com",
+        testName: "Burnout Test",
+        score: "78%",
+        risk: "High",
+        topAnswers: ["Хадгаламжгүй", "Өрийн дарамт өндөр"]
+      }),
+    });
+
+    const data = await res.json();
+    console.log("✅ Response:", data);
+  }
+
+  // Хуудас ачаалмагц автоматаар туршина
+  testSendReport();
+</script>
+
     </body>
 </html>
