@@ -530,7 +530,70 @@ try { localStorage.setItem('lc_test', testKey); } catch(_) {}
   }, 2500);
 })();
 
+function extractTopAnswers() {
+  // Радио сонголтууд дундаас ХАМГИЙН эрсдэлтэй 2–3-г сонгоно (утга их = илүү муу)
+  // Таны асуулт бүр name="q1"..."q14" гэх мэт гэж тооцоолоод:
+  const picked = [];
+  const MAX_Q = 20; // аюулгүй тоо, тест бүр өөр; илүүдлийг өөрөө шүүж авна
+  for (let i = 1; i <= MAX_Q; i++) {
+    const name = `q${i}`;
+    const input = document.querySelector(`input[name="${name}"]:checked`);
+    if (!input) continue;
 
+    const val = parseInt(input.value, 10); // 0 сайн → 4 муу
+    const label = input.closest('label')?.innerText?.trim() || `#${i}`;
+    // Асуултын гарчгийг давхар авчихвал ойлгомжтой болно:
+    const qTitle = input.closest('.question-card')?.querySelector('.question-title')?.innerText?.trim();
+    picked.push({
+      q: i,
+      score: isNaN(val) ? 0 : val,
+      text: qTitle ? `${qTitle} → ${label}` : label
+    });
+  }
 
+  // score-оор нь буулгаж (их оноо = red flag), эхний 3-г авна
+  picked.sort((a, b) => b.score - a.score);
+  return picked.slice(0, 3).map(p => p.text);
+}
+
+try {
+  const topAnswers = extractTopAnswers();
+  localStorage.setItem('lc_topAnswers', JSON.stringify(topAnswers));
+} catch (_) {}
+
+// Эдгээр хувьсагч танай одоо байгаа логикоос ирнэ:
+//  - pct: 0–100 хоорондын хувь
+//  - sev.key: "low" | "mid" | "high" | "severe"
+//  - getCurrentTestKey(): "burnout" | "money" | "redflags" | "future"
+//  - COPY.summaryTitle эсвэл UI дээрх тестийн нэр
+
+const testKey = (typeof getCurrentTestKey === 'function') ? getCurrentTestKey() : 'burnout';
+const riskKey = (sev && sev.key) ? sev.key : 'low';
+const scoreVal = typeof pct !== 'undefined' ? pct : 0;
+
+// Тестийн харагдах нэр (олддоггүй бол fallback)
+let testName = '';
+try {
+  testName = (typeof COPY !== 'undefined' && COPY.summaryTitle) 
+    ? COPY.summaryTitle 
+    : document.querySelector('.question-step.active .question-title')?.innerText?.trim() 
+      || (testKey.charAt(0).toUpperCase() + testKey.slice(1)) + ' Test';
+} catch(_) {
+  testName = (testKey.charAt(0).toUpperCase() + testKey.slice(1)) + ' Test';
+}
+
+// Шаардлагатай бол name/email-ээ өмнө нь localStorage-д хадгалчихсан байх ёстой:
+// localStorage.setItem('lc_name',  ...)
+// localStorage.setItem('lc_email', ...)
+
+const qs = new URLSearchParams({
+  test: testKey,
+  risk: riskKey,
+  score: String(scoreVal),
+  testName: testName
+});
+
+// Report preview рүү оруулна (PDF татах товч тэнд байгаа)
+window.location.href = `/report.html?${qs.toString()}`;
 
 
