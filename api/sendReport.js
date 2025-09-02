@@ -1,6 +1,7 @@
 import PDFDocument from "pdfkit";
+import path from "path";
 import nodemailer from "nodemailer";
-import { REPORT_CONTENT } from "../assets/reportContent.js"; // замыг зөв тааруулна уу
+import { REPORT_CONTENT } from "../assets/reportContent.js"; // замаа зөв шалгаарай
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -18,14 +19,22 @@ export default async function handler(req, res) {
   } = req.body;
 
   try {
-    // 1) PDF бэлтгэх
-    const doc = new PDFDocument({ margin: 50 });
-    const chunks = [];
-    doc.on("data", (c) => chunks.push(c));
-    doc.on("end", async () => {
-      const pdfBuffer = Buffer.concat(chunks);
+    // === FONT register ===
+    const fontRegular = path.join(process.cwd(), "assets", "fonts", "NunitoSans-VariableFont.ttf");
+    const fontItalic = path.join(process.cwd(), "assets", "fonts", "NunitoSans-Italic-VariableFont.ttf");
 
-      // 2) Имэйл илгээх
+    const doc = new PDFDocument({ margin: 50 });
+    const buffers = [];
+
+    // Register fonts
+    doc.registerFont("Nunito", fontRegular);
+    doc.registerFont("Nunito-Italic", fontItalic);
+
+    doc.on("data", buffers.push.bind(buffers));
+    doc.on("end", async () => {
+      const pdfBuffer = Buffer.concat(buffers);
+
+      // === Nodemailer ===
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -35,42 +44,42 @@ export default async function handler(req, res) {
       });
 
       await transporter.sendMail({
-      from: `"LifeCheck" <${process.env.MAIL_USER}>`,
-      to: email,
-      subject: `📊 Таны ${testName} тайлан`,
-      text: `${name || "Хэрэглэгч"}-ийн ${testName} тайлан хавсралтад байна.`,
-      attachments: [
-      {
-      filename: `${testName}-report.pdf`,
-      content: pdfBuffer.toString("base64"),
-      encoding: "base64"
-      }
-    ],
-  });
-
-      
+        from: `"LifeCheck" <${process.env.MAIL_USER}>`,
+        to: email,
+        subject: `📊 Таны ${testName} тайлан`,
+        text: `${name || "Хэрэглэгч"}-ийн ${testName} тайлан хавсралтад байна.`,
+        attachments: [
+          {
+            filename: `${testName}-report.pdf`,
+            content: pdfBuffer.toString("base64"),
+            encoding: "base64",
+            contentType: "application/pdf",
+          },
+        ],
+      });
 
       res.status(200).json({ success: true, message: "Report emailed" });
     });
 
-    // 3) PDF контент — Cover sheet
-    doc.fontSize(20).fillColor("#f97316").text("LifeCheck Report", { align: "center" });
+    // === Cover sheet ===
+    doc.font("Nunito").fontSize(20).fillColor("#f97316").text("LifeCheck Report", { align: "center" });
     doc.moveDown();
     doc.fontSize(14).fillColor("black").text(`Тест: ${testName}`);
     doc.text(`Нэр: ${name || "-"}`);
     doc.text(`Имэйл: ${email || "-"}`);
     doc.text(`Оноо: ${score || "-"}`);
     doc.text(`Risk level: ${risk || "-"}`);
+
     if (topAnswers.length) {
       doc.moveDown().fontSize(14).text("Хамгийн чухал хариултууд:");
       topAnswers.forEach((ans, i) => doc.text(`${i + 1}. ${ans}`));
     }
 
-    // 4) Report content (reportContent.js-ээс)
+    // === Report content ===
     const block = REPORT_CONTENT?.[testKey]?.[risk] || {};
     doc.addPage();
 
-    doc.fontSize(16).fillColor("#f97316").text("Дэлгэрэнгүй шинжилгээ", { underline: true });
+    doc.font("Nunito").fontSize(16).fillColor("#f97316").text("Дэлгэрэнгүй шинжилгээ", { underline: true });
     doc.moveDown(0.5).fontSize(12).fillColor("black").text(block.analysis || "", { align: "justify" });
 
     doc.moveDown().fontSize(16).fillColor("#f97316").text("Хувийн зөвлөмжүүд", { underline: true });
@@ -83,7 +92,7 @@ export default async function handler(req, res) {
     doc.moveDown(0.5).fontSize(12).fillColor("black").text(block.motivation || "", { align: "justify" });
 
     if (block.disclaimer) {
-      doc.moveDown().fontSize(10).fillColor("gray").text(block.disclaimer, { align: "justify" });
+      doc.moveDown().font("Nunito-Italic").fontSize(10).fillColor("gray").text(block.disclaimer, { align: "justify" });
     }
 
     doc.end();
