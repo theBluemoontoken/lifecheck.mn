@@ -22,9 +22,7 @@
   },
   "homepage": "https://github.com/theBluemoontoken/lifecheck.mn#readme",
   "dependencies": {
-    "chrome-aws-lambda": "^10.1.0",
     "nodemailer": "^7.0.6",
-    "pdfkit": "^0.17.2",
-    "puppeteer-core": "^10.4.0"
+    "pdfkit": "^0.17.2"
   }
 }
