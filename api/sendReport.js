@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
-import puppeteer from "puppeteer";
+import chromium from "chrome-aws-lambda";   // 👈 headless chrome
+import puppeteer from "puppeteer-core";     // 👈 puppeteer-core
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -9,13 +10,18 @@ export default async function handler(req, res) {
   const { name, email, testName, score, risk, topAnswers = [] } = req.body;
 
   try {
-    // Puppeteer browser эхлүүлээд HTML-ээ render хийх
+    // Puppeteer browser эхлүүлэх (Vercel friendly)
+    const executablePath = await chromium.executablePath;
+
     const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: chromium.args,
+      executablePath: executablePath || undefined,
+      headless: chromium.headless,
     });
+
     const page = await browser.newPage();
 
-    // Report HTML үүсгэх (dynamic контент оруулах)
+    // Simple HTML content → дараа нь report.html загвараар сайжруулна
     const html = `
       <!doctype html>
       <html lang="mn">
@@ -48,7 +54,7 @@ export default async function handler(req, res) {
 
     await browser.close();
 
-    // Имэйл илгээх
+    // Имэйл илгээх (SMTP / Gmail app password)
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
