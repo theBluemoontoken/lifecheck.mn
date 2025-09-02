@@ -1,0 +1,1149 @@
+/* ========== Base Layout & Background ========== */
+:root{
+  /* === Warm Peach System === */
+  --r-card: 20px;
+  --r-btn: 999px;
+  --shadow-1: 0 8px 24px rgba(0,0,0,.08);
+  --shadow-2: 0 12px 28px rgba(16,24,40,.06);
+  --space-2: 12px; --space-3: 16px; --space-4: 24px;
+  --content-w: 720px;
+
+  /* primary family */
+  --primary: #F97316;                         /* main peach */
+  --primary-light: #FFEBD9;                   /* card/soft bg (peachy white) */
+  --primary-mid: #FF9800;                     /* mid peach (swatch 3) */
+  --primary-dark: #C53D00;                    /* deep accent (swatch 4) */
+  --primary-gradient: linear-gradient(90deg,#ff6900,#ff637b);
+
+  /* text & surfaces */
+  --text-dark: #1E293B;
+  --text-muted: #64748B;
+  --text-light: #F8FAFC;
+  --bg-light: #FFF7F2;                        /* цайвар дулаан bg */
+  --card-glass: rgba(255,255,255,.28);
+  --border-light: rgba(255,255,255,.40);
+
+  /* compatibility (хуучин кодуудыг эвдэхгүй) */
+  --accent1: var(--primary);
+  --accent2: #FB7185;                         /* peach→pink tail */
+
+  /* status */
+  --success:#22C55E; --warning:#FACC15; --danger:#EF4444;
+}
+
+
+
+*, *::before, *::after { box-sizing: border-box; }
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+
+  /* нэмэлтээр */
+  flex: 1;
+  display: flex;
+  align-items: center;     /* босоо голлуулах */
+  justify-content: center; /* хөндлөн голлуулах */
+}
+
+main {
+  flex: 1;
+}
+
+body {
+  font-family: 'Nunito Sans', sans-serif;
+  color: #222;
+  margin: 0;
+  background: #fff4ef; /* flat warm peach */
+  position: relative;
+  overflow-x: hidden;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* Хуучин background-аа хадгалах тул hero өөрөө тунгалаг */
+.hero-future {
+  position: relative;
+  padding: clamp(80px, 12vw, 140px) 0;
+  overflow: hidden;
+  background: transparent; /* хуучин background чинь хадгалагдана */
+}
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px; /* spacing бага зэрэг шахав */
+  align-items: center;
+  max-width: 1200px;   /* төв багана */
+  margin: 0 auto;
+  padding: 0 16px;     /* mobile padding */
+}
+
+.hero-copy {
+  text-align: center;
+  padding: 0 8px; /* нэмэлт дотоод padding */
+}
+@media (min-width: 640px) {
+  .hero-inner {
+    gap: 40px;
+    padding: 0 20px;
+  }
+}
+
+@media (min-width: 960px) {
+  .hero-inner {
+    grid-template-columns: 1.1fr .9fr;
+    gap: 48px;
+    padding: 0 24px;
+  }
+  .hero-copy {
+    text-align: center;
+    padding: 0;
+  }
+}
+/* ===== HERO TITLE PATCH (namespaced, no conflicts) ===== */
+
+/* Base (all screens) */
+.hero-future .hero-title {
+  font-size: clamp(24px, 5vw, 44px);
+  font-weight: 500; /* static арай нимгэн */
+  line-height: 1.3;
+  margin: 0 auto 4px;
+  max-width: 34ch;
+  text-align: center;
+}
+
+.hero-future .dynamic-word {
+  position: relative;
+  display: block;
+  min-height: 1.6em;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.hero-future .dynamic-word > span {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .4s ease;
+  background: linear-gradient(90deg, #F97316, #FB7185);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: normal;
+  line-height: 1.3;
+  font-size: 1.4em;   /* static-аас том */
+  font-weight: 900;   /* хамгийн bold */
+}
+
+.hero-future .dynamic-word > span.show {
+  opacity: 1;
+}
+
+
+
+
+/* === Badges (fixed styles) === */
+.hero-future .wrap{
+display:flex; gap:16px; flex-wrap:wrap; align-items:center; justify-content:center; padding:24px 0;
+}
+
+
+.hero-future .badge{
+display:inline-flex; align-items:center; gap:8px;
+background: var(--card, rgba(17,18,19,0.9));
+color: var(--fg, #ffffff);
+padding:8px 16px; border-radius:6px; font-size:14px; font-weight:500; position:relative;
+box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 4px 14px rgba(0,0,0,.25);
+transition:transform .15s ease, box-shadow .15s ease;
+}
+.hero-future .badge .icon{ font-size:16px; line-height:1 }
+.hero-future .badge .brand{ white-space:nowrap }
+.hero-future .badge::after{
+content:""; position:absolute; left:6px; right:6px; bottom:-4px; height:3px; border-radius:2px;
+background:linear-gradient(90deg, var(--a1, #3b82f6), var(--a2, #10b981), var(--a3, #9333ea));
+}
+.hero-future .badge:hover{ transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,.35) }
+
+/* Variants */
+.hero-future .gpt-badge::after{ background:linear-gradient(90deg,#22c55e,#06b6d4,#64748b) }
+.hero-future .gpt-badge .icon{ filter:drop-shadow(0 0 4px rgba(34,197,94,.4)) }
+.hero-future .psych-badge .icon{ filter:drop-shadow(0 0 4px rgba(147,51,234,.35)) }
+
+
+/* Discreet note under badges */
+.hero-future .badge-desc { 
+  font-size: 0.8rem; 
+  color: #94a3b8; 
+  font-style: italic; 
+  margin: 4px 0 0; 
+  text-align: center; 
+  opacity: 0.8; }
+
+
+@media (max-width:420px){
+.hero-future .badge .brand{ white-space:normal }
+}
+
+/* --- Simple hero visual mode --- */
+.hero-future .hero-visual.simple {
+  min-height: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* зураг өөрөө – цэвэр, минимал */
+.hero-future .hero-visual.simple img {
+  display: block;
+  max-width: min(520px, 92%);
+  height: auto;
+  border-radius: 16px;
+
+}
+
+/* mobile дээр зургийг текстийн ДЭЭР гаргана */
+@media (max-width: 959px) {
+  .hero-future .hero-visual { order: -1; margin-bottom: 4px; }
+}
+
+/* === Hero float: constant speed, no pause === */
+.hero-future .hero-visual {
+  --float-y: 10px;      /* дээш/доош хэмжээс */
+  --float-speed: 5.2s;  /* хурд (удаан → илүү их) */
+}
+
+.hero-future .hero-visual img {
+  animation: lc-floatLinear var(--float-speed) linear infinite !important;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+@keyframes lc-floatLinear {
+  0%   { transform: translateY(var(--float-y)); }
+  50%  { transform: translateY(calc(var(--float-y) * -1)); }
+  100% { transform: translateY(var(--float-y)); }
+}
+
+/* Mobile: арай бага савлалт, арай удаан */
+@media (max-width: 600px){
+  .hero-future .hero-visual { 
+    --float-y: 8px; 
+    --float-speed: 5.6s; 
+  }
+}
+
+/* Motion багасгасан хэрэглэгчдэд animation‑г унтраана */
+@media (prefers-reduced-motion: reduce){
+  .hero-future .hero-visual img { animation: none !important; transform: none !important; }
+}
+
+
+
+
+/* --- WHY LIFECHECK NEW --- */
+.why-lifecheck.alt {
+  padding: 20px 20px;
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+  text-align: center;
+}
+
+.why-lifecheck.alt .why-container {
+  max-width: 1200px; /* төвд оруулна */
+  margin: 0 auto;
+  padding: 0 20px; /* дэлгэцийн захад наалдахаас сэргийлнэ */
+}
+
+.why-lifecheck.alt .why-subtitle {
+  font-size: 1rem;
+  color: #475569;
+  margin-bottom: 48px;
+}
+
+.why-lifecheck.alt .why-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  max-width: 1100px;
+  margin: 150px auto 0;
+}
+
+.why-lifecheck.alt .why-card {
+  position: relative;
+  border-radius: 20px;
+  padding: 60px 24px 28px; /* илүү доошилсон зай */
+  background: radial-gradient(circle at top center,
+              rgba(249,115,22,0.15),   /* peach (primary) */
+              rgba(251,113,133,0.12),  /* soft pink accent */
+              rgba(255,255,255,0) 70%);
+  transition: transform .25s ease, background .25s ease;
+}
+
+.why-lifecheck.alt .why-card:hover {
+  transform: translateY(-6px);
+  background: radial-gradient(circle at top center,
+              rgba(249,115,22,0.25),   /* peach илүү тод */
+              rgba(251,113,133,0.18),  /* pink илүү тод */
+              rgba(255,255,255,0) 80%);
+}
+
+
+.why-lifecheck.alt .why-image {
+  position: absolute;
+  top: -25%; /* card дээрээс илүү гарсан */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  z-index: 2;
+}
+
+.why-lifecheck.alt .why-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+}
+
+.why-lifecheck.alt .why-content {
+  position: relative;
+  z-index: 1;
+  margin-top: 40px; /* зурагтай давхардахгүйгээр доошлуулсан */
+}
+
+.why-lifecheck.alt h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.why-lifecheck.alt p {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .why-lifecheck.alt .why-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .why-lifecheck.alt .why-grid {
+    grid-template-columns: 1fr;
+  }
+  .why-lifecheck.alt .why-image {
+    top: -20%;
+    width: 100px;
+    height: 100px;
+  }
+  .why-lifecheck.alt .why-content {
+    margin-top: 40px;
+  }
+}
+
+.why-lifecheck.alt .why-title {
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--text-dark); /* ердийн текст */
+}
+
+.why-lifecheck.alt .why-title .highlight {
+  font-weight: 800;
+  background: var(--primary-gradient); /* Warm Peach gradient (#F97316 → #FB7185) */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* divider */
+.section-divider.brand-logo-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 60px auto 32px;
+  max-width: 800px;
+  width: 100%;
+}
+
+.section-divider.brand-logo-divider .line {
+  flex-grow: 1;
+  min-width: 60px;     /* үргэлж дор хаяж 60px */
+  height: 4px;
+  border-radius: 4px;
+}
+
+.section-divider.brand-logo-divider .line.left {
+  background: linear-gradient(90deg, transparent, var(--accent1));
+}
+
+.section-divider.brand-logo-divider .line.right {
+  background: linear-gradient(90deg, var(--accent2), transparent);
+}
+
+.section-divider.brand-logo-divider .logo {
+  height: 48px;   /* хэмжээгээ энд тааруулж болно */
+  width: auto;
+  animation: bounce 1.8s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px); /* доошоо 8px үсэрнэ */
+  }
+}
+
+/* ========== CTA Section (patch) ========== */
+.cta-section {
+  margin: 48px 0 80px;         /* Why-ын дараах агаар */
+}
+
+/* CTA button – жижиг, тансаг */
+.cta-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;   /* бүгдийг голлуулна */
+}
+
+.cta-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #1e293b;
+}
+
+.cta-subtitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* голд нь тэгшлэнэ */
+  gap: 6px;
+  font-size: 1rem;
+  color: #475569;
+  margin-bottom: 12px;
+  line-height: 1.3;
+  flex-wrap: wrap;           /* багтахгүй бол дараагийн мөрөнд оруулна */
+}
+
+.cta-subtitle .avatars {
+  display: flex;
+  align-items: center;
+}
+
+.cta-subtitle .cta-text {
+  white-space: normal;       /* текст мөрөө хугалах боломжтой */
+}
+
+
+.avatars {
+  display: inline-flex;
+  align-items: center;
+}
+.avatars img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  margin-left: -8px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+  transition: transform .25s ease;
+}
+.avatars img:first-child { margin-left: 0; }
+.avatars img:hover { transform: translateY(-3px); }
+
+/* === CTA BUTTON шинэ загвар === */
+/* From Uiverse.io by Wendell47 */
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 30px;
+  border: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10rem;
+  transition: all 0.25s ease;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-light);              /* цайвар текст */
+  z-index: 0;
+  background: var(--primary-gradient);   /* peach → pink gradient */
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+.cta-button:hover {
+  background: linear-gradient(90deg, #F97316, #FB7185); /* илүү тод peach-pink */
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.cta-button:active {
+  transform: scale(0.97);
+}
+
+/* Hover effect glow — илүү subtle болгож үлдээе */
+.cta-button .hoverEffect {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+}
+
+.cta-button .hoverEffect div {
+  background: var(--primary-gradient);
+  border-radius: 50%;
+  width: 10rem;
+  height: 10rem;
+  transition: 0.4s;
+  filter: blur(32px);
+  opacity: 0.4;
+}
+
+.cta-button:hover .hoverEffect div {
+  width: 8rem;
+  height: 8rem;
+  opacity: 0.5;
+}
+
+.test-card .cta-button{ align-self: center; }
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+  .cta-title { font-size: 1.6rem; }
+  .cta-subtitle {
+    display: flex;              /* мөрөндөө байлгах */
+    flex-direction: row;        /* column руу унтрахгүй */
+    align-items: center;
+    justify-content: center;
+    gap: 4px;                   /* зайг багасгав */
+    line-height: 1.2;           /* илүү шахав */
+    margin-bottom: 8px;         /* доод margin багасгав */
+  }
+  .avatars img {
+    width: 26px;
+    height: 26px;
+  }
+  .cta-button { padding: 10px 16px; font-size: 0.9rem; }
+}
+
+
+/* ========== Tests Grid & Cards ========== */
+.hero-tests { padding: 20px; text-align: center; }
+.hero-tests h1 { font-size: 2rem; margin-bottom: 15px; }
+.hero-tests p { font-size: 1rem; color:#444; max-width: 600px; margin: 0 auto 20px; }
+
+.tests-page-title {
+  text-align: center;
+  margin-bottom: 48px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tests-page-title h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 12px;
+  color: var(--text-dark); /* default текст */
+}
+
+.tests-page-title h1 .highlight {
+  background: var(--primary-gradient);  /* Warm Peach gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+}
+
+.tests-page-title p {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+
+
+.tests-section {
+  max-width: 1200px;   /* нийт өргөн */
+  margin: 0 auto;      /* төвд байрлуулах */
+  padding: 40px 20px;  /* дотор зай */
+}
+
+.tests-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* яг 4 багана */
+  gap: 24px;
+}
+@media (max-width: 992px) {
+  .tests-grid {
+    grid-template-columns: repeat(2, 1fr); /* таблет дээр 2 багана */
+  }
+}
+
+@media (max-width: 600px) {
+  .tests-grid {
+    grid-template-columns: 1fr;
+    gap: 100px;
+  }
+  .test-image { width: 100px; height: 100px; }
+  .test-card { padding-top: 60px; }
+}
+
+/* Test cards → Question card look */
+.test-card {
+  position: relative;
+  background: linear-gradient(
+    315deg,              /* 135 → 315 = reverse */
+    #f8cbab 0%,          /* будгэрүүлсэн peach (soft orange) */
+    #ffffff 100%         /* white fade */
+  );
+  border-radius: var(--r-card);
+  padding: 60px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  /* Сүүдэр */
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08),
+              0 12px 28px rgba(0,0,0,0.06);
+
+  border: none;
+  opacity: 0.95;
+  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+}
+
+
+.test-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(16,24,40,.10);
+  background: rgba(249,115,22,0.08); /* peachy tint */
+  border: 2px solid rgba(249,115,22,0.4);
+}
+
+.test-image {
+  position: absolute;
+  top: -16%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  z-index: 2;
+}
+
+.test-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.test-card:hover .test-image {
+  transform: translateX(-50%) scale(1.05);
+  transition: 0.3s ease;
+}
+
+.test-title {
+  display: flex;
+  flex-direction: column; /* англи + монголыг босоо болгож харуулна */
+  align-items: flex-start; /* зүүн тийш зэрэгцүүлнэ */
+  gap: 4px;
+}
+
+.test-title .en {
+  font-size: 1.3rem;   /* том */
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.test-title .mn {
+  font-size: 1.1rem;  /* арай жижиг */
+  font-weight: 500;
+  color: var(--text-dark);
+  opacity: 0.8;
+}
+
+.test-desc { 
+  color:#444; 
+  font-size:.85rem; 
+  line-height:1.4; 
+  text-align: left; }
+
+.test-icon i { width: 28px; height: 28px; }
+
+/* ========== Question (Inner Test) UI ========== */
+.question-step { display: none; }
+.question-step.active {
+  display: flex;
+  justify-content: center;  /* хэвтээ дунд */
+  align-items: center;      /* босоо дунд */
+  padding: var(--space-4) 0;
+}
+
+.question-card{
+  max-width: var(--content-w); 
+  width: 100%;
+  background: linear-gradient(
+    315deg,              /* 135 → 315 = reverse */
+    #f8cbab 0%,          /* будгэрүүлсэн peach (soft orange) */
+    #ffffff 100%         /* white fade */
+  );
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: var(--r-card); 
+  padding: 32px;
+  box-shadow: var(--shadow-1);
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px;
+  opacity: 0.9;
+    /* Сүүдэр */
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08),
+              0 12px 28px rgba(0,0,0,0.06);
+}
+
+/* Progress */
+.question-card .progress-bar{
+  width:100%; height:8px; border-radius:8px;
+  background:#eef2f7; overflow:hidden; margin:2px 0 6px 0;
+}
+.question-card .progress-fill{
+  height:100%; width:0%;
+  background: var(--primary-gradient);
+  transition: width .35s ease;
+}
+
+/* Badge + texts */
+.q-badge{ display:inline-block; align-self:flex-start; background: var(--primary); color:#fff; font-size:.85rem; padding:4px 12px; border-radius:20px; }
+.question-title{ font-size:1.5rem; font-weight:700; line-height:1.35; margin:0 0 2px; color:#111; }
+.test-tagline { font-size: 1.1rem; font-weight: 600; color:#4b5563; margin: 0 0 12px; }
+.question-desc {
+  font-size: .90rem;
+  font-weight: 300;       /* light */
+  font-style: italic;     /* italic */
+  color: #94a3b8;         /* цайвар саарал */
+  margin: 0 0 3px;
+}
+
+/* Option row (minimal style) */
+.question-card .option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;                     /* жижиг padding */
+  border: none;                       /* хайрцаг байхгүй */
+  background: transparent;
+  cursor: pointer;
+  transition: color .2s ease;
+}
+
+.question-card .option:hover span {
+  color: var(--accent1);               /* hover үед текст accent болно */
+}
+
+/* Radio button custom look */
+.question-card .option input[type="radio"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #cbd5e1;           /* саарал хүрээ */
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+
+.question-card .option input[type="radio"]:checked {
+  border-color: var(--accent1);
+  background: radial-gradient(circle at center, var(--accent1) 45%, transparent 46%);
+}
+
+/* Label text */
+.question-card .option span {
+  font-size: 15px;
+  color: #374151;
+}
+.question-card .option input[type="radio"]:checked + span {
+  font-weight: 600;
+  color: var(--accent1);
+}
+
+/* Next товч (идэвхтэй үед) accent өнгөөр тодорно */
+.button.next:not(:disabled){
+  background: var(--accent1);
+  color: #fff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent1) 30%, transparent);
+  cursor: pointer;
+}
+
+/* Buttons */
+.button, .cta-btn{
+  display: inline-flex; align-items:center; justify-content:center;
+  border: 0; border-radius: var(--r-btn); font-weight:700;
+  padding: 12px 20px; cursor:pointer; position:relative; overflow:hidden;
+  transition: all .2s; z-index:0;
+}
+.button { color: #252525; box-shadow: 0 0px 7px -5px rgba(0,0,0,.5); }
+.button:hover { background: rgb(193,228,248); color: rgb(33,0,85); }
+.button:active { transform: scale(.97); }
+.cta-btn { width: 100%; background: var(--accent1); color:#fff; }
+.cta-btn:hover { background: color-mix(in srgb, var(--accent1) 85%, black); }
+
+.button:hover .hoverEffect div{ width: 8rem; height: 8rem; }
+
+.question-card .button-row{ display:flex; gap:12px; margin-top:30px; }
+.question-card .button-row .button{ flex:1; justify-content:center; }
+
+/* Start button – solid purple (Next-тэй ижил) */
+.question-card .start-btn{
+  background: var(--accent1);
+  color:#fff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent1) 30%, transparent);
+}
+
+.question-card .start-btn:hover{
+  background: color-mix(in srgb, var(--accent1) 88%, black);
+  color:#fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--accent1) 38%, transparent);
+}
+
+.question-card .start-btn:active{
+  transform: translateY(-1px);
+}
+
+.question-card .start-btn:focus-visible{
+  outline: 2px solid var(--accent1);
+  outline-offset: 2px;
+  border-radius: var(--r-btn);
+}
+
+
+/* Quiz prev link-like */
+.question-card .button.prev{
+  background:none !important; border:none !important; box-shadow:none !important; padding:0 !important;
+  color:#6b7280; font-weight:500; cursor:pointer;
+}
+.question-card .button.prev:hover{ text-decoration: underline; color:#374151; }
+.question-card .button.prev:disabled{ opacity:.5; pointer-events:none; text-decoration:none; }
+.question-card .button.prev:focus-visible{ outline:2px solid var(--accent1); outline-offset:2px; border-radius:4px; }
+
+/* Button disabled look (for both) */
+.question-card .button:disabled{
+  background:#e5e7eb; color:#9ca3af; cursor:not-allowed;
+}
+
+/* Mobile polish */
+@media (max-width:600px){
+  .question-card{ padding:24px; border-radius: var(--r-card); }
+  .question-title{ font-size:1.25rem; }
+}
+
+/* ========== Loading Overlay ========== */
+.loading-overlay {
+  position: fixed; inset: 0; 
+  background: rgba(0,0,0,0.75);
+  display:flex; align-items:center; justify-content:center; 
+  z-index: 9999;
+  backdrop-filter: blur(6px); /* glass effect */
+}
+.loading-overlay.hidden { display: none; }
+
+.loading-card {
+  background: linear-gradient(
+    315deg,              /* 135 → 315 = reverse */
+    #f8cbab 0%,          /* будгэрүүлсэн peach (soft orange) */
+    #ffffff 100%         /* white fade */
+  );
+  border-radius: var(--r-card); 
+  padding: 40px; 
+  max-width: 340px; width:90%;
+  text-align:center; 
+  box-shadow: 0 12px 32px rgba(0,0,0,0.25); 
+  animation: fadeIn .6s ease; 
+  margin:auto;
+  backdrop-filter: blur(10px);
+}
+@keyframes fadeIn { 
+  from{opacity:0; transform: translateY(12px) scale(0.96)} 
+  to{opacity:1; transform:none} 
+}
+
+.orb {
+  width: 70px; height:70px; 
+  margin: 0 auto 20px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #a5b4fc, #c084fc, #f472b6);
+  box-shadow: 0 0 25px rgba(192,132,252,0.6), 0 0 50px rgba(147,197,253,0.4);
+  animation: pulse 1.6s infinite ease-in-out;
+}
+@keyframes pulse { 
+  0%,100%{transform:scale(1);opacity:1} 
+  50%{transform:scale(1.2);opacity:.75} 
+}
+
+.progress-bar { 
+  width:100%; height:10px; 
+  background:#e5e7eb; 
+  border-radius:999px; 
+  margin:24px 0; 
+  overflow:hidden; 
+  position: relative;
+}
+.progress-bar .progress { 
+  height:100%; width:0%; 
+  background: linear-gradient(90deg,#FFB199,#F97316,#FB7185);
+  border-radius:999px; 
+  transition: width 1s ease; 
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.checklist { 
+  list-style:none; padding:0; margin:20px 0 0; 
+  text-align:left; font-size:14px; color:#374151; 
+}
+.checklist li { 
+  margin-bottom:10px; position:relative; padding-left:28px; 
+  line-height:1.4; 
+  transition: color .3s ease;
+}
+.checklist li::before { 
+  content:""; 
+  position:absolute; left:0; top:2px; 
+  width:18px; height:18px; 
+  border-radius:50%; 
+  border:2px solid #d1d5db; 
+  box-sizing:border-box;
+}
+.checklist li.done { color:#059669; font-weight:500; }
+.checklist li.done::before { 
+  content:"✓"; 
+  display:flex; align-items:center; justify-content:center; 
+  font-size:12px; font-weight:bold; 
+  background:#10b981; 
+  color:#fff; border:none;
+  box-shadow:0 0 6px rgba(16,185,129,0.6);
+}
+
+
+/* ========== Summary (Results) ========== */
+.summary {
+  max-width: var(--content-w); 
+  margin: 40px auto 40px;
+  background: linear-gradient(
+    315deg,              /* 135 → 315 = reverse */
+    #f8cbab 0%,          /* будгэрүүлсэн peach (soft orange) */
+    #ffffff 100%         /* white fade */
+  );
+  border-radius: var(--r-card); 
+  padding:24px; 
+  text-align:left;
+  box-shadow: var(--shadow-2);
+  opacity: 0.9; 
+}
+
+/* Title + accuracy badge row */
+.summary .summary-header{
+  display:flex; justify-content:space-between; align-items:center;
+  margin: 0 auto 16px; max-width: 560px;
+}
+.summary .summary-title{ font-weight:800; font-size:22px; margin-top: 10px; text-align:center; }
+.summary .summary-badge{
+  font-size:13px; background:#f3f4f6; color:#374151;
+  padding: 2px 8px; border-radius:6px; text-align:center;
+  max-width:560px; margin: 0 auto 16px;
+}
+
+/* Score + risk (one row) */
+.summary .stats-row{
+  display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:nowrap;
+  margin: 20px 0; text-align:center;
+}
+.summary .stats-row .score{ margin:0; color:#6b7280; }
+.summary .stats-row .risk{ margin:0; }
+
+/* Meter row */
+.summary .meter-row{
+  display:flex; align-items:center; gap:0; max-width:560px;
+  margin: 12px auto; position:relative;
+}
+.summary .risk-meter{ flex:1 !important; margin:0 !important; text-align:left; }
+.summary .risk-meter .track{
+  width:100% !important; height:12px !important; border-radius:999px;
+  background:#eef2f7; overflow:hidden; position:relative;
+}
+.summary .risk-meter .fill{
+  height:100% !important; width:0%;
+  background: linear-gradient(
+    90deg, 
+    #22c55e,   /* 🟢 ногоон (#22c55e) */
+    #eab308,   /* 🟡 шар (#eab308) */
+    #f97316,   /* 🟠 улбар шар (#f97316) */
+    #ef4444    /* 🔴 улаан (#ef4444) */
+  );
+  transition: width .6s ease;
+}
+.summary .risk-meter .scale{
+  display:flex !important;
+  font-size:10px; color:#94a3b8; margin-top:10px;
+}
+.summary .risk-meter .scale span{ flex:1; text-align:center; }
+.summary .risk-meter .scale span:first-child{ text-align:left; }
+.summary .risk-meter .scale span:last-child{ text-align:right; }
+
+/* % badge on the meter */
+.summary .score-badge{
+  position:absolute; right:0; top:6px; transform: translateY(-50%);
+  z-index:3; padding:6px 10px; border-radius:999px; font-weight:700; font-variant-numeric: tabular-nums;
+  background: color-mix(in srgb, var(--accent1) 12%, #fff);
+  color: var(--accent1);
+  border: 1px solid color-mix(in srgb, var(--accent1) 35%, transparent);
+}
+
+/* Risk chips */
+.summary .risk{
+  display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:700; margin:8px 0 6px;
+  font-size:14px;
+}
+.summary .risk--low   { background:#ecfdf5; color:#059669; }
+.summary .risk--mid   { background:#fffbeb; color:#d97706; }
+.summary .risk--high  { background:#fef2f2; color:#dc2626; }
+.summary .risk--severe{ background:#fef2f2; color:#b91c1c; box-shadow:0 0 0 1px #fecaca inset; }
+
+.summary .score{ color:#6b7280; margin:2px 0 0; }
+
+.summary .risk--low::before    { content:"✅"; }
+.summary .risk--mid::before    { content:"⚠️"; }
+.summary .risk--high::before   { content:"🚨"; }
+.summary .risk--severe::before { content:"⛔"; }
+
+/* Cliffhanger (analysis excerpt) */
+.analysis-excerpt {
+  max-width: 560px; margin: var(--space-2) auto var(--space-3);
+  position: relative; text-align: left; display: block;
+}
+.analysis-excerpt p{
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6;
+  overflow: hidden; line-height: 1.6;
+  color:#374151; text-align: justify; text-justify: inter-word; margin: 0 0 10px;
+}
+.analysis-excerpt .text-link{
+  display:inline-block; float:right; position:relative; z-index:2;
+  background:none; border:none; color: var(--accent1); font-weight:600; cursor:pointer; padding:0;
+}
+.analysis-excerpt .text-link:hover{ text-decoration: underline; }
+
+/* Mobile fade tweak */
+@media (max-width: 767px){
+  .analysis-excerpt p{ -webkit-line-clamp: 6; }
+  .analysis-excerpt.locked::after{ height: 24px; }
+}
+
+/* Trust / reference lines */
+.summary .trust-copy, .trust-copy{
+  font-size: 12px; color:#6b7280; margin-top: 16px; text-align: center;
+}
+.summary .trust-copy a, .trust-copy a{ color:#6b7280; text-decoration: underline; }
+
+/* Disclaimer style */
+.summary p small.muted{ color:#9aa3ae; font-size:12px; }
+
+/* Summary footer */
+.summary-footer{
+  font-size:12px; color:#9ca3af; text-align:center; margin-top:50px;
+}
+.summary-footer a{ color:#9ca3af; text-decoration: underline; }
+.summary-footer a:hover{ color:#6b7280; }
+
+/* ========== Modal ========== */
+.modal { 
+  position: fixed; inset: 0; 
+  display: flex; align-items: center; justify-content: center; 
+  background: rgba(0,0,0,0.5); 
+  z-index: 1000; 
+  padding: var(--space-3); 
+}
+.modal.hidden { display: none; }
+
+.modal-content {
+  background: linear-gradient(
+    315deg,              /* 135 → 315 = reverse */
+    #f8cbab 0%,          /* будгэрүүлсэн peach (soft orange) */
+    #ffffff 100%         /* white fade */
+  );
+  border-radius: var(--r-card); 
+  padding: 28px; 
+  width: 100%; 
+  max-width: 360px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08), 
+              0 12px 28px rgba(0,0,0,0.06); /* дээрээс гэрэлтэй сүүдэр */
+  position: relative; 
+  text-align: center; 
+  animation: fadeInUp .35s ease; 
+  margin: auto;
+  border: 1px solid rgba(249,115,22,0.2); /* peachy border */
+}
+
+@keyframes fadeInUp { from{opacity:0; transform: translateY(20px)} to{opacity:1; transform:none} }
+.close-modal{
+  position:absolute; top:8px; right:8px; width:40px; height:40px; display:grid; place-items:center;
+  border:none; background:none; font-size:22px; cursor:pointer; color:#6b7280;
+}
+.modal-title{ font-size:20px; font-weight:700; margin-bottom:6px; }
+.modal-subtitle{ font-size:14px; color:#4b5563; margin-bottom:14px; }
+
+.benefits{ list-style:none; padding:0; margin:0 0 16px; text-align:left; font-size:15px; line-height:1.5; }
+.benefits li{ margin-bottom:6px; }
+
+.lead-form{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+.lead-form .input{
+  padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:14px; width:100%;
+}
+.trust-copy{ font-size:12px; color:#6b7280; margin-top:4px; }
+
+.discreet-link {
+  font-size: 13px;
+  margin-top: 6px;
+}
+.discreet-link a {
+  color: #6b7280;
+  text-decoration: underline;
+  opacity: 0.85;
+}
+.discreet-link a:hover {
+  color: var(--accent1);
+  opacity: 1;
+}
+
+/* ========== Animations ========== */
+@keyframes effect { 0%{transform: rotate(0deg)} 100%{transform: rotate(360deg)} }
+@keyframes rotate { 0%{ transform: translate(-50%,-50%) rotate(0deg)} 100%{ transform: translate(-50%,-50%) rotate(360deg)} }
+@keyframes rotate-reverse { 0%{ transform: translate(-50%,-50%) rotate(0deg)} 100%{ transform: translate(-50%,-50%) rotate(-360deg)} }
+
+/* ========== Utilities ========== */
+.test-proof {
+  font-size: 13px;
+  color: #6b7280;
+  font-style: italic;     /* italic болголоо */
+  opacity: 0.85;          /* арай бүдэг болгож discreet мэдрэмж */
+}
+

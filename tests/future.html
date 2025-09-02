@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Future Readiness - LifeCheck</title>
+  
+  <link rel="stylesheet" href="/assets/theme.css" />
+  <link rel="stylesheet" href="/assets/style.css" />
+  <link rel="stylesheet" href="/assets/header.css" />
+  <link rel="stylesheet" href="/assets/footer.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+<body>
+  
+  <header class="site-header">
+    <div class="header-inner container">
+      <a href="/" class="logo-link">
+        <img src="/images/lifechecklogo.svg" alt="LifeCheck" class="logo-img" />
+      </a>
+      <span class="header-tip" id="header-tip">😊 Өнөөдрийн зөвлөмж: 5 минут алх</span>
+      <div class="header-right">
+        <nav class="nav-links">
+          <a href="/tests.html">Тестүүд</a>
+          <a href="/about.html">Тухай</a>
+        </nav>
+        <a href="/tests.html" class="header-cta">⚡ Шинэ тест</a>
+      </div>
+      <button class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="dropdown-menu">
+        <a href="/tests.html">Тестүүд</a>
+        <a href="/about.html">Тухай</a>
+        <a href="/tests.html" class="header-cta">⚡ Шинэ тест</a>
+      </div>
+    </div>
+  </header>
+
+
+  <main class="container" data-test="future">
+    <!-- Intro Card -->
+    <div class="question-step active intro-step">
+      <div class="question-card">
+        <div class="test-icon">🚀</div>
+        <div class="question-title">Future Readiness</div>
+        <p class="test-tagline">ИРЭЭДҮЙН ЧАДАМЖИЙН ҮНЭЛГЭЭ</p>
+        <p class="test-desc">Маргаашийн хөдөлмөрийн зах зээл өнөөдрөөсөө тэс өөр. Та бэлтгэлтэй юу? Энэ тест таны суурь чадвар, AI/дижитал хэрэглээ, эрүүл мэнд ба санхүүгийн дэрийг нэг зураглал болгон харуулж, ирэх 7 хоногт хийх хамгийн жижиг алхмуудыг санал болгоно.</p>
+        <p class="test-proof">Сүүлийн 7 хоногт 180+ хүн бөглөсөн • Дундаж хугацаа 2:35</p>
+        <button class="button start-btn">Тестийг эхлүүлэх</button>
+      </div>
+    </div>
+
+    
+    <!-- Question 1 -->
+    <div class="question-step" data-step="1">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 1 / {TOTAL}</div>
+        <div class="question-title">Таны үндсэн ур чадвар (коммуникац, бичих, тооцоолол) хэдэн оноо?</div>
+        <div class="question-desc">Өдөр тутмын ажлын суурь чадвар.</div>
+        <label class="option"><input type="radio" name="q1" value="0"><span>Онц</span></label>
+        <label class="option"><input type="radio" name="q1" value="1"><span>Сайн</span></label>
+        <label class="option"><input type="radio" name="q1" value="2"><span>Дунд</span></label>
+        <label class="option"><input type="radio" name="q1" value="3"><span>Сул</span></label>
+        <label class="option"><input type="radio" name="q1" value="4"><span>Шинэчлэх хэрэгтэй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 2 -->
+    <div class="question-step" data-step="2">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 2 / {TOTAL}</div>
+        <div class="question-title">Дижитал ба AI хэрэгслийг ажилдаа ашиглах түвшин?</div>
+        <div class="question-desc">Automation, AI assist, no‑code.</div>
+        <label class="option"><input type="radio" name="q2" value="0"><span>Дадлагатай</span></label>
+        <label class="option"><input type="radio" name="q2" value="1"><span>Ихэнхдээ ашиглана</span></label>
+        <label class="option"><input type="radio" name="q2" value="2"><span>Туршиж байна</span></label>
+        <label class="option"><input type="radio" name="q2" value="3"><span>Ховор</span></label>
+        <label class="option"><input type="radio" name="q2" value="4"><span>Бараг мэдэхгүй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 3 -->
+    <div class="question-step" data-step="3">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 3 / {TOTAL}</div>
+        <div class="question-title">Суралцах тогтолцоо танд бий юу?</div>
+        <div class="question-desc">7 хоногийн тогтмол сургалт, тэмдэглэл, review.</div>
+        <label class="option"><input type="radio" name="q3" value="0"><span>Тогтмол системтэй</span></label>
+        <label class="option"><input type="radio" name="q3" value="1"><span>Ихэнхдээ дагана</span></label>
+        <label class="option"><input type="radio" name="q3" value="2"><span>Заримдаа</span></label>
+        <label class="option"><input type="radio" name="q3" value="3"><span>Ховор</span></label>
+        <label class="option"><input type="radio" name="q3" value="4"><span>Огт байхгүй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 4 -->
+    <div class="question-step" data-step="4">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 4 / {TOTAL}</div>
+        <div class="question-title">Цагийн менежмент ба фокус?</div>
+        <div class="question-desc">Deep work, таслалгүй цаг.</div>
+        <label class="option"><input type="radio" name="q4" value="0"><span>Сайн тогтолцоотой</span></label>
+        <label class="option"><input type="radio" name="q4" value="1"><span>Ихэнхдээ OK</span></label>
+        <label class="option"><input type="radio" name="q4" value="2"><span>Заримдаа алдагдана</span></label>
+        <label class="option"><input type="radio" name="q4" value="3"><span>Ихэвчлэн алдагдсан</span></label>
+        <label class="option"><input type="radio" name="q4" value="4"><span>Огт байхгүй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 5 -->
+    <div class="question-step" data-step="5">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 5 / {TOTAL}</div>
+        <div class="question-title">Сүлжээ ба хамтын ажиллагаа?</div>
+        <div class="question-desc">Мэргэжлийн network, mentor, community.</div>
+        <label class="option"><input type="radio" name="q5" value="0"><span>Идэвхтэй, өргөн</span></label>
+        <label class="option"><input type="radio" name="q5" value="1"><span>Дунд зэрэг</span></label>
+        <label class="option"><input type="radio" name="q5" value="2"><span>Жаахан</span></label>
+        <label class="option"><input type="radio" name="q5" value="3"><span>Маш бага</span></label>
+        <label class="option"><input type="radio" name="q5" value="4"><span>Байхгүй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 6 -->
+    <div class="question-step" data-step="6">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 6 / {TOTAL}</div>
+        <div class="question-title">Эрүүл мэнд ба энергийн менежмент?</div>
+        <div class="question-desc">Нойр, хоол, хөдөлгөөн, стресс.</div>
+        <label class="option"><input type="radio" name="q6" value="0"><span>Тогтвортой</span></label>
+        <label class="option"><input type="radio" name="q6" value="1"><span>Ихэнхдээ OK</span></label>
+        <label class="option"><input type="radio" name="q6" value="2"><span>Дунд зэрэг</span></label>
+        <label class="option"><input type="radio" name="q6" value="3"><span>Сул</span></label>
+        <label class="option"><input type="radio" name="q6" value="4"><span>Эрсдэлтэй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 7 -->
+    <div class="question-step" data-step="7">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 7 / {TOTAL}</div>
+        <div class="question-title">Санхүүгийн дэр (runway) хэд вэ?</div>
+        <div class="question-desc">3–6 сарын зардлын нөөцтэй эсэх.</div>
+        <label class="option"><input type="radio" name="q7" value="0"><span>> 6 сар</span></label>
+        <label class="option"><input type="radio" name="q7" value="1"><span>3–6 сар</span></label>
+        <label class="option"><input type="radio" name="q7" value="2"><span>1–3 сар</span></label>
+        <label class="option"><input type="radio" name="q7" value="3"><span>< 1 сар</span></label>
+        <label class="option"><input type="radio" name="q7" value="4"><span>Байхгүй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 8 -->
+    <div class="question-step" data-step="8">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 8 / {TOTAL}</div>
+        <div class="question-title">Таны карьерийн roadmap тодорхой уу?</div>
+        <div class="question-desc">1–2 жилийн зорилго, алхам.</div>
+        <label class="option"><input type="radio" name="q8" value="0"><span>Тодорхой</span></label>
+        <label class="option"><input type="radio" name="q8" value="1"><span>Ерөнхийдөө тодорхой</span></label>
+        <label class="option"><input type="radio" name="q8" value="2"><span>Зарим хэсэг тодорхойгүй</span></label>
+        <label class="option"><input type="radio" name="q8" value="3"><span>Бараг тодорхойгүй</span></label>
+        <label class="option"><input type="radio" name="q8" value="4"><span>Огт тодорхойгүй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 9 -->
+    <div class="question-step" data-step="9">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 9 / {TOTAL}</div>
+        <div class="question-title">Портфолио/шалгалттай баталгаа бий юу?</div>
+        <div class="question-desc">GitHub, Dribbble, бичлэг, сертификат.</div>
+        <label class="option"><input type="radio" name="q9" value="0"><span>Хүчтэй</span></label>
+        <label class="option"><input type="radio" name="q9" value="1"><span>Дунд зэрэг</span></label>
+        <label class="option"><input type="radio" name="q9" value="2"><span>Жаахан</span></label>
+        <label class="option"><input type="radio" name="q9" value="3"><span>Эхэлж байна</span></label>
+        <label class="option"><input type="radio" name="q9" value="4"><span>Байхгүй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 10 -->
+    <div class="question-step" data-step="10">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 10 / {TOTAL}</div>
+        <div class="question-title">Эрсдэлийн төлөвлөгөө (Plan B) байгаа юу?</div>
+        <div class="question-desc">Ажлын өөрчлөлт, орлогын төрөлжилт.</div>
+        <label class="option"><input type="radio" name="q10" value="0"><span>Тийм, бэлэн</span></label>
+        <label class="option"><input type="radio" name="q10" value="1"><span>Ихэнхдээ бий</span></label>
+        <label class="option"><input type="radio" name="q10" value="2"><span>Зарим хэсэг байна</span></label>
+        <label class="option"><input type="radio" name="q10" value="3"><span>Сул</span></label>
+        <label class="option"><input type="radio" name="q10" value="4"><span>Байхгүй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 11 -->
+    <div class="question-step" data-step="11">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 11 / {TOTAL}</div>
+        <div class="question-title">Сүүлийн 3 сард шинэ ур чадвар сурсан уу?</div>
+        <div class="question-desc">Course, төсөл, сертификат.</div>
+        <label class="option"><input type="radio" name="q11" value="0"><span>Тийм, 2+</span></label>
+        <label class="option"><input type="radio" name="q11" value="1"><span>Тийм, 1</span></label>
+        <label class="option"><input type="radio" name="q11" value="2"><span>Төлөвлөсөн</span></label>
+        <label class="option"><input type="radio" name="q11" value="3"><span>Эргэлзэж байна</span></label>
+        <label class="option"><input type="radio" name="q11" value="4"><span>Үгүй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button next" disabled>Дараах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Question 12 -->
+    <div class="question-step" data-step="12">
+      <div class="question-card">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="q-badge">Асуулт 12 / {TOTAL}</div>
+        <div class="question-title">Өөрийгөө танилцуулах нэг өгүүлбэр тод уу?</div>
+        <div class="question-desc">Professional positioning.</div>
+        <label class="option"><input type="radio" name="q12" value="0"><span>Маш тод</span></label>
+        <label class="option"><input type="radio" name="q12" value="1"><span>Дунд зэрэг</span></label>
+        <label class="option"><input type="radio" name="q12" value="2"><span>Заримдаа будилах</span></label>
+        <label class="option"><input type="radio" name="q12" value="3"><span>Бараг тодорхойгүй</span></label>
+        <label class="option"><input type="radio" name="q12" value="4"><span>Огт тодорхойгүй</span></label>
+        <div class="button-row">
+          <button class="button prev">Буцах</button>
+          <button class="button finish" disabled>Дуусгах</button>
+        </div>
+      </div>
+    </div>
+    
+
+    
+    <div class="summary" style="display:none; margin:40px auto;" data-offer-minutes="10">
+      <div class="summary-header">
+        <h2 class="summary-title">Future Readiness — дүн</h2>
+      </div>
+      <p class="summary-badge">Алдаа гарах магадлал &lt;2%</p>
+
+      <div class="stats-row">
+        <p class="score">Нийт оноо: 0 / 48</p>
+        <p class="risk">—</p>
+      </div>
+
+      <div class="meter-row">
+        <div class="risk-meter">
+          <div class="track"><div class="fill" style="width:0%"></div></div>
+          <div class="scale"><span>Бага</span><span>Дунд</span><span>Өндөр</span><span>Маш өндөр</span></div>
+        </div>
+        <span class="score-badge" id="score-badge">0%</span>
+      </div>
+
+      <div class="analysis-excerpt locked">
+        <p>Таны хувьд хамгийн чухал дараагийн нэг алхам бол …</p>
+        <button class="text-link" id="open-paywall">Бүрэн тайлан үзэх →</button>
+      </div>
+
+      <div class="summary-footer">
+        Энэхүү үнэлгээ нь World Economic Forum (2023)-ын 2030 ур чадварын жагсаалтад тулгуурласан • <a href="#">Нууцлал</a>
+      </div>
+    </div>
+    
+  </main>
+
+  
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <img src="/images/lifechecklogo.svg" alt="LifeCheck" class="footer-logo" />
+        <div class="footer-tagline">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
+      </div>
+      <div class="footer-right">
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+        <div class="footer-copy">© 2025 LifeCheck.mn</div>
+      </div>
+    </div>
+  </footer>
+
+
+  
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay hidden" data-duration="8000">
+    <div class="loading-card">
+      <div class="orb"></div>
+      <p class="loading-text">AI таны хариултыг шинжилж байна…</p>
+      <div class="progress-bar"><div class="progress"></div></div>
+      <ul class="checklist">
+        <li>Чадвар/эрч хүч/санхүүг нэгтгэж байна…</li>
+        <li>Сул/давуу талыг оношилж байна…</li>
+        <li>7 хоногийн микро‑план бэлдэж байна…</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- === Modal === -->
+  <div id="payModal" class="modal hidden">
+    <div class="modal-content">
+    <button class="close-modal">&times;</button>
+
+    <!-- Гарчиг -->
+    <h2 class="modal-title">🎉 Таны бүрэн тайлан бэлэн боллоо</h2>
+    <p class="modal-subtitle">
+      Шинжилгээгээ нээж, хувьдаа тохирсон зөвлөмжүүдээ аваарай.
+    </p>
+
+    <!-- Давуу талууд -->
+    <ul class="benefits">
+      <li>✅ Дэлгэрэнгүй шинжилгээ</li>
+      <li>✅ Хувийн зөвлөмжүүд</li>
+      <li>✅ Дүгнэлт</li>
+    </ul>
+
+    <!-- Form + CTA -->
+    <form class="lead-form">
+      <input type="email" class="input" placeholder="Имэйлээ оруулна уу" required>
+      <button type="submit" class="cta-btn">📩 Бүрэн тайлан авах</button>
+    </form>
+
+    <!-- Discreet link -->
+      <p class="discreet-link">
+      <a href="/assets/reports/sample.pdf" target="_blank">📄 Жишээ тайлан үзэх</a>
+      </p>
+
+    <p class="trust-copy">🔒 Secure • Имэйлийг зөвхөн тайлан илгээхэд ашиглана.</p>
+    </div>
+  </div>
+
+
+  <script src="/assets/test.js"></script>
+</body>
+</html>

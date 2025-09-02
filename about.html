@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Бидний тухай - LifeCheck</title>
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="/assets/theme.css">
+  <link rel="stylesheet" href="/assets/header.css">
+  <link rel="stylesheet" href="/assets/footer.css">
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .hero-section {
+  padding: 30px 20px 60px; /* багасгасан */
+  text-align: center;
+}
+
+.hero-section h1 {
+  font-size: clamp(28px, 5vw, 44px); /* жижиг range */
+  margin-bottom: 12px; /* бага gap */
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-section p {
+  font-size: 1rem; /* жижигрүүлсэн */
+  color: #475569; /* арай softer өнгө */
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+
+    .story-section {
+      padding: 0 20px;
+    }
+    .story-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.25); /* илүү тунгалаг */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); /* Safari */
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4); /* цайвар хүрээ */
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); /* зөөлөн сүүдэр */
+}
+
+    .story-container h2 {
+      font-size: 2rem;
+      margin-bottom: 24px;
+      text-align: center;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .story-text p {
+      margin-bottom: 20px;
+      line-height: 1.7;
+      font-size: 1.05rem;
+      color: #334155;
+    }
+    .story-quote {
+      font-style: italic;
+      font-weight: 500;
+      text-align: center;
+      margin: 30px 0;
+      font-size: 1.1rem;
+      color: var(--accent1);
+    }
+
+    .closing-section {
+      padding: 40px 20px 80px;
+      text-align: center;
+    }
+    .closing-section h3 {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .closing-section p {
+      font-size: 1.1rem;
+      color: #334155;
+      margin-bottom: 32px;
+    }
+    .btn-primary {
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 600;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      color: #fff;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .story-illustration {
+  width: 100%;
+  max-width: 720px;   /* хүссэн хэмжээгээ өөрчилж болно */
+  margin: 0 auto 20px auto; /* төвд байрлуулна */
+  text-align: center;
+}
+
+.story-illustration img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+      <div class="header-inner container">
+      <!-- Logo (left) -->
+      <a href="/" class="logo-link">
+      <img src="images/lifechecklogo.svg" alt="LifeCheck" class="logo-img" />
+      </a>
+
+      <!-- Tip (center, desktop only) -->
+      <span class="header-tip" id="header-tip">😊 Өнөөдрийн зөвлөмж: 5 минут алх</span>
+
+      <!-- Right side: nav + cta (desktop) -->
+      <div class="header-right">
+      <nav class="nav-links">
+        <a href="/tests.html">Тестүүд</a>
+        <a href="/about.html">Тухай</a>
+      </nav>
+      <a href="/tests.html" class="header-cta">⚡ Шинэ тест</a>
+      </div>
+
+     <!-- Mobile hamburger -->
+      <button class="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+      </button>
+
+      <!-- Dropdown (mobile only, JS чинь шууд ажиллана) -->
+      <div class="dropdown-menu">
+      <a href="/tests.html">Тестүүд</a>
+      <a href="/about.html">Тухай</a>
+      <a href="/tests.html" class="header-cta">⚡ Шинэ тест</a>
+      </div>
+      </div>
+     </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <h1>Hey найз минь, яагаад LifeCheck гэж?</h1>
+    <p>Амьдралдаа жижигхэн шалгалт хийснээр бүх зүйл өөрчлөгдөж чадна. Энэ бол бидний түүх.</p>
+  </section>
+
+  <!-- Story Section -->
+  <section class="story-section">
+    <div class="story-container">
+      <div class="story-text">
+        <div class="story-illustration">
+          <img src="images/story-main.png" alt="Story main illustration">
+        </div>
+        <p><strong>“Би бүх зүйлээ алдчих шахсан.”</strong></p>
+        <p>Hey найз минь, би чамд үнэнээ хэлье. Нэг үеийн амьдрал минь бараг сүйрчихсэн юм шиг санагддаг байсан.</p>
+        <p>Нэг л мэдэхэд цалин авсан өдрөөс хойш хэдхэн хоног өнгөрөөд байхад түрийвч хоосорчихсон байдаг байлаа. Мөнгө дуусах болгондоо “дараагийнхаа амьдралд би арай дээр төлөвлөх байх” гэж өөрийгөө шоолно. Гэхдээ бодит байдал дээр би зүгээр л өнөөдрийг туулахын төлөө амьдарч байсан юм.</p>
+        <p>Харилцаа гэвэл бүр ч хэцүү. Ойр дотны хүнтэйгээ инээж суухын оронд бид жижигхэн зүйлээс маргалдаж, өдрийг ууртай дуусгадаг болсон. Хамгийн аймшигтай нь би түүнд хайртай хэвээр байсан ч, энэ бүх маргаан түүнийг намайг ойлгохгүй байгаа мэт санагдуулдаг байсан.</p>
+        <p>Карьерын тухайд яривал... би өглөө бүр ширээний ард суудаг хэрнээ юуны төлөө хичээж байгаагаа ойлгодоггүй. Бусдын мөрөөдлийг биелүүлэхийн төлөө ажиллаж байгаа юм шиг, өөрийнхөө ирээдүйг биелүүлэх итгэлээ алдсан байлаа. “Маргааш юу болох бол?” гэдэг асуулт дандаа айдас төрүүлдэг байсан.</p>
+
+        <p>Харин толгой минь... тэнд л бүх зүйл нурж унаж байсан. Заримдаа хов хоосон мэт, заримдаа болзооноос хоцорч байгаа мэт зүрх дэлсүүлсэн дуу чимээ дүүрэн. Амралт гэдэг үгийг би зөвхөн номон дээрээс уншдаг болсон байв.</p>
+
+        <p>Би анзаараагүй байсан ч энэ бүгд удаан хугацаанд хуримтлагдаад, нэг өдөр л бүх зүйл нурж унах шиг болжээ. Нэг өглөө босоод “ямар ч утга алга” гэж бодсон тэр мөчийг би одоо ч мартдаггүй.</p>
+        <p>Тэгэхэд л нэг зүйл намайг зогсоосон: би ганцаараа биш байх магадлал. Гудамжинд алхахдаа хүмүүсийн ядарсан царайг харна, сошиалд найзуудынхаа бухимдсан постыг уншина, ажил дээрээ хамт олноосоо “чи ч бас ядраад байна уу?” гэхийг сонсоно. Тэгээд л би ойлгосон: <strong>энэ зовлон зөвхөн минийх биш, бид бүгдийнх.</strong></p>
+
+        <div class="story-quote">“Би асуудлаа харж чадсан бол, шийдэж чадах юм байна.”</div>
+
+        <p>Энэ туршлагаас л LifeCheck төрсөн. Би ганцаараа биш байсан, тэгээд чамд ч ганцаараа биш гэдгийг мэдрүүлэхийг хүссэн. Амьдралд минь жижигхэн нэг шалгалт хийсэн тэр мөч хамгийн том өөрчлөлтийн эхлэл байсан юм.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing Section -->
+  <section class="closing-section">
+    <h3>Эрсдлээ эрт харсан хүн илүү хүчтэй</h3>
+    <p>Хэрэв би өөрийгөө шалгаснаар амьдралаа өөрчилж чадсан бол, чамд ч бас боломж бий.</p>
+    <a href="tests.html" class="btn-primary">⚡ Өөрийгөө шалгаад үзье</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+        <div class="footer-inner">
+        <!-- Left side -->
+        <div class="footer-left">
+        <img src="images/lifechecklogo.svg" alt="LifeCheck" class="footer-logo" />
+        <div class="footer-tagline">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
+        </div>
+
+        <!-- Right side -->
+        <div class="footer-right">
+        <div class="footer-social">
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+
+        <div class="footer-copy">© 2025 LifeCheck.mn</div>
+        </div>
+        </div>
+      </footer>
+
+      
+</body>
+</html>

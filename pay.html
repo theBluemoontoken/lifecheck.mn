@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LifeCheck • Төлбөр баталгаажуулах</title>
+  <link rel="stylesheet" href="/assets/theme.css" />
+  <link rel="stylesheet" href="/assets/style.css" />
+  <link rel="stylesheet" href="/assets/header.css">
+  <link rel="stylesheet" href="/assets/footer.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+  .pay-card {
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  background: linear-gradient(
+    315deg,              /* 135 → 315 = reverse */
+    #f8cbab 0%,          /* будгэрүүлсэн peach (soft orange) */
+    #ffffff 100%         /* white fade */
+  );
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  box-shadow:  0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.pay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+  .pay-content {
+    flex-direction: row;
+    gap: 40px; /* left/right columns хоорондын зай */
+    justify-content: space-between;
+  }
+  .pay-left, .pay-right {
+    flex: 1;
+  }
+  .pay-right {
+    flex: 0 0 280px; /* QR + button багтах өргөн */
+    text-align: center;
+    align-items: center;
+  }
+  .pay-right img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 16px;
+  }
+}
+
+.pay-left { text-align:center;}
+
+.pay-left h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #475569;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;   /* underline-тэй зай */
+  margin-bottom: 10px;   /* доорх тексттэй зай */
+}
+
+.pay-left h3::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+}
+
+/* section blocks жигд spacing-тэй байлгах */
+.pay-left > * + * {
+  margin-top: 24px;
+}
+
+.pay-left p {
+  font-size: 1.05rem;      /* арай том */
+  font-weight: 500;
+  color: #1e293b;          /* илүү тод харагдана */
+  margin: 0 0 16px;        /* доогуур зай */
+}
+
+/* Сүүлд үнэ / countdown */
+.pay-left .price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent1); /* gradient-тай accent color */
+  margin: 12px 0 6px;
+}
+
+#countdown {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 0 4px;
+  border-radius: 6px;
+  background: rgba(99,102,241,0.08); /* accent өнгөний сул хувилбар */
+  font-weight: 600;
+  color: #334155;
+}
+
+.pay-left .hint {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.pay-right img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 16px;
+}
+
+.pay-right .button {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.qr-block {
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qr-block img {
+  max-width: 200px;
+  height: auto;
+}
+
+/* button style */
+.pay-btn {
+  display: block;
+  width: auto;
+  padding: 14px 20px;
+  border-radius: 24px;
+  border: none;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin: 0 auto;
+}
+
+.pay-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.pay-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+/* Гарчигны дараагийн мөр (Burnout Test — #...) */
+.pay-left h3 + p {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #334155;
+}
+
+/* Имэйл мөр */
+.pay-left .email {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #334155;
+}
+
+#user-email {
+  margin-bottom: 40px; /* имэйл ба үнэ хоорондын зай */
+}
+.price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 12px 0;
+  color: #1e293b;
+}
+
+.price .old-price {
+  text-decoration: line-through;
+  color: #9ca3af; /* саарал, бүдгэрсэн */
+  margin-right: 6px;
+  font-weight: 400;
+}
+
+.price .new-price {
+  color: var(--accent1); /* гол өнгө */
+  font-weight: 700;
+}
+
+.section-title {
+  display: block;        /* inline-block биш, бүтэн мөр эзэлнэ */
+  text-align: center;    /* дотроо текстээ төвд гаргана */
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  padding-bottom: 10px;
+  margin: 32px 0;
+  position: relative;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 20%;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+}
+
+main.container.pay-container {
+  display: block;          /* .container-ийн flex-ийг хүчингүй болгоно */
+  padding-bottom: 40px;      /* mobile дээр */
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  main.container.pay-container {
+    padding: 100px 20px;   /* desktop дээр */
+  }
+}
+
+.qr-block .qr-note{
+  font-size: 0.7rem;
+  font-weight: 400;
+  font-style: italic;
+  color: #334155;          /* subtle, clean */
+  margin: 0 0 10px;        /* доороо л зай */
+  text-align: center;
+  letter-spacing: .2px;    /* жаахан premium мэдрэмж */
+}
+
+@media (min-width: 768px){
+  .qr-block .qr-note{ 
+    font-size: 0.7rem;
+    font-weight: 400;
+    font-style: italic; 
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+      <div class="header-inner container">
+      <!-- Logo (left) -->
+      <a href="/" class="logo-link">
+      <img src="images/lifechecklogo.svg" alt="LifeCheck" class="logo-img" />
+      </a>
+
+      <!-- Tip (center, desktop only) -->
+      <span class="header-tip" id="header-tip">😊 Өнөөдрийн зөвлөмж: 5 минут алх</span>
+
+      <!-- Right side: nav + cta (desktop) -->
+      <div class="header-right">
+      <nav class="nav-links">
+        <a href="/tests.html">Тестүүд</a>
+        <a href="/about.html">Тухай</a>
+      </nav>
+      <a href="/tests.html" class="header-cta">⚡ Шинэ тест</a>
+      </div>
+
+     <!-- Mobile hamburger -->
+      <button class="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+      </button>
+
+      <!-- Dropdown (mobile only, JS чинь шууд ажиллана) -->
+      <div class="dropdown-menu">
+      <a href="/tests.html">Тестүүд</a>
+      <a href="/about.html">Тухай</a>
+      <a href="/tests.html" class="header-cta">⚡ Шинэ тест</a>
+      </div>
+      </div>
+     </header>
+
+  <main class="container pay-container">
+    
+    <h3 class="section-title">Төлбөрийн хэсэг</h3>
+    
+    <div class="pay-card">
+  <div class="pay-content">
+    <div class="pay-left">
+      <h3>Сонгосон тест</h3>
+      <p id="test-name">....</p>
+
+      <h3>Имэйл хаяг</h3>
+      <p id="user-email">hellothere@lifecheck.mn</p>
+
+      <p class="price">
+  Төлбөр: <span class="old-price">19,900₮</span> <span class="new-price">6,900₮</span>
+</p>
+
+      <p class="hint">⏳<span id="countdown">13:43</span> хүчинтэй</p>
+    </div>
+
+    <div class="pay-right">
+      <div class="qr-block">
+        <p class="qr-note">Та QR код уншуулж төлбөрөө төлнө үү</p>
+        <img src="/images/blankqr.svg" alt="QR code" />
+      </div>
+      <button class="pay-btn">Төлбөр шалгах</button>
+    </div>
+  </div>
+</div>
+
+  </main>
+
+  <!-- FOOTER -->
+      <footer class="site-footer">
+        <div class="footer-inner">
+        <!-- Left side -->
+        <div class="footer-left">
+        <img src="images/lifechecklogo.svg" alt="LifeCheck" class="footer-logo" />
+        <div class="footer-tagline">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
+        </div>
+
+        <!-- Right side -->
+        <div class="footer-right">
+        <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+        <div class="footer-copy">© 2025 LifeCheck.mn</div>
+        </div>
+        </div>
+      </footer>
+  <script src="/assets/test.js"></script>
+  <script>
+(function(){
+  const TEST_NAMES = {
+    burnout:  "Burnout Test",
+    redflags: "Relationship Red Flags",
+    future:   "Future Readiness",
+    money:    "Money Mindset",
+  };
+
+  // 1) URL-аас ?test=... авна, буруу эсвэл байхгүй бол burnout
+  const qs = (new URLSearchParams(location.search).get('test')||'').toLowerCase();
+  const key = TEST_NAMES[qs] ? qs : "тест олдсонгүй";
+
+  // 2) Сонгосон тестийн нэр + random id
+  const id = "#" + Math.floor(10000 + Math.random()*90000);
+  const nameEl = document.getElementById("test-name");
+  if (nameEl) nameEl.textContent = `${TEST_NAMES[key] || "LifeCheck Test"} — ${id}`;
+
+  // 3) Имэйлийг localStorage–оос авч масклаж харуулах
+  function maskEmail(email){
+    const [local, domain] = (email||'').split('@');
+    if (!domain || local.length <= 4) return email || '(имэйл байхгүй)';
+    return `${local.slice(0,2)}${'*'.repeat(local.length-4)}${local.slice(-2)}@${domain}`;
+  }
+
+  const rawEmail = (()=>{ try{ return localStorage.getItem("lc_email")||"" }catch(_){ return "" }})();
+  const emailEl = document.getElementById("user-email");
+  if (emailEl) emailEl.textContent = rawEmail ? maskEmail(rawEmail) : "(имэйл байхгүй)";
+
+  // 4) Countdown (15:00)
+  const countdownEl = document.getElementById("countdown");
+  if (countdownEl) {
+    let t = 15*60;
+    const tick = () => {
+      const m = String(Math.floor(t/60)).padStart(2,"0");
+      const s = String(t%60).padStart(2,"0");
+      countdownEl.textContent = `${m}:${s}`;
+      if (t-- <= 0) clearInterval(timer);
+    };
+    tick();
+    const timer = setInterval(tick, 1000);
+  }
+})();
+</script>
+</body>
+</html>

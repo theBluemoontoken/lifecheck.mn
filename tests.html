@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeCheck Tests</title>
+  <link rel="stylesheet" href="/assets/theme.css">
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/header.css">
+  <link rel="stylesheet" href="/assets/footer.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header class="site-header">
+    <div class="header-inner container">
+    <!-- Logo (left) -->
+    <a href="/" class="logo-link">
+      <img src="images/lifechecklogo.svg" alt="LifeCheck" class="logo-img" />
+    </a>
+
+    <!-- Tip (center, desktop only) -->
+    <span class="header-tip" id="header-tip">😊 Өнөөдрийн зөвлөмж: 5 минут алх</span>
+
+    <!-- Right side: nav + cta (desktop) -->
+    <div class="header-right">
+      <nav class="nav-links">
+        <a href="/tests.html">Тестүүд</a>
+        <a href="/about.html">Тухай</a>
+      </nav>
+      <a href="/tests.html" class="header-cta">⚡ Шинэ тест</a>
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button class="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Dropdown (mobile only, JS чинь шууд ажиллана) -->
+    <div class="dropdown-menu">
+      <a href="/tests.html">Тестүүд</a>
+      <a href="/about.html">Тухай</a>
+      <a href="/tests.html" class="header-cta">⚡ Шинэ тест</a>
+    </div>
+    </div>
+  </header>
+
+  <header class="hero-tests">
+    <div class="tests-page-title">
+  <h1>
+    Амьдралдаа жижигхэн <span class="highlight">“эрсдэлийн шалгалт”</span> хийчих үү?
+  </h1>
+  <p>5 минутын шалгалтаар та өөрийгөө бүх талаас нь харах боломжтой — эрүүл мэнд, харилцаа, карьер бүгд нэг дор 🤗</p>
+    </div>
+  </header>
+
+
+  <section class="tests-section">
+    <div id="tests" class="tests-grid">
+
+      <!-- Burnout Test -->
+      <div class="test-card">
+        <div class="test-image">
+          <img src="/images/stress.png" alt="Burnout">
+        </div>
+        <div class="test-title">
+        <span class="en">Burnout Test</span>
+        <span class="mn">Далд ядаргааны үнэлгээ</span>
+        </div>
+        <div class="test-desc">
+          Зүгээр л ядраад байгаа юм шиг” санагдаж байна уу? Энэ тест таны өдөр тутмын стресс, сэтгэл зүйн тэсвэр, далд ядаргааг эрт илрүүлж харуулна.
+        </div>
+        <p class="test-proof">Сүүлийн 7 хоногт 200+ хүн бөглөсөн • Дундаж хугацаа 2:41</p>
+        <a href="tests/burnout.html" class="cta-button">
+        Тест эхлүүлэх →
+        <span class="hoverEffect"><div></div></span>
+        </a>
+
+      </div>
+
+      <!-- Relationship Red Flags -->
+      <div class="test-card">
+        <div class="test-image">
+          <img src="/images/communication.png" alt="Burnout">
+        </div>
+
+        <div class="test-title">
+        <span class="en">Relationship Red Flags</span>
+        <span class="mn">Харилцааны эрсдэлийн үнэлгээ</span>
+        </div>
+        <div class="test-desc">
+          Та харилцаандаа хааяа эргэлзэж байсан уу? Энэ тест танд харилцаанд нуугдаж буй red flag-уудыг эрт илрүүлж харуулна.
+        </div>
+        <p class="test-proof">Сүүлийн долоо хоногт 150+ хүн бөглөсөн • Дундаж хугацаа 2:18</p>
+        <a href="tests/redflags.html" class="cta-button">
+        Тест эхлүүлэх →
+        <span class="hoverEffect"><div></div></span>
+        </a>
+
+      </div>
+
+      <!-- Money Mindset Test -->
+      <div class="test-card">
+        <div class="test-image">
+          <img src="/images/money.png" alt="Money">
+        </div>
+        <div class="test-title">
+        <span class="en">Money Mindset Test</span>
+        <span class="mn">Мөнгөний сэтгэлгээний үнэлгээ</span>
+        </div>
+        <div class="test-desc">
+          Та баяжих хүн мөн үү? 💰 Энэ тест таны мөнгөнд хандах хандлага, санхүүгийн зуршил, хөрөнгө өсгөх чадварыг тодорхойлно.
+        </div>
+        <p class="test-proof">Сүүлийн 7 хоногт 190+ хүн бөглөсөн • Дундаж хугацаа 2:25</p>
+        <a href="tests/money.html" class="cta-button">
+        Тест эхлүүлэх →
+        <span class="hoverEffect"><div></div></span>
+        </a>
+
+      </div>
+
+
+      <!-- Future Readiness -->
+      <div class="test-card">
+        <div class="test-image">
+          <img src="/images/career.png" alt="Burnout">
+        </div>
+        <div class="test-title">
+        <span class="en">Future Readiness Test</span>
+        <span class="mn">Ирээдүйн чадамжийн үнэлгээ</span>
+        </div>
+        <div class="test-desc">
+          Ирээдүйн карьер, амьдралдаа та бэлтгэлтэй гэж бодож байна уу? Энэ тест таны ур чадвар, чиг хандлагыг үнэлж, ирээдүйд илүү баталгаатай алхахад тань тусална.
+        </div>
+        <p class="test-proof">Сүүлийн 7 хоногт 180+ хүн бөглөсөн • Дундаж хугацаа 2:35</p>
+        <a href="tests/future.html" class="cta-button">
+        Тест эхлүүлэх →
+        <span class="hoverEffect"><div></div></span>
+        </a>
+
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <img src="images/lifechecklogo.svg" alt="LifeCheck" class="footer-logo" />
+        <div class="footer-tagline">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
+      </div>
+      <div class="footer-right">
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+        <div class="footer-copy">© 2025 LifeCheck.mn</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+  <script src="/assets/test.js"></script>
+</body>
+</html>

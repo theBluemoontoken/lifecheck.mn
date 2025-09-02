@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LifeCheck - Өөрийгөө шалга, ирээдүйгээ хамгаал</title>
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/header.css">
+<link rel="stylesheet" href="/assets/footer.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  </head>
+    <body>
+
+      <header class="site-header">
+      <div class="header-inner container">
+      <!-- Logo (left) -->
+      <a href="/" class="logo-link">
+      <img src="images/lifechecklogo.svg" alt="LifeCheck" class="logo-img" />
+      </a>
+
+      <!-- Tip (center, desktop only) -->
+      <span class="header-tip" id="header-tip">😊 Өнөөдрийн зөвлөмж: 5 минут алх</span>
+
+      <!-- Right side: nav + cta (desktop) -->
+      <div class="header-right">
+      <nav class="nav-links">
+        <a href="/tests.html">Тестүүд</a>
+        <a href="/about.html">Тухай</a>
+      </nav>
+      <a href="/tests.html" class="header-cta">⚡ Шинэ тест</a>
+      </div>
+
+     <!-- Mobile hamburger -->
+      <button class="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+      </button>
+
+      <!-- Dropdown (mobile only, JS чинь шууд ажиллана) -->
+      <div class="dropdown-menu">
+      <a href="/tests.html">Тестүүд</a>
+      <a href="/about.html">Тухай</a>
+      <a href="/tests.html" class="header-cta">⚡ Шинэ тест</a>
+      </div>
+      </div>
+     </header>
+
+
+
+      <!-- HERO -->
+      <section class="hero-future">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="hero-pretitle">Clinical AI Screening • Quick tests • Personalized plan</p>
+      <h1 class="hero-title">
+  LifeCheck танд 
+  <span class="dynamic-word" id="dyn">
+    <span class="show">ЯДАРГААНЫ</span>
+    <span>ХАРИЛЦААНЫ</span>
+    <span>СТРЕССИЙН</span>
+    <span>КАРЬЕРИЙН</span>
+    <span>WORK/LIFE</span>
+    <span>САНХҮҮГИЙН</span>
+  </span>
+  эрсдэлийг цаг тухайд нь илрүүлэх боломж олгоно.
+</h1>
+
+      <p class="hero-sub">Амьдралаа шалга. Эрсдлээ эрт хар.</p>
+
+      <div class="wrap">
+        <div class="badge gpt-badge">
+          <span class="icon">🤖</span>
+          <span class="brand">Powered by GPT</span>
+        </div>
+        <div class="badge psych-badge">
+          <span class="icon">🌐</span>
+          <span class="brand">Powered by WHO-5, PHQ-9, GAD-7, PSS-10</span>
+        </div>
+      </div>
+      <p class="badge-desc">
+        *AI болон олон улсад баталгаажсан үнэлгээний хэмжүүрүүдийн нэгдэл дээр тулгуурласан.
+      </p>
+    </div>
+
+    <div class="hero-visual simple">
+  <img src="images/hero-visual.png"
+       alt="LifeCheck zurag"
+       loading="eager" width="560" height="520" />
+</div>
+  </div>
+</section>
+
+
+      <!-- SECTION DIVIDER -->
+      <div class="section-divider brand-logo-divider">
+        <span class="line left"></span>
+          <img src="images/divider.png" alt="Lifecheck Logo" class="logo">
+        <span class="line right"></span>
+      </div>
+
+      <!-- WHY LIFECHECK (шинэчилсэн) -->
+<section class="why-lifecheck alt">
+  <div class="why-container">
+    <h2 class="why-title">Яагаад <span class="highlight">LifeCheck</span> онцлог вэ?</h2>
+    <p class="why-subtitle">Эрсдлээ эртхэн харчхаад, шийдлээ өгөгдөл дээрээс олъё.</p>
+
+    <div class="why-grid">
+      <!-- Item 1 -->
+      <div class="why-card">
+        <div class="why-image">
+          <img src="images/whytime.png" alt="Хурдан" />
+        </div>
+        <div class="why-content">
+          <h3>Хурдан бөгөөд амархан</h3>
+          <p>2 минутын дотор жижигхэн тест бөглөөд л эрсдэлийнхээ түвшинг мэдээд авна.</p>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="why-card">
+        <div class="why-image">
+          <img src="images/whyhuman.png" alt="Хувийн зөвлөмж" />
+        </div>
+        <div class="why-content">
+          <h3>Танд зориулсан зөвлөгөө</h3>
+          <p>Таны оноо, хариултанд тулгуурлаад яг танд таарах 7 хоногийн жижиг алхмуудыг санал болгоно.</p>
+        </div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="why-card">
+        <div class="why-image">
+          <img src="images/whydata.png" alt="Судалгаанд баталгаажсан" />
+        </div>
+        <div class="why-content">
+          <h3>Судалгаанд баталгаажсан</h3>
+          <p>Энгийн нэг таамаг биш шүү. ДЭМБ болон клиник хэмжүүрүүдэд суурилсан, найдвартай үнэлгээ.</p>
+        </div>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="why-card">
+        <div class="why-image">
+          <img src="images/whyger.png" alt="Монгол контекст" />
+        </div>
+        <div class="why-content">
+          <h3>Монголын амьдралд нийцүүлсэн</h3>
+          <p>Монгол хүний өдөр тутмын амьдралд тохирсон, хэрэгжүүлэхэд амар зөвлөмжүүд.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--onboard cta-->
+<section class="cta-section">
+  <div class="cta-container">
+    <h2 class="cta-title">Эрсдлээ эрт харсан хүн илүү хүчтэй.</h2>
+    <p class="cta-subtitle">
+      <span class="avatars">
+        <img src="https://i.pravatar.cc/48?img=1" alt="">
+        <img src="https://i.pravatar.cc/48?img=2" alt="">
+        <img src="https://i.pravatar.cc/48?img=3" alt="">
+        <img src="https://i.pravatar.cc/48?img=4" alt="">
+        <img src="https://i.pravatar.cc/48?img=5" alt="">
+      </span>
+      <span class="cta-text">LifeCheck-г ашигласан 2,000+ хүнтэй нэгдээрэй.</span>
+    </p>
+    <a href="/tests.html" class="cta-button">
+  Тестүүд үзэх
+  <span class="hoverEffect"><div></div></span>
+</a>
+
+  </div>
+</section>
+
+
+      <!-- FOOTER -->
+      <footer class="site-footer">
+        <div class="footer-inner">
+        <!-- Left side -->
+        <div class="footer-left">
+        <img src="images/lifechecklogo.svg" alt="LifeCheck" class="footer-logo" />
+        <div class="footer-tagline">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
+        </div>
+
+        <!-- Right side -->
+        <div class="footer-right">
+        <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+        <div class="footer-copy">© 2025 LifeCheck.mn</div>
+        </div>
+        </div>
+      </footer>
+
+      <script>
+     lucide.createIcons();
+      </script>
+      <script src="/assets/test.js"></script>
+    </body>
+</html>
