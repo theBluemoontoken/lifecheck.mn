@@ -388,8 +388,6 @@ main.container.pay-container {
   }
 })();
 </script>
-<button id="test-mail-btn" class="button">📧 Туршилтын имэйл илгээх</button>
-
 <script>
   document.getElementById("test-mail-btn").addEventListener("click", async () => {
     const res = await fetch("/api/sendReport", {
