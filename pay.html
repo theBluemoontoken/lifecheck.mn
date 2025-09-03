@@ -410,6 +410,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      console.log("PAYLOAD ILLUUJ BGA:", payload);
+
       const res = await fetch("/api/sendReport", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
