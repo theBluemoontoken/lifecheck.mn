@@ -1,7 +1,42 @@
 import PDFDocument from "pdfkit";
 import path from "path";
 import nodemailer from "nodemailer";
-import { REPORT_CONTENT } from "../assets/reportContent.js"; // замаа зөв шалгаарай
+import { google } from "googleapis";
+
+async function fetchBlockFromSheets(testKey, risk) {
+  const auth = new google.auth.GoogleAuth({
+    credentials: {
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    },
+    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+  });
+
+  const sheets = google.sheets({ version: "v4", auth });
+  const resp = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: "ReportBlocks!A2:H", // id, testKey, riskLevel, analysis, advice, conclusion, motivation, disclaimer
+  });
+
+  const rows = resp.data.values || [];
+  const row = rows.find(r => r[1] === testKey && r[2] === risk);
+
+  return row
+    ? {
+        analysis: row[3] || "—",
+        advice: row[4] || "—",
+        conclusion: row[5] || "—",
+        motivation: row[6] || "—",
+        disclaimer: row[7] || "—",
+      }
+    : {
+        analysis: "—",
+        advice: "—",
+        conclusion: "—",
+        motivation: "—",
+        disclaimer: "—",
+      };
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -9,34 +44,36 @@ export default async function handler(req, res) {
   }
 
   const {
-  name,
-  email,
-  testName,
-  testKey = "burnout",
-  score,
-  risk = "low",
-  topAnswers = []
-} = req.body;
-
-// ReportContent block
-const block = REPORT_CONTENT?.[testKey]?.[risk] || {
-  analysis: "—",
-  advice: "—",
-  conclusion: "—",
-  motivation: "—",
-  disclaimer: "—"
-};
-
+    name,
+    email,
+    testName,
+    testKey = "burnout",
+    score,
+    risk = "low",
+    topAnswers = [],
+  } = req.body;
 
   try {
+    // Report блокыг Sheets-ээс унших
+    const block = await fetchBlockFromSheets(testKey, risk);
+
     // === FONT register ===
-    const fontRegular = path.join(process.cwd(), "assets", "fonts", "NunitoSans-VariableFont.ttf");
-    const fontItalic = path.join(process.cwd(), "assets", "fonts", "NunitoSans-Italic-VariableFont.ttf");
+    const fontRegular = path.join(
+      process.cwd(),
+      "assets",
+      "fonts",
+      "NunitoSans-VariableFont.ttf"
+    );
+    const fontItalic = path.join(
+      process.cwd(),
+      "assets",
+      "fonts",
+      "NunitoSans-Italic-VariableFont.ttf"
+    );
 
     const doc = new PDFDocument({ margin: 50 });
     const buffers = [];
 
-    // Register fonts
     doc.registerFont("Nunito", fontRegular);
     doc.registerFont("Nunito-Italic", fontItalic);
 
@@ -72,37 +109,49 @@ const block = REPORT_CONTENT?.[testKey]?.[risk] || {
     });
 
     // Cover sheet
-doc.font("Nunito").fontSize(20).fillColor("#f97316").text("LifeCheck Report", { align: "center" });
-doc.moveDown();
-doc.fontSize(14).fillColor("black").text(`Тест: ${testName}`);
-doc.text(`Нэр: ${name || "-"}`);
-doc.text(`Имэйл: ${email || "-"}`);
-doc.text(`Оноо: ${score || "-"}`);
-doc.text(`Risk level: ${risk || "-"}`);
+    doc
+      .font("Nunito")
+      .fontSize(20)
+      .fillColor("#f97316")
+      .text("LifeCheck Report", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(14).fillColor("black").text(`Тест: ${testName}`);
+    doc.text(`Нэр: ${name || "-"}`);
+    doc.text(`Имэйл: ${email || "-"}`);
+    doc.text(`Оноо: ${score || "-"}`);
+    doc.text(`Risk level: ${risk || "-"}`);
 
-if (topAnswers.length) {
-  doc.moveDown().text("Хамгийн чухал хариултууд:");
-  topAnswers.forEach((ans, i) => doc.text(`${i + 1}. ${ans}`));
-}
+    if (topAnswers.length) {
+      doc.moveDown().text("Хамгийн чухал хариултууд:");
+      topAnswers.forEach((ans, i) => doc.text(`${i + 1}. ${ans}`));
+    }
 
-// Report content
-doc.addPage();
-doc.font("Nunito").fontSize(16).fillColor("#f97316").text("Дэлгэрэнгүй шинжилгээ");
-doc.fontSize(12).fillColor("black").text(block.analysis, { align: "justify" });
+    // Report content
+    doc.addPage();
+    doc
+      .font("Nunito")
+      .fontSize(16)
+      .fillColor("#f97316")
+      .text("Дэлгэрэнгүй шинжилгээ");
+    doc.fontSize(12).fillColor("black").text(block.analysis, { align: "justify" });
 
-doc.moveDown().fontSize(16).fillColor("#f97316").text("Хувийн зөвлөмжүүд");
-doc.fontSize(12).fillColor("black").text(block.advice, { align: "justify" });
+    doc.moveDown().fontSize(16).fillColor("#f97316").text("Хувийн зөвлөмжүүд");
+    doc.fontSize(12).fillColor("black").text(block.advice, { align: "justify" });
 
-doc.moveDown().fontSize(16).fillColor("#f97316").text("Дүгнэлт");
-doc.fontSize(12).fillColor("black").text(block.conclusion, { align: "justify" });
+    doc.moveDown().fontSize(16).fillColor("#f97316").text("Дүгнэлт");
+    doc.fontSize(12).fillColor("black").text(block.conclusion, { align: "justify" });
 
-doc.moveDown().fontSize(16).fillColor("#f97316").text("Motivation boost");
-doc.fontSize(12).fillColor("black").text(block.motivation, { align: "justify" });
+    doc.moveDown().fontSize(16).fillColor("#f97316").text("Motivation boost");
+    doc.fontSize(12).fillColor("black").text(block.motivation, { align: "justify" });
 
-if (block.disclaimer) {
-  doc.moveDown().font("Nunito-Italic").fontSize(10).fillColor("gray").text(block.disclaimer, { align: "justify" });
-}
-
+    if (block.disclaimer) {
+      doc
+        .moveDown()
+        .font("Nunito-Italic")
+        .fontSize(10)
+        .fillColor("gray")
+        .text(block.disclaimer, { align: "justify" });
+    }
 
     doc.end();
   } catch (err) {
