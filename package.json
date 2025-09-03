@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/theBluemoontoken/lifecheck.mn#readme",
   "dependencies": {
+    "googleapis": "^159.0.0",
     "nodemailer": "^7.0.6",
     "pdfkit": "^0.17.2"
   }
