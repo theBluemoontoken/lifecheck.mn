@@ -186,7 +186,7 @@ const domainBars = (domainScores || [])
     --risk: ${riskColor};
     --text: #111827;
     --muted: #6b7280;
-    --bg: #ffffff;
+    --bg: ##fff4ef;
     --line: #e5e7eb;
   }
   * { box-sizing: border-box; }
@@ -242,7 +242,7 @@ const domainBars = (domainScores || [])
   .checklist { padding-left: 0; list-style: none; }
   .checklist li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
 
-  .footer { margin-top: 8px; color: var(--muted); font-size: 12px; text-align: right; }
+  .footer { margin-top: 8px; color: var(--muted); font-size: 12px; text-align: center; }
 </style>
 </head>
 <body>
