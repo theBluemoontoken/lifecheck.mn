@@ -382,6 +382,16 @@ showStep(1);
     summary.scrollIntoView({ behavior: 'smooth' });
   }
 
+  // ... (pct, sev, COPY г.м. аль хэдийн тодорхойлогдсон байхад)
+try {
+  const testKey = getCurrentTestKey();
+  localStorage.setItem('lc_test', testKey);
+  localStorage.setItem('lc_risk', sev.key);           // low | mid | high | severe
+  localStorage.setItem('lc_score', String(pct));      // 0..100
+  localStorage.setItem('lc_testName', COPY.summaryTitle || 'LifeCheck Test');
+} catch (_) {}
+
+
   // Init — эхний active-ийг хүндэлнэ, байхгүй бол 0-оос
   if (steps.length) {
     const activeIndex = Array.from(steps).findIndex(s => s.classList.contains('active'));
@@ -561,37 +571,6 @@ try {
   localStorage.setItem('lc_topAnswers', JSON.stringify(topAnswers));
 } catch (_) {}
 
-// Эдгээр хувьсагч танай одоо байгаа логикоос ирнэ:
-//  - pct: 0–100 хоорондын хувь
-//  - sev.key: "low" | "mid" | "high" | "severe"
-//  - getCurrentTestKey(): "burnout" | "money" | "redflags" | "future"
-//  - COPY.summaryTitle эсвэл UI дээрх тестийн нэр
-
-const testKey = (typeof getCurrentTestKey === 'function') ? getCurrentTestKey() : 'burnout';
-const riskKey = (sev && sev.key) ? sev.key : 'low';
-const scoreVal = typeof pct !== 'undefined' ? pct : 0;
-
-// Тестийн харагдах нэр (олддоггүй бол fallback)
-let testName = '';
-try {
-  testName = (typeof COPY !== 'undefined' && COPY.summaryTitle) 
-    ? COPY.summaryTitle 
-    : document.querySelector('.question-step.active .question-title')?.innerText?.trim() 
-      || (testKey.charAt(0).toUpperCase() + testKey.slice(1)) + ' Test';
-} catch(_) {
-  testName = (testKey.charAt(0).toUpperCase() + testKey.slice(1)) + ' Test';
-}
-
-// Шаардлагатай бол name/email-ээ өмнө нь localStorage-д хадгалчихсан байх ёстой:
-// localStorage.setItem('lc_name',  ...)
-// localStorage.setItem('lc_email', ...)
-
-try {
-  localStorage.setItem('lc_test', testKey);
-  localStorage.setItem('lc_risk', riskKey);
-  localStorage.setItem('lc_score', String(scoreVal));
-  localStorage.setItem('lc_testName', testName);
-} catch(_) {}
 
 
 
