@@ -400,7 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
       testName: localStorage.getItem("lc_testName") || "LifeCheck Test",
       testKey: localStorage.getItem("lc_test") || "burnout",
       score: localStorage.getItem("lc_score") || "",
-      risk: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
+      riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
       topAnswers: JSON.parse(localStorage.getItem("lc_topAnswers") || "[]"),
     };
 
