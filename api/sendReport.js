@@ -233,7 +233,7 @@ function buildHTML(data) {
     <div class="meta">
       <div>Нэр: <strong>${escapeHtml(name || "-")}</strong></div>
       <div>Имэйл: <strong>${escapeHtml(email || "-")}</strong></div>
-      <div>Тест: <strong>${escapeHtml(testKey)}</strong></div>
+      <div>Тест: <strong>${escapeHtml(copyRow.testName || testKey)}</strong></div>
       <div>Эрсдэл: <span class="badge">${escapeHtml(riskLabel || riskLevel)}</span></div>
     </div>
     <div style="margin-top:12px">
@@ -250,7 +250,7 @@ function buildHTML(data) {
   ${
     (domainScores || []).length
       ? `<section class="card">
-    <h2>Онооны задрал</h2>
+    <h2>Онооны задаргаа</h2>
     <div class="domains">
       ${domainBars}
     </div>
