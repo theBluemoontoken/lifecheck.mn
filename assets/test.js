@@ -572,32 +572,28 @@ try {
 // ===== Domain Breakdown Calculation =====
 const DOMAIN_MAP = {
   burnout: {
-    energy:   ["q1","q2","q5"],
-    focus:    ["q3","q4","q10"],
-    health:   ["q11","q12"],
-    meaning:  ["q6","q13","q14","q15"],
-    relations:["q7","q8","q9"],
-  },
-  money: {
-    savings:   ["q1","q4","q11"],
-    investing: ["q2","q12","q13"],
-    planning:  ["q3","q8","q15"],
-    income:    ["q5","q14"],
-    debt:      ["q6","q7","q9","q10"],
+    energy:   ["q1","q2"],
+    sleep:    ["q5","q12","q14","q15"],
+    mood:     ["q8","q9","q10"],
+    focus:    ["q3","q4","q6","q7","q11","q13"]
   },
   redflags: {
-    communication: ["q1","q2","q3"],
-    trust:         ["q4","q5","q6"],
-    respect:       ["q7","q8","q9"],
-    support:       ["q10","q11","q12"],
-    safety:        ["q13","q14","q15"],
+    trust: ["q1","q2","q3"],
+    respect: ["q4","q5","q6"],
+    comms: ["q7","q8","q9"],
+    safety: ["q10","q11","q12","q13","q14","q15"]
+  },
+  money: {
+    budget: ["q1","q3","q8","q15"],
+    debt: ["q6","q7","q9","q10"],
+    saving: ["q2","q4","q11","q12"],
+    income: ["q5","q13","q14"]
   },
   future: {
-    skills:    ["q1","q2","q3"],
-    planning:  ["q4","q5","q6"],
-    resilience:["q7","q8","q9"],
-    digital:   ["q10","q11","q12"],
-    finance:   ["q13","q14","q15"],
+    skills: ["q1","q2","q3"],
+    health: ["q4","q5","q6"],
+    network: ["q7","q8","q9"],
+    finance: ["q10","q11","q12","q13","q14","q15"]
   }
 };
 
@@ -619,13 +615,13 @@ function calculateDomainScores(testKey){
   return result;
 }
 
-// 📝 Summary харуулах үед domain оноо хадгална
 function saveDomainScores(testKey){
   try {
     const scores = calculateDomainScores(testKey);
     localStorage.setItem("lc_domainsScore", JSON.stringify(scores));
   } catch(e) { console.error("Domain calc error", e); }
 }
+
 
 
 
