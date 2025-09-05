@@ -39,7 +39,7 @@ async function readSheet(tabName) {
  * 2) Report-д орох бүх өгөгдлийг нэгтгэнэ (Sheets + dynamic)
  */
 async function gatherReportData(payload) {
-  const { testKey, riskLevel, scorePct = 0, name = "", email = "", topAnswers = [], domainsScore = [] } = payload;
+  const { testKey, riskLevel, scorePct = 0, name = "", email = "", topAnswers = [], domainsScore = [],testId = "" } = payload;
 
   // Sheets-ээс табуудаа авч ирнэ
   const [reportBlocks, actions, domains, copy] = await Promise.all([
@@ -261,7 +261,7 @@ const domainBars = (domainScores || [])
     <div>Нэр: <strong>${escapeHtml(name || "-")}</strong></div>
     <div>Имэйл: <strong>${escapeHtml(email || "-")}</strong></div>
     <div>Тест: <strong>${escapeHtml(copyRow.testName || testKey)}</strong></div>
-    <div>Тестийн дугаар: <strong>${escapeHtml(testId || "-")}</strong></div>
+    <div>Тестийн дугаар: <strong>${escapeHtml(data.testId || "-")}</strong></div>
     <div>Эрсдэл: <span class="badge">${escapeHtml(riskLabel || riskLevel)}</span></div>
   </div>
 
