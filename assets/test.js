@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Lucide icons (аюулгүй дуудлага)
 if (window.lucide?.createIcons) lucide.createIcons();
 
-
 const steps = document.querySelectorAll('.question-step'); // intro + бүх асуултууд
 const summary = document.querySelector('.summary');
 const overlay = document.getElementById('loading-overlay');
@@ -311,6 +310,14 @@ showStep(1);
     };
     const sev = severity(pct);
 
+    try {
+    const testKey = getCurrentTestKey();
+    localStorage.setItem('lc_test', testKey);
+    localStorage.setItem('lc_risk', sev.key);           // low | mid | high | severe
+    localStorage.setItem('lc_score', String(pct));      // 0..100
+    localStorage.setItem('lc_testName', COPY.summaryTitle || 'LifeCheck Test');
+    } catch (_) {}
+
     // Test-specific overrides
     const testKey = getCurrentTestKey();
     const COPY = TEST_COPY[testKey] || TEST_COPY.generic;
@@ -381,16 +388,6 @@ showStep(1);
     summary.classList.add('fade-in');
     summary.scrollIntoView({ behavior: 'smooth' });
   }
-
-  // ... (pct, sev, COPY г.м. аль хэдийн тодорхойлогдсон байхад)
-try {
-  const testKey = getCurrentTestKey();
-  localStorage.setItem('lc_test', testKey);
-  localStorage.setItem('lc_risk', sev.key);           // low | mid | high | severe
-  localStorage.setItem('lc_score', String(pct));      // 0..100
-  localStorage.setItem('lc_testName', COPY.summaryTitle || 'LifeCheck Test');
-} catch (_) {}
-
 
   // Init — эхний active-ийг хүндэлнэ, байхгүй бол 0-оос
   if (steps.length) {

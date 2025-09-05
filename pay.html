@@ -395,17 +395,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   mailBtn.addEventListener("click", async () => {
     const payload = {
-  name: localStorage.getItem("lc_name") || "",
-  email: localStorage.getItem("lc_email") || "",
-  testName: localStorage.getItem("lc_testName") || "LifeCheck Test",
-  testKey:  localStorage.getItem("lc_test") || "burnout",
-  scorePct: Number(localStorage.getItem("lc_score") || 0),
-  riskLevel:(localStorage.getItem("lc_risk") || "low").toLowerCase(),
-  topAnswers: JSON.parse(localStorage.getItem("lc_topAnswers") || "[]"),
-  // Хэрэв домэйн задаргаа явуулах бол:
-  // domainsScore: [{ domainKey: "sleep", scorePct: 42 }, ...]
-};
-
+      name: localStorage.getItem("lc_name") || "",
+      email: localStorage.getItem("lc_email") || "",
+      testName: localStorage.getItem("lc_testName") || "LifeCheck Test",
+      testKey: localStorage.getItem("lc_test") || "burnout",
+      scorePct: localStorage.getItem("lc_score") || "",
+      riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
+      topAnswers: JSON.parse(localStorage.getItem("lc_topAnswers") || "[]"),
+    };
 
     if (!payload.email) {
       alert("❌ Имэйл олдсонгүй. Та эхлээд имэйлээ оруулна уу.");
