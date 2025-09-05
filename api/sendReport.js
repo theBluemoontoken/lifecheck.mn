@@ -171,7 +171,7 @@ function buildHTML(data) {
     --risk: ${riskColor};
     --text: #111827;
     --muted: #6b7280;
-    --bg: #ffffff;
+    --bg: #fff4ef;
     --line: #e5e7eb;
   }
   * { box-sizing: border-box; }
@@ -183,6 +183,11 @@ function buildHTML(data) {
     padding: 24px;
   }
   .card {
+    background: linear-gradient(
+    315deg,              /* 135 → 315 = reverse */
+    #f8cbab 0%,          /* будгэрүүлсэн peach (soft orange) */
+    #ffffff 100%         /* white fade */
+  );
     max-width: 820px;
     margin: 0 auto 16px;
     padding: 24px 28px;
