@@ -145,19 +145,34 @@ function buildHTML(data) {
   // Top answers HTML
   const topAnsHTML = (topAnswers || []).map((t, i) => `<li><span>${i + 1}.</span> ${escapeHtml(t)}</li>`).join("");
 
-  // Domain bars HTML
-  const domainBars = (domainScores || [])
-    .map(
-      (d) => `
+  // Түвшин буцаах функц
+function domainLevel(pct) {
+  if (pct < 25) return { label: "🚨 Маш сул", color: "#ef4444" };
+  if (pct < 50) return { label: "⚠️ Сул", color: "#f97316" };
+  if (pct < 75) return { label: "🙂 Дунд зэрэг", color: "#f59e0b" };
+  return { label: "💪 Сайн", color: "#16a34a" };
+}
+
+// Domain bars HTML
+const domainBars = (domainScores || [])
+  .map((d) => {
+    const pct = Math.max(0, Math.min(100, d.scorePct));
+    const lvl = domainLevel(pct);
+    return `
       <div class="domain">
         <div class="label">${escapeHtml(d.label || d.domainKey)}</div>
         <div class="bar">
-          <div class="fill" style="width:${Math.max(0, Math.min(100, d.scorePct))}%;"></div>
+          <div class="fill" style="width:${pct}%; background:${lvl.color};"></div>
         </div>
-        <div class="pct">${Math.round(d.scorePct)}%</div>
-      </div>`
-    )
-    .join("");
+        <div class="pct">
+          ${pct}%
+          <br>
+          <span style="font-size:12px;color:${lvl.color};">${lvl.label}</span>
+        </div>
+      </div>`;
+  })
+  .join("");
+
 
   return `<!doctype html>
 <html lang="mn">
@@ -171,7 +186,7 @@ function buildHTML(data) {
     --risk: ${riskColor};
     --text: #111827;
     --muted: #6b7280;
-    --bg: #fff4ef;
+    --bg: #ffffff;
     --line: #e5e7eb;
   }
   * { box-sizing: border-box; }
