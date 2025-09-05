@@ -103,6 +103,7 @@ async function gatherReportData(payload) {
     name,
     email,
     testKey,
+    testId,
     riskLevel,
     riskLabel,
     scorePct: Number(scorePct || 0),
@@ -248,23 +249,33 @@ const domainBars = (domainScores || [])
 <body>
 
   <!-- COVER -->
-  <section class="card">
-    <h1>${escapeHtml(copyRow.summaryTitle || "LifeCheck Report")}</h1>
-    <div class="meta">
-      <div>Нэр: <strong>${escapeHtml(name || "-")}</strong></div>
-      <div>Имэйл: <strong>${escapeHtml(email || "-")}</strong></div>
-      <div>Тест: <strong>${escapeHtml(copyRow.testName || testKey)}</strong></div>
-      <div>Эрсдэл: <span class="badge">${escapeHtml(riskLabel || riskLevel)}</span></div>
-    </div>
-    <div style="margin-top:12px">
-      <div class="meterRow">
-        <div class="meter" aria-label="Risk meter">
-          <div class="fill"></div>
-        </div>
-        <div class="meterPct">${Math.round(scorePct)}%</div>
+<section class="card">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+    <img src="https://lifecheck.mn/images/lifechecklogo.svg" alt="LifeCheck" style="height:28px;">
+    <div style="font-size:12px; color:#64748b;">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
+  </div>
+
+  <h1>${escapeHtml(copyRow.summaryTitle || "LifeCheck Report")}</h1>
+
+  <div class="meta">
+    <div>Нэр: <strong>${escapeHtml(name || "-")}</strong></div>
+    <div>Имэйл: <strong>${escapeHtml(email || "-")}</strong></div>
+    <div>Тест: <strong>${escapeHtml(copyRow.testName || testKey)}</strong></div>
+    <div>Тестийн дугаар: <strong>${escapeHtml(testId || "-")}</strong></div>
+    <div>Эрсдэл: <span class="badge">${escapeHtml(riskLabel || riskLevel)}</span></div>
+  </div>
+
+  <div style="margin-top:12px">
+    <div class="meterRow">
+      <div class="meter" aria-label="Risk meter">
+        <div class="fill"></div>
       </div>
+      <div class="meterPct">${Math.round(scorePct)}%</div>
     </div>
-  </section>
+  </div>
+</section>
+
+
 
   <!-- DOMAINS CHART -->
   ${

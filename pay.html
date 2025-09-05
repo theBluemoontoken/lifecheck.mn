@@ -348,21 +348,28 @@ main.container.pay-container {
 (function(){
   const TEST_NAMES = {
     burnout:  "Burnout Test",
-    redflags: "Relationship Red Flags",
-    future:   "Future Readiness",
-    money:    "Money Mindset",
+    redflags: "Relationship Red Flags Test",
+    future:   "Future Readiness Test",
+    money:    "Money Mindset Test",
   };
 
-  // 1) URL-аас ?test=... авна, буруу эсвэл байхгүй бол burnout
+  // 1) URL-аас ?test=... авна
   const qs = (new URLSearchParams(location.search).get('test')||'').toLowerCase();
-  const key = TEST_NAMES[qs] ? qs : "тест олдсонгүй";
+  const key = TEST_NAMES[qs] ? qs : "generic";
 
-  // 2) Сонгосон тестийн нэр + random id
-  const id = "#" + Math.floor(10000 + Math.random()*90000);
+  // 2) Test ID → localStorage дээр counter хадгална
+  let counter = Number(localStorage.getItem("lc_testCounter") || "0");
+  counter++;
+  localStorage.setItem("lc_testCounter", String(counter));
+
+  const id = "LC-" + counter.toString().padStart(5, "0"); // LC-00001 гэх мэт
+  localStorage.setItem("lc_testId", id);
+
+  // 3) Сонгосон тестийн нэр + ID-г харуулна
   const nameEl = document.getElementById("test-name");
   if (nameEl) nameEl.textContent = `${TEST_NAMES[key] || "LifeCheck Test"} — ${id}`;
 
-  // 3) Имэйлийг localStorage–оос авч масклаж харуулах
+  // 4) Имэйлийг localStorage–оос авч масклаж харуулах
   function maskEmail(email){
     const [local, domain] = (email||'').split('@');
     if (!domain || local.length <= 4) return email || '(имэйл байхгүй)';
@@ -403,6 +410,7 @@ document.addEventListener("DOMContentLoaded", () => {
       riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
       topAnswers: JSON.parse(localStorage.getItem("lc_topAnswers") || "[]"),
       domainsScore: JSON.parse(localStorage.getItem("lc_domainsScore") || "[]"),
+      testId: localStorage.getItem("lc_testId") || "",
     };
 
     if (!payload.email) {
