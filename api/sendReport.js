@@ -140,7 +140,7 @@ function buildHTML(data) {
     (riskLevel === "low" && "#16a34a") ||
     (riskLevel === "mid" && "#f59e0b") ||
     (riskLevel === "high" && "#f97316") ||
-    "#ef4444"; // severe
+    (riskLevel === "severe" && "#ef4444"); // severe
 
   // Top answers HTML
   const topAnsHTML = (topAnswers || []).map((t, i) => `<li><span>${i + 1}.</span> ${escapeHtml(t)}</li>`).join("");

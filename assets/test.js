@@ -354,9 +354,10 @@ showStep(1);
 
     // === 3-түвшний cliffhanger (per-test) → .analysis-excerpt p дээр ===
     let level;
-    if (pct < 40)      level = 'low';     // 0–39%
-    else if (pct < 70) level = 'medium';  // 40–69%
-    else               level = 'high';    // 70–100%
+    if (pct < 25)      level = 'low';     // 0–24%
+    else if (pct < 50) level = 'mid';     // 25–49%
+    else if (pct < 75) level = 'high';    // 50–74%
+    else               level = 'severe';  // 75–100%
 
     const cliffTarget = summary.querySelector('.analysis-excerpt p') || cliffEl;
     if (cliffTarget) cliffTarget.textContent = pickCliff(level, testKey);
