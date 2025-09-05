@@ -402,6 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
       scorePct: localStorage.getItem("lc_score") || "",
       riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
       topAnswers: JSON.parse(localStorage.getItem("lc_topAnswers") || "[]"),
+      domainsScore: JSON.parse(localStorage.getItem("lc_domainsScore") || "[]"),
     };
 
     if (!payload.email) {
