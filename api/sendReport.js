@@ -147,22 +147,12 @@ function buildHTML(data) {
   const topAnsHTML = (topAnswers || []).map((t, i) => `<li><span>${i + 1}.</span> ${escapeHtml(t)}</li>`).join("");
 
 // domain-ийн шошго/өнгө (pct бол ЯГ ХАРУУЛАХ хувь гэж ойлгоно)
-function domainLevel(pct, testKey) {
-  const tk = String(testKey || '').toLowerCase();
-  // FUTURE: их хувь = САЙН
-  if (tk === 'future') {
-    if (pct < 25) return { label: "🚨 Маш сул",    color: "#ef4444" };
-    if (pct < 50) return { label: "⚠️ Сул",        color: "#f97316" };
-    if (pct < 75) return { label: "🙂 Дунд зэрэг", color: "#f59e0b" };
-    return           { label: "💪 Сайн",           color: "#16a34a" };
-  }
-  // Бусад тестүүд: их хувь = МУУ
-  if (pct < 25) return { label: "💪 Сайн",           color: "#16a34a" };
-  if (pct < 50) return { label: "🙂 Дунд зэрэг",     color: "#f59e0b" };
-  if (pct < 75) return { label: "⚠️ Сул",            color: "#f97316" };
-  return           { label: "🚨 Маш сул",         color: "#ef4444" };
+function domainLevel(pct) {
+  if (pct < 25) return { label: "🚨 Маш сул", color: "#ef4444" };
+  if (pct < 50) return { label: "⚠️ Сул",    color: "#f97316" };
+  if (pct < 75) return { label: "🙂 Дунд зэрэг", color: "#f59e0b" };
+  return               { label: "💪 Сайн",    color: "#16a34a" };
 }
-
 
 // Domain bars HTML
 const clampPct = (x) => Math.max(0, Math.min(100, Math.round(Number(x) || 0)));
@@ -170,9 +160,9 @@ const tk = String(testKey || '').toLowerCase();
 
 const domainBars = (domainScores || [])
   .map((d) => {
-    const raw = clampPct(d.scorePct);                // 0..100 (эрсдэлийн хувь)
-    const shown = tk === 'future' ? (100 - raw) : raw; // FUTURE-г урвуулж харуулна
-    const lvl = domainLevel(shown, tk);
+    const raw   = clampPct(d.scorePct); // 0..100 = эрсдэлийн % (их = муу)
+    const shown = 100 - raw;            // сайн% болгон урвуулж зурна
+    const lvl   = domainLevel(shown);   // (эсвэл domainLevel(shown, testKey) хэрвээ салгадаг бол)
 
     return `
       <div class="domain">
@@ -187,7 +177,6 @@ const domainBars = (domainScores || [])
       </div>`;
   })
   .join("");
-
 
 
   return `<!doctype html>
