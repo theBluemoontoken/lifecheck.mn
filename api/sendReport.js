@@ -146,43 +146,48 @@ function buildHTML(data) {
   // Top answers HTML
   const topAnsHTML = (topAnswers || []).map((t, i) => `<li><span>${i + 1}.</span> ${escapeHtml(t)}</li>`).join("");
 
-// Түвшин буцаах функц (testKey-ээр салаална)
+// domain-ийн шошго/өнгө (pct бол ЯГ ХАРУУЛАХ хувь гэж ойлгоно)
 function domainLevel(pct, testKey) {
-  // future → их хувь = САЙН (бэлэн байдал өсөх)
-  if (String(testKey).toLowerCase() === "future") {
+  const tk = String(testKey || '').toLowerCase();
+  // FUTURE: их хувь = САЙН
+  if (tk === 'future') {
     if (pct < 25) return { label: "🚨 Маш сул",    color: "#ef4444" };
     if (pct < 50) return { label: "⚠️ Сул",        color: "#f97316" };
     if (pct < 75) return { label: "🙂 Дунд зэрэг", color: "#f59e0b" };
-    return           { label: "💪 Сайн",        color: "#16a34a" };
+    return           { label: "💪 Сайн",           color: "#16a34a" };
   }
-
-  // burnout, redflags, money → их хувь = МУУ (эрсдэл өсөх)
-  if (pct < 25) return { label: "💪 Сайн",        color: "#16a34a" };
-  if (pct < 50) return { label: "🙂 Дунд зэрэг", color: "#f59e0b" };
-  if (pct < 75) return { label: "⚠️ Сул",        color: "#f97316" };
-  return           { label: "🚨 Маш сул",    color: "#ef4444" };
+  // Бусад тестүүд: их хувь = МУУ
+  if (pct < 25) return { label: "💪 Сайн",           color: "#16a34a" };
+  if (pct < 50) return { label: "🙂 Дунд зэрэг",     color: "#f59e0b" };
+  if (pct < 75) return { label: "⚠️ Сул",            color: "#f97316" };
+  return           { label: "🚨 Маш сул",         color: "#ef4444" };
 }
 
 
 // Domain bars HTML
+const clampPct = (x) => Math.max(0, Math.min(100, Math.round(Number(x) || 0)));
+const tk = String(testKey || '').toLowerCase();
+
 const domainBars = (domainScores || [])
   .map((d) => {
-    const pct = Math.max(0, Math.min(100, d.scorePct));
-    const lvl = domainLevel(pct, testKey);
+    const raw = clampPct(d.scorePct);                // 0..100 (эрсдэлийн хувь)
+    const shown = tk === 'future' ? (100 - raw) : raw; // FUTURE-г урвуулж харуулна
+    const lvl = domainLevel(shown, tk);
+
     return `
       <div class="domain">
         <div class="label">${escapeHtml(d.label || d.domainKey)}</div>
         <div class="bar">
-          <div class="fill" style="width:${pct}%; background:${lvl.color};"></div>
+          <div class="fill" style="width:${shown}%; background:${lvl.color};"></div>
         </div>
         <div class="pct">
-          ${pct}%
-          <br>
+          ${shown}%<br>
           <span style="font-size:12px;color:${lvl.color};">${lvl.label}</span>
         </div>
       </div>`;
   })
   .join("");
+
 
 
   return `<!doctype html>
