@@ -138,6 +138,7 @@ function buildHTML(data) {
     scorePct,
     topAnswers = [],
     block,
+    tips,
     copyRow,
     domainScores = [],
   } = data;
