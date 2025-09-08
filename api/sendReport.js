@@ -53,7 +53,10 @@ async function gatherReportData(payload) {
   const block =
     reportBlocks.find((r) => (r.testKey || "").toLowerCase() === (testKey || "").toLowerCase() && (r.riskLevel || "").toLowerCase() === (riskLevel || "").toLowerCase()) ||
     {
-      analysis: "",
+      analysis_energy: "",
+      analysis_focus: "",
+      analysis_relationship: "",
+      analysis_somatic: "",
       advice: "",
       conclusion: "",
       motivation: "",
@@ -257,7 +260,7 @@ const domainBars = (domainScores || [])
   <!-- COVER -->
 <section class="card">
   <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-    <img src="https://lifecheck.mn/images/lifechecklogo.png" alt="LifeCheck" style="height:28px;">
+    <img src="https://lifecheck.mn/images/lifechecklogo.svg" alt="LifeCheck" style="height:28px;">
     <div style="font-size:12px; color:#64748b;">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
   </div>
 
@@ -321,7 +324,18 @@ ${block.signals ? `
   <!-- TEXT BLOCKS -->
   <section class="card">
     <h2>Шинжилгээ</h2>
-    <p>${nl2br(escapeHtml(block.analysis || ""))}</p>
+
+    <h3>Энерги</h3>
+    <p>${nl2br(escapeHtml(block.analysis_energy || ""))}</p>
+
+    <h3>Төвлөрөл</h3>
+    <p>${nl2br(escapeHtml(block.analysis_focus || ""))}</p>
+
+    <h3>Харилцаа</h3>
+    <p>${nl2br(escapeHtml(block.analysis_relationship || ""))}</p>
+
+    <h3>Соматик</h3>
+    <p>${nl2br(escapeHtml(block.analysis_somatic || ""))}</p>
 
     <h2>Зөвлөмж</h2>
     <p>${nl2br(escapeHtml(block.advice || ""))}</p>
@@ -332,6 +346,7 @@ ${block.signals ? `
     <h2>Motivation</h2>
     <p>${nl2br(escapeHtml(block.motivation || ""))}</p>
   </section>
+
 
   <!-- ACTIONS CHECKLIST -->
   ${
