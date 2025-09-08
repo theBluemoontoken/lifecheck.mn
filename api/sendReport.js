@@ -58,6 +58,8 @@ async function gatherReportData(payload) {
       conclusion: "",
       motivation: "",
       disclaimer: "",
+      intro: "",
+      signals: "",
     };
 
   // Actions: тухайн testKey + riskLevel-ийн checklist
@@ -255,11 +257,24 @@ const domainBars = (domainScores || [])
   <!-- COVER -->
 <section class="card">
   <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-    <img src="https://lifecheck.mn/images/lifechecklogo.svg" alt="LifeCheck" style="height:28px;">
+    <img src="https://lifecheck.mn/images/lifechecklogo.png" alt="LifeCheck" style="height:28px;">
     <div style="font-size:12px; color:#64748b;">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
   </div>
 
   <h1>${escapeHtml(copyRow.summaryTitle || "LifeCheck Report")}</h1>
+
+  <p style="margin-top:12px; font-size:14px; line-height:1.6;">
+  ${nl2br(escapeHtml(block.intro || ""))}
+</p>
+
+${block.signals ? `
+<div style="margin-top:10px; font-size:14px;">
+  <strong>• Гол дохио:</strong>
+  <ul style="margin:6px 0 0 18px; padding:0; line-height:1.5;">
+    ${block.signals.split(/[;\\n]/).map(s => `<li>${escapeHtml(s.trim())}</li>`).join("")}
+  </ul>
+</div>` : ""}
+
 
   <div class="meta">
     <div>Нэр: <strong>${escapeHtml(name || "-")}</strong></div>
