@@ -42,9 +42,8 @@ async function gatherReportData(payload) {
   const { testKey, riskLevel, scorePct = 0, name = "", email = "", topAnswers = [], domainsScore = [],testId = "" } = payload;
 
   // Sheets-ээс табуудаа авч ирнэ
-  const [reportBlocks, actions, domains, copy] = await Promise.all([
+  const [reportBlocks, domains, copy] = await Promise.all([
     readSheet("ReportBlocks"),
-    readSheet("Actions"),
     readSheet("Domains"),
     readSheet("Copy"),
   ]);
@@ -57,18 +56,15 @@ async function gatherReportData(payload) {
       analysis_focus: "",
       analysis_relationship: "",
       analysis_somatic: "",
-      advice: "",
+      tips_24h: "",
+      tips_7d: "",
+      tips_30d: "",
       conclusion: "",
       motivation: "",
       disclaimer: "",
       intro: "",
       signals: "",
     };
-
-  // Actions: тухайн testKey + riskLevel-ийн checklist
-  const action =
-    actions.find((r) => (r.testKey || "").toLowerCase() === (testKey || "").toLowerCase() && (r.riskLevel || "").toLowerCase() === (riskLevel || "").toLowerCase()) ||
-    { in24h: "", in7d: "", in30d: "" };
 
   // Copy: UI гарчиг, risk-ийн шошго, footer
   const copyRow = copy.find((r) => (r.testKey || "").toLowerCase() === (testKey || "").toLowerCase()) || {
@@ -78,6 +74,12 @@ async function gatherReportData(payload) {
     riskHigh: "Өндөр",
     riskSevere: "Маш өндөр",
     trustFooter: "LifeCheck ©",
+  };
+
+  const tips = {
+    in24h: block.tips_24h || "",
+    in7d:  block.tips_7d  || "",
+    in30d: block.tips_30d || "", 
   };
 
   // Domains: тухайн тестийн домэйн жагсаалт (chart-д label болгоно)
@@ -114,7 +116,7 @@ async function gatherReportData(payload) {
     scorePct: Number(scorePct || 0),
     topAnswers,
     block,
-    action,
+    tips,
     copyRow,
     domainScores: domainScoresMapped,
   };
@@ -136,7 +138,6 @@ function buildHTML(data) {
     scorePct,
     topAnswers = [],
     block,
-    action,
     copyRow,
     domainScores = [],
   } = data;
@@ -196,7 +197,7 @@ const domainBars = (domainScores || [])
     --risk: ${riskColor};
     --text: #111827;
     --muted: #6b7280;
-    --bg: ##fff4ef;
+    --bg: #fff4ef;
     --line: #e5e7eb;
   }
   * { box-sizing: border-box; }
@@ -338,7 +339,12 @@ ${block.signals ? `
     <p>${nl2br(escapeHtml(block.analysis_somatic || ""))}</p>
 
     <h2>Зөвлөмж</h2>
-    <p>${nl2br(escapeHtml(block.advice || ""))}</p>
+    <ul class="checklist">
+     ${tips.in24h ? `<li>24 цагт: ${escapeHtml(tips.in24h)}</li>` : ``}
+     ${tips.in7d  ? `<li>7 хоногт: ${escapeHtml(tips.in7d)}</li>`  : ``}
+     ${tips.in30d ? `<li>30 хоногт: ${escapeHtml(tips.in30d)}</li>`: ``}
+    </ul>
+
 
     <h2>Дүгнэлт</h2>
     <p>${nl2br(escapeHtml(block.conclusion || ""))}</p>
@@ -346,21 +352,6 @@ ${block.signals ? `
     <h2>Motivation</h2>
     <p>${nl2br(escapeHtml(block.motivation || ""))}</p>
   </section>
-
-
-  <!-- ACTIONS CHECKLIST -->
-  ${
-    action.in24h || action.in7d || action.in30d
-      ? `<section class="card">
-    <h2>Action Plan</h2>
-    <ul class="checklist">
-      ${action.in24h ? `<li>24 цагт: ${escapeHtml(action.in24h)}</li>` : ``}
-      ${action.in7d ? `<li>7 хоногт: ${escapeHtml(action.in7d)}</li>` : ``}
-      ${action.in30d ? `<li>30 хоногт: ${escapeHtml(action.in30d)}</li>` : ``}
-    </ul>
-  </section>`
-      : ``
-  }
 
   <!-- FOOTER -->
   <div class="footer">${escapeHtml(copyRow.trustFooter || "LifeCheck ©")}</div>
