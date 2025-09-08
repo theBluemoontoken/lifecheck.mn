@@ -271,16 +271,36 @@ showStep(1);
   }
 
   function pickCliff(level, testKey){
-    const pools = {
-      burnout: CLIFF,
-      redflags: CLIFF_REDFLAGS,
-      future: CLIFF_FUTURE,
-      money: CLIFF_MONEY,
-      generic: CLIFF
-    };
-    const arr = (pools[testKey] && pools[testKey][level]) ? pools[testKey][level] : (CLIFF[level] || []);
-    return arr.length ? arr[Math.floor(Math.random() * arr.length)] : "";
-  }
+  const pools = {
+    burnout: CLIFF,
+    redflags: CLIFF_REDFLAGS,
+    future: CLIFF_FUTURE,
+    money: CLIFF_MONEY,
+    generic: CLIFF
+  };
+  const tk = pools[testKey] ? testKey : 'generic';
+  const fb = (level === 'severe') ? 'high' : level;
+
+  const tryPick = (pool, lvl) => (pool && pool[lvl] && pool[lvl].length)
+      ? pool[lvl][Math.floor(Math.random()*pool[lvl].length)]
+      : "";
+
+  // 1) primary
+  let txt = tryPick(pools[tk], level);
+  if (txt) return txt;
+
+  // 2) same test fallback (severe→high)
+  txt = tryPick(pools[tk], fb);
+  if (txt) return txt;
+
+  // 3) generic, same level
+  txt = tryPick(pools.generic, level);
+  if (txt) return txt;
+
+  // 4) generic fallback (severe→high)
+  return tryPick(pools.generic, fb) || "";
+}
+
 
   function showSummaryCard() {
     if (!summary) return;
@@ -359,8 +379,10 @@ showStep(1);
     else if (pct < 75) level = 'high';    // 50–74%
     else               level = 'severe';  // 75–100%
 
-    const cliffTarget = summary.querySelector('.analysis-excerpt p') || cliffEl;
-    if (cliffTarget) cliffTarget.textContent = pickCliff(level, testKey);
+    const target = summary.querySelector('.analysis-excerpt p') || cliffEl;
+const text = pickCliff(level, testKey);
+if (target && text) target.textContent = text; // хоосон бол бүү дар
+
 
     // 5) Countdown (HTML атрибутаас уншина, default 10 минут)
     const mins = Number(summary.dataset.offerMinutes || 10);
