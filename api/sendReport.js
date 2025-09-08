@@ -146,19 +146,29 @@ function buildHTML(data) {
   // Top answers HTML
   const topAnsHTML = (topAnswers || []).map((t, i) => `<li><span>${i + 1}.</span> ${escapeHtml(t)}</li>`).join("");
 
-  // Түвшин буцаах функц
-function domainLevel(pct) {
-  if (pct < 25) return { label: "🚨 Маш сул", color: "#ef4444" };
-  if (pct < 50) return { label: "⚠️ Сул", color: "#f97316" };
-  if (pct < 75) return { label: "🙂 Дунд зэрэг", color: "#f59e0b" };
-  return { label: "💪 Сайн", color: "#16a34a" };
+// Түвшин буцаах функц (testKey-ээр салаална)
+function domainLevel(pct, testKey) {
+  // future → их хувь = САЙН (бэлэн байдал өсөх)
+  if (String(testKey).toLowerCase() === "future") {
+    if (pct < 25) return { label: "🚨 Маш сул",    color: "#ef4444" };
+    if (pct < 50) return { label: "⚠️ Сул",        color: "#f97316" };
+    if (pct < 75) return { label: "🙂 Дунд зэрэг", color: "#f59e0b" };
+    return           { label: "💪 Сайн",        color: "#16a34a" };
+  }
+
+  // burnout, redflags, money → их хувь = МУУ (эрсдэл өсөх)
+  if (pct < 25) return { label: "💪 Сайн",        color: "#16a34a" };
+  if (pct < 50) return { label: "🙂 Дунд зэрэг", color: "#f59e0b" };
+  if (pct < 75) return { label: "⚠️ Сул",        color: "#f97316" };
+  return           { label: "🚨 Маш сул",    color: "#ef4444" };
 }
+
 
 // Domain bars HTML
 const domainBars = (domainScores || [])
   .map((d) => {
     const pct = Math.max(0, Math.min(100, d.scorePct));
-    const lvl = domainLevel(pct);
+    const lvl = domainLevel(pct, testKey);
     return `
       <div class="domain">
         <div class="label">${escapeHtml(d.label || d.domainKey)}</div>
