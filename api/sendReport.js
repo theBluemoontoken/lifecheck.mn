@@ -377,12 +377,11 @@ function escapeHtml(s = "") {
  * 4) HTML → PDF (Playwright)
  */
 async function htmlToPdfBuffer(html) {
-  const browser = await playwrightChromium.launch({
-  args: chromium.args,
-  executablePath: await chromium.executablePath(),
-  headless: chromium.headless !== "false", // string → boolean хөрвүүлэлт
-});
-
+  const browser = await playwright.launch({
+    args: chromium.args,
+    executablePath: await chromium.executablePath(), // Vercel-д зориулсан binary path
+    headless: true,
+  });
 
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: "networkidle" });
