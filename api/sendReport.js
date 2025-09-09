@@ -376,9 +376,6 @@ function escapeHtml(s = "") {
 /**
  * 4) HTML → PDF (Playwright)
  */
-const chromium = require("@sparticuz/chromium");
-const { chromium: playwrightChromium } = require("playwright-core");
-
 async function htmlToPdfBuffer(html) {
   const browser = await playwrightChromium.launch({
     args: chromium.args,
