@@ -377,9 +377,9 @@ function escapeHtml(s = "") {
  * 4) HTML → PDF (Playwright)
  */
 async function htmlToPdfBuffer(html) {
-  const browser = await playwright.launch({
-    args: chromium.args,
-    executablePath: await chromium.executablePath(), // Vercel-д зориулсан binary path
+  const browser = await playwrightChromium.launch({
+    args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
+    executablePath: await chromium.executablePath(),
     headless: true,
   });
 
