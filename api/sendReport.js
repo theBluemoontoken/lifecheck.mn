@@ -223,6 +223,26 @@ function buildHTML(data) {
 @media print { .pagebreak { page-break-after: always; } }
 
 .section-avoid-break { break-inside: avoid; } /* блок дундуур хуваагдахгүй */
+@media print {
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  section.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* босоо төв */
+    margin: auto;            /* хэвтээ төв */
+    min-height: 100vh;       /* хуудас өндөртэй тэнцүү */
+    box-sizing: border-box;
+  }
+
+  .pagebreak {
+    page-break-after: always;
+  }
+}
+
 </style>
 </head>
 <body>
