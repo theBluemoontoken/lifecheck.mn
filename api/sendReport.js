@@ -229,14 +229,14 @@ function buildHTML(data) {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    gap: 16px;
+  
   }
   .analysis, .advice, .conclusion {
     display: flex;
     flex-direction: column;
     justify-content: center;
     margin: auto;
-    min-height: 100vh;
   }
 }
 </style>
