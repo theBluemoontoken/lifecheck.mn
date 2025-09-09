@@ -385,14 +385,10 @@ async function htmlToPdfBuffer(html) {
 
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: "networkidle" });
-
-  const pdfBuffer = await page.pdf({
-    format: "A4",
-    printBackground: true,
-  });
+  const pdf = await page.pdf({ format: "A4", printBackground: true });
 
   await browser.close();
-  return pdfBuffer;
+  return pdf;
 }
 
 
