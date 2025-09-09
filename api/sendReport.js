@@ -218,6 +218,11 @@ function buildHTML(data) {
   .recHead{font-weight:800;margin-bottom:6px;}
   .quote{background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px;margin-top:12px;}
   .footer{text-align:center;font-size:12px;color:var(--muted);margin-top:12px;}
+  /* Page breaks */
+.pagebreak { break-after: page; }            /* modern */
+@media print { .pagebreak { page-break-after: always; } }
+
+.section-avoid-break { break-inside: avoid; } /* блок дундуур хуваагдахгүй */
 </style>
 </head>
 <body>
@@ -231,10 +236,9 @@ function buildHTML(data) {
   <p style="font-size:14px;">${nl2br(escapeHtml(block.intro || ""))}</p>
   <div class="status">
     <span class="badge">Эрсдэл: ${escapeHtml(riskLabel||riskLevel)}</span>
-    <span class="chip">Оноо: ${Math.round(scorePct)}%</span>
     ${testId?`<span class="chip">Тест ID: ${escapeHtml(testId)}</span>`:""}
   </div>
-  ${signalsHTML?`<div style="margin-top:10px"><strong>• Гол дохио:</strong><ul style="margin:6px 0 0 18px">${signalsHTML}</ul></div>`:""}
+  ${signalsHTML?`<div style="margin-top:10px"><strong>Гол дохио:</strong><ul style="margin:6px 0 0 18px">${signalsHTML}</ul></div>`:""}
   <div class="meta">
     <div>Нэр: <strong>${escapeHtml(name||"-")}</strong></div>
     <div>Имэйл: <strong>${escapeHtml(email||"-")}</strong></div>
@@ -248,7 +252,20 @@ function buildHTML(data) {
   <div class="legend">Шкала: 0 / 25 / 50 / 75 / 100 (Ногоон → Улаан)</div>
 </section>
 
-${domainScores.length?`<section class="card"><h2>Онооны задаргаа</h2><div class="domains">${domainBars}</div></section>`:""}
+${
+  (domainScores || []).length
+    ? `<section class="card">
+  <h2>Онооны задаргаа</h2>
+  <p style="font-size:13px;color:#64748b;margin:4px 0 12px;">
+    Харилцан холбоотой домэйнүүдийн сайн % (эрсдэлийн 100 − таны оноо)
+  </p>
+  <div class="domains">
+    ${domainBars}
+  </div>
+</section>`
+    : ``
+}
+<div class="pagebreak"></div>
 
 <section class="card">
   <h2>Шинжилгээ</h2>
@@ -259,6 +276,7 @@ ${domainScores.length?`<section class="card"><h2>Онооны задаргаа</
     <div class="anaCard"><h3>🧠 Соматик</h3><p>${nl2br(escapeHtml(block.analysis_somatic||""))}</p></div>
   </div>
 </section>
+<div class="pagebreak"></div>
 
 <section class="card">
   <h2>Зөвлөмж</h2>
@@ -268,6 +286,7 @@ ${domainScores.length?`<section class="card"><h2>Онооны задаргаа</
     <div class="recCard"><div class="recHead">🗓 30 хоног</div><p>${escapeHtml(tips.in30d||"")}</p></div>
   </div>
 </section>
+<div class="pagebreak"></div>
 
 <section class="card">
   <h2>Дүгнэлт</h2>
