@@ -136,11 +136,12 @@ function buildHTML(data) {
     riskLevel,
     riskLabel,
     scorePct,
-    topAnswers = [],
+    /* topAnswers = [], */ // —> ашиглахгүй болгов
     block,
     tips,
     copyRow,
     domainScores = [],
+    testId
   } = data;
 
   // Risk өнгө
@@ -148,43 +149,40 @@ function buildHTML(data) {
     (riskLevel === "low" && "#16a34a") ||
     (riskLevel === "mid" && "#f59e0b") ||
     (riskLevel === "high" && "#f97316") ||
-    (riskLevel === "severe" && "#ef4444"); // severe
+    (riskLevel === "severe" && "#ef4444");
 
-  // Top answers HTML
-  const topAnsHTML = (topAnswers || []).map((t, i) => `<li><span>${i + 1}.</span> ${escapeHtml(t)}</li>`).join("");
+  // Signals — хоосон мөрүүдийг шүүнэ
+  const signalsHTML = (block.signals || "")
+    .split(/[;\n]/)
+    .map(s => (s || "").trim())
+    .filter(Boolean)
+    .map(s => `<li>${escapeHtml(s)}</li>`)
+    .join("");
 
-// domain-ийн шошго/өнгө (pct бол ЯГ ХАРУУЛАХ хувь гэж ойлгоно)
-function domainLevel(pct) {
-  if (pct < 25) return { label: "🚨 Маш сул", color: "#ef4444" };
-  if (pct < 50) return { label: "⚠️ Сул",    color: "#f97316" };
-  if (pct < 75) return { label: "🙂 Дунд зэрэг", color: "#f59e0b" };
-  return               { label: "💪 Сайн",    color: "#16a34a" };
-}
+  // Domains
+  const clampPct = (x) => Math.max(0, Math.min(100, Math.round(Number(x) || 0)));
+  const domainLevel = (pct) => {
+    if (pct < 25) return { label: "🚨 Маш сул", color: "#ef4444" };
+    if (pct < 50) return { label: "⚠️ Сул",    color: "#f97316" };
+    if (pct < 75) return { label: "🙂 Дунд",   color: "#f59e0b" };
+    return               { label: "💪 Сайн",    color: "#16a34a" };
+  };
+  const domainBars = (domainScores || [])
+    .map((d) => {
+      const raw   = clampPct(d.scorePct); // 0..100 = эрсдэлийн %
+      const shown = 100 - raw;            // сайн% болгон урвуу
+      const lvl   = domainLevel(shown);
+      return `
+        <div class="domain">
+          <div class="label">${escapeHtml(d.label || d.domainKey)}</div>
+          <div class="bar"><div class="fill" style="width:${shown}%; background:${lvl.color};"></div></div>
+          <div class="pct">${shown}%<br><span style="font-size:12px;color:${lvl.color};">${lvl.label}</span></div>
+        </div>`;
+    })
+    .join("");
 
-// Domain bars HTML
-const clampPct = (x) => Math.max(0, Math.min(100, Math.round(Number(x) || 0)));
-const tk = String(testKey || '').toLowerCase();
-
-const domainBars = (domainScores || [])
-  .map((d) => {
-    const raw   = clampPct(d.scorePct); // 0..100 = эрсдэлийн % (их = муу)
-    const shown = 100 - raw;            // сайн% болгон урвуулж зурна
-    const lvl   = domainLevel(shown);   // (эсвэл domainLevel(shown, testKey) хэрвээ салгадаг бол)
-
-    return `
-      <div class="domain">
-        <div class="label">${escapeHtml(d.label || d.domainKey)}</div>
-        <div class="bar">
-          <div class="fill" style="width:${shown}%; background:${lvl.color};"></div>
-        </div>
-        <div class="pct">
-          ${shown}%<br>
-          <span style="font-size:12px;color:${lvl.color};">${lvl.label}</span>
-        </div>
-      </div>`;
-  })
-  .join("");
-
+  // Өнөөдрийн огноо
+  const today = new Date().toISOString().slice(0,10);
 
   return `<!doctype html>
 <html lang="mn">
@@ -194,139 +192,97 @@ const domainBars = (domainScores || [])
 <title>${escapeHtml(copyRow.summaryTitle || "LifeCheck Report")}</title>
 <style>
   :root {
-    --accent: #f97316; /* orange */
+    --accent: #f97316;
     --risk: ${riskColor};
     --text: #111827;
     --muted: #6b7280;
     --bg: #fff4ef;
     --line: #e5e7eb;
   }
-  * { box-sizing: border-box; }
-  body {
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
-    color: var(--text);
-    background: var(--bg);
-    margin: 0;
-    padding: 24px;
-  }
-  .card {
-    background: linear-gradient(
-    315deg,              /* 135 → 315 = reverse */
-    #f8cbab 0%,          /* будгэрүүлсэн peach (soft orange) */
-    #ffffff 100%         /* white fade */
-  );
-    max-width: 820px;
-    margin: 0 auto 16px;
-    padding: 24px 28px;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-  }
-  h1 { font-size: 22px; margin: 0 0 6px; color: var(--accent); }
-  h2 { font-size: 18px; margin: 18px 0 10px; color: var(--accent); }
-  p  { line-height: 1.55; margin: 10px 0; }
-  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; color: var(--muted); font-size: 13px; }
-  .badge {
-    display: inline-block; padding: 6px 10px; border-radius: 999px; font-weight: 600; color: #fff; background: var(--risk);
-  }
-  .meter {
-    width: 100%; height: 14px; background: #f3f4f6; border-radius: 999px; overflow: hidden; border: 1px solid var(--line);
-    margin-top: 8px;
-  }
-  .meter .fill { height: 100%; background: linear-gradient(90deg, #22c55e, #eab308, #f97316, #ef4444); width: ${Math.max(
-    0,
-    Math.min(100, scorePct)
-  )}%; }
-  .meterRow { display: flex; align-items: center; gap: 12px; }
-  .meterPct { font-weight: 700; color: var(--risk); min-width: 48px; text-align: right; }
+  *{ box-sizing:border-box }
+  body{ font-family: ui-sans-serif, system-ui, -apple-system,"Segoe UI",Roboto,"Noto Sans",Arial; color:var(--text); background:var(--bg); margin:0; padding:24px; }
+  .card{ background:linear-gradient(315deg,#f8cbab 0%,#ffffff 100%); max-width:820px; margin:0 auto 16px; padding:24px 28px; border:1px solid var(--line); border-radius:16px; }
 
-  .topAnswers { margin-top: 6px; }
-  .topAnswers ul { margin: 0; padding-left: 18px; }
-  .topAnswers li { margin: 6px 0; }
+  h1{ font-size:22px; margin:0 0 6px; color:var(--accent); }
+  h2{ font-size:18px; margin:18px 0 10px; color:var(--accent); }
+  p{ line-height:1.55; margin:10px 0; }
 
-  .domains { display: flex; flex-direction: column; gap: 10px; }
-  .domain { display: grid; grid-template-columns: 140px 1fr 48px; align-items: center; gap: 10px; }
-  .domain .label { font-size: 14px; color: var(--text); }
-  .domain .bar { height: 10px; background: #f3f4f6; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
-  .domain .bar .fill { height: 100%; background: var(--accent); }
-  .domain .pct { text-align: right; font-size: 13px; color: var(--muted); }
+  .row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .slogan{ font-size:12px; color:#64748b; }
+  .badge{ display:inline-block; padding:6px 10px; border-radius:999px; font-weight:700; color:#fff; background: var(--risk); }
+  .chip{ font-size:13px; color:#fff; background:#0ea5e9; padding:5px 10px; border-radius:999px; }
 
-  .list { padding-left: 18px; }
-  .checklist { padding-left: 0; list-style: none; }
-  .checklist li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+  .status{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px }
+  .meta{ display:grid; grid-template-columns: 1fr 1fr; gap:8px 16px; color:var(--muted); font-size:13px; margin-top:14px; }
 
-  .footer { margin-top: 8px; color: var(--muted); font-size: 12px; text-align: center; }
+  .meterRow{ display:flex; align-items:center; gap:12px; }
+  .meter{ width:100%; height:14px; background:#f3f4f6; border-radius:999px; overflow:hidden; border:1px solid var(--line); position:relative; }
+  .meter .fill{ height:100%; background: linear-gradient(90deg,#22c55e,#eab308,#f97316,#ef4444); width:${Math.max(0,Math.min(100,scorePct))}%;}
+  .meterPct{ font-weight:700; color:var(--risk); min-width:48px; text-align:right; }
+  .legend{ font-size:12px; color:var(--muted); margin-top:8px; }
+
+  .domains{ display:flex; flex-direction:column; gap:10px; }
+  .domain{ display:grid; grid-template-columns:140px 1fr 56px; align-items:center; gap:10px; }
+  .domain .bar{ height:10px; background:#f3f4f6; border:1px solid var(--line); border-radius:999px; overflow:hidden; }
+  .domain .pct{ text-align:right; font-size:13px; color:var(--muted); }
+  .domain .label{ font-weight:600; }
+
+  .checklist{ padding-left:18px; }
+  .checklist li::marker{ content:"• "; }
+
+  .footer{ margin-top:8px; color:var(--muted); font-size:12px; text-align:center; }
 </style>
 </head>
 <body>
 
   <!-- COVER -->
-<section class="card">
-  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-    <img src="https://lifecheck.mn/images/lifechecklogo.svg" alt="LifeCheck" style="height:28px;">
-    <div style="font-size:12px; color:#64748b;">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
-  </div>
-
-  <h1>${escapeHtml(copyRow.summaryTitle || "LifeCheck Report")}</h1>
-
-  <p style="margin-top:12px; font-size:14px; line-height:1.6;">
-  ${nl2br(escapeHtml(block.intro || ""))}
-</p>
-
-${block.signals ? `
-<div style="margin-top:10px; font-size:14px;">
-  <strong>• Гол дохио:</strong>
-  <ul style="margin:6px 0 0 18px; padding:0; line-height:1.5;">
-    ${block.signals.split(/[;\\n]/).map(s => `<li>${escapeHtml(s.trim())}</li>`).join("")}
-  </ul>
-</div>` : ""}
-
-
-  <div class="meta">
-    <div>Нэр: <strong>${escapeHtml(name || "-")}</strong></div>
-    <div>Имэйл: <strong>${escapeHtml(email || "-")}</strong></div>
-    <div>Тест: <strong>${escapeHtml(copyRow.testName || testKey)}</strong></div>
-    <div>Тестийн дугаар: <strong>${escapeHtml(data.testId || "-")}</strong></div>
-    <div>Эрсдэл: <span class="badge">${escapeHtml(riskLabel || riskLevel)}</span></div>
-  </div>
-
-  <div style="margin-top:12px">
-    <div class="meterRow">
-      <div class="meter" aria-label="Risk meter">
-        <div class="fill"></div>
-      </div>
-      <div class="meterPct">${Math.round(scorePct)}%</div>
+  <section class="card">
+    <div class="row">
+      <img src="https://lifecheck.mn/images/lifechecklogo.svg" alt="LifeCheck" style="height:28px;">
+      <div class="slogan">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
     </div>
-  </div>
-</section>
 
+    <h1>${escapeHtml(copyRow.summaryTitle || "LifeCheck Report")}</h1>
+    <p style="margin-top:12px; font-size:14px; line-height:1.6;">${nl2br(escapeHtml(block.intro || ""))}</p>
 
+    <div class="status">
+      <span class="badge">Эрсдэл: ${escapeHtml(riskLabel || riskLevel)}</span>
+      <span class="chip">Оноо: ${Math.round(scorePct)}%</span>
+      ${testId ? `<span class="chip">Тест ID: ${escapeHtml(String(testId))}</span>` : ``}
+    </div>
+
+    ${signalsHTML ? `
+    <div style="margin-top:10px; font-size:14px;">
+      <strong>• Гол дохио:</strong>
+      <ul style="margin:6px 0 0 18px; line-height:1.5;">${signalsHTML}</ul>
+    </div>` : ``}
+
+    <div class="meta">
+      <div>Нэр: <strong>${escapeHtml(name || "-")}</strong></div>
+      <div>Имэйл: <strong>${escapeHtml(email || "-")}</strong></div>
+      <div>Тест: <strong>${escapeHtml(copyRow.testName || testKey)}</strong></div>
+      <div>Огноо: <strong>${escapeHtml(today)}</strong></div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div class="meterRow">
+        <div class="meter" aria-label="Risk meter"><div class="fill"></div></div>
+        <div class="meterPct">${Math.round(scorePct)}%</div>
+      </div>
+      <div class="legend">Шкала: 0 / 25 / 50 / 75 / 100 (Ногоон → Улаан)</div>
+    </div>
+  </section>
 
   <!-- DOMAINS CHART -->
-  ${
-    (domainScores || []).length
-      ? `<section class="card">
+  ${(domainScores || []).length ? `
+  <section class="card">
     <h2>Онооны задаргаа</h2>
-    <div class="domains">
-      ${domainBars}
-    </div>
-  </section>`
-      : ``
-  }
-
-  <!-- TOP ANSWERS -->
-  ${
-    (topAnswers || []).length
-      ? `<section class="card topAnswers">
-    <h2>Танд хамгийн их нөлөөлсөн хариултууд</h2>
-    <ul>${topAnsHTML}</ul>
-  </section>`
-      : ``
-  }
+    <div class="domains">${domainBars}</div>
+  </section>` : ``}
 
   <!-- TEXT BLOCKS -->
   <section class="card">
     <h2>Шинжилгээ</h2>
-
     <h3>Энерги</h3>
     <p>${nl2br(escapeHtml(block.analysis_energy || ""))}</p>
 
@@ -341,11 +297,10 @@ ${block.signals ? `
 
     <h2>Зөвлөмж</h2>
     <ul class="checklist">
-     ${tips.in24h ? `<li>24 цагт: ${escapeHtml(tips.in24h)}</li>` : ``}
-     ${tips.in7d  ? `<li>7 хоногт: ${escapeHtml(tips.in7d)}</li>`  : ``}
-     ${tips.in30d ? `<li>30 хоногт: ${escapeHtml(tips.in30d)}</li>`: ``}
+      ${tips.in24h ? `<li>24 цагт: ${escapeHtml(tips.in24h)}</li>` : ``}
+      ${tips.in7d  ? `<li>7 хоногт: ${escapeHtml(tips.in7d)}</li>` : ``}
+      ${tips.in30d ? `<li>30 хоногт: ${escapeHtml(tips.in30d)}</li>`: ``}
     </ul>
-
 
     <h2>Дүгнэлт</h2>
     <p>${nl2br(escapeHtml(block.conclusion || ""))}</p>
@@ -354,12 +309,11 @@ ${block.signals ? `
     <p>${nl2br(escapeHtml(block.motivation || ""))}</p>
   </section>
 
-  <!-- FOOTER -->
   <div class="footer">${escapeHtml(copyRow.trustFooter || "LifeCheck ©")}</div>
-
 </body>
 </html>`;
 }
+
 
 // Helper-ууд
 function nl2br(s = "") {
