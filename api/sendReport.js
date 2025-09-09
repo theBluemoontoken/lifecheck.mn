@@ -208,8 +208,9 @@ function buildHTML(data) {
   .domains{display:flex;flex-direction:column;gap:10px;}
   .domain{display:grid;grid-template-columns:140px 1fr 56px;align-items:center;gap:10px;}
   .domain .bar{height:10px;background:#f3f4f6;border:1px solid var(--line);border-radius:999px;overflow:hidden;}
+  .domain .bar .fill{height:100%;}
   .checklist li::before{content:"✓ ";color:var(--accent);font-weight:700;}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid2{display:flex;flex-direction:column;gap:16px;}
   .anaCard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;}
   .anaCard h3{margin:0 0 6px;}
   .recs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
