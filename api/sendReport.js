@@ -224,30 +224,27 @@ function buildHTML(data) {
 
 .section-avoid-break { break-inside: avoid; } /* блок дундуур хуваагдахгүй */
 @media print {
-  body {
+  .page-group {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
   }
-
-  section.card {
+  .analysis, .advice, .conclusion {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* босоо төв */
-    margin: auto;            /* хэвтээ төв */
-    min-height: 100vh;       /* хуудас өндөртэй тэнцүү */
-    box-sizing: border-box;
-  }
-
-  .pagebreak {
-    page-break-after: always;
+    justify-content: center;
+    margin: auto;
+    min-height: 100vh;
   }
 }
-
 </style>
 </head>
 <body>
 
-<section class="card">
+<section class="page-group">
+  <section class="card">
   <div class="row">
     <img src="https://lifecheck.mn/images/lifechecklogo.svg" alt="LifeCheck" style="height:28px;">
     <div class="slogan">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
@@ -270,9 +267,9 @@ function buildHTML(data) {
     <div class="meterPct">${Math.round(scorePct)}%</div>
   </div>
   <div class="legend">Шкала: 0 / 25 / 50 / 75 / 100 (Ногоон → Улаан)</div>
-</section>
+  </section>
 
-${
+  ${
   (domainScores || []).length
     ? `<section class="card">
   <h2>Онооны задаргаа</h2>
@@ -282,12 +279,13 @@ ${
   <div class="domains">
     ${domainBars}
   </div>
-</section>`
+  </section>`
     : ``
-}
+  }
+</section>
 <div class="pagebreak"></div>
 
-<section class="card">
+<section class="card analysis">
   <h2>Шинжилгээ</h2>
   <div class="grid2">
     <div class="anaCard"><h3>⚡ Энерги</h3><p>${nl2br(escapeHtml(block.analysis_energy||""))}</p></div>
@@ -298,7 +296,7 @@ ${
 </section>
 <div class="pagebreak"></div>
 
-<section class="card">
+<section class="card advice">
   <h2>Зөвлөмж</h2>
   <div class="recs">
     <div class="recCard"><div class="recHead">⏱ 24 цаг</div><p>${escapeHtml(tips.in24h||"")}</p></div>
@@ -308,7 +306,7 @@ ${
 </section>
 <div class="pagebreak"></div>
 
-<section class="card">
+<section class="card conclusion">
   <h2>Дүгнэлт</h2>
   <p>${nl2br(escapeHtml(block.conclusion||""))}</p>
   <div class="quote"><strong>Motivation</strong><div style="margin-top:6px">“${escapeHtml(block.motivation||"")}”</div></div>
