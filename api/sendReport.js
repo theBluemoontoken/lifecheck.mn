@@ -184,132 +184,172 @@ function buildHTML(data) {
   // Өнөөдрийн огноо
   const today = new Date().toISOString().slice(0,10);
 
-  return `<!doctype html>
+   return `<!doctype html>
 <html lang="mn">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${escapeHtml(copyRow.summaryTitle || "LifeCheck Report")}</title>
+<title>${escapeHtml(copyRow.summaryTitle || "LifeCheck Report – Placeholder Preview")}</title>
 <style>
-  :root {
-    --accent: #f97316;
-    --risk: ${riskColor};
-    --text: #111827;
-    --muted: #6b7280;
-    --bg: #fff4ef;
-    --line: #e5e7eb;
+  :root{
+    --accent:#f97316; --accent2:#fb7185; --risk:#f59e0b; --text:#0f172a;
+    --muted:#64748b; --bg:#fff4ef; --line:#e5e7eb; --card:linear-gradient(315deg,#f8cbab 0%,#ffffff 100%);
   }
-  *{ box-sizing:border-box }
-  body{ font-family: ui-sans-serif, system-ui, -apple-system,"Segoe UI",Roboto,"Noto Sans",Arial; color:var(--text); background:var(--bg); margin:0; padding:24px; }
-  .card{ background:linear-gradient(315deg,#f8cbab 0%,#ffffff 100%); max-width:820px; margin:0 auto 16px; padding:24px 28px; border:1px solid var(--line); border-radius:16px; }
-
-  h1{ font-size:22px; margin:0 0 6px; color:var(--accent); }
-  h2{ font-size:18px; margin:18px 0 10px; color:var(--accent); }
-  p{ line-height:1.55; margin:10px 0; }
-
-  .row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-  .slogan{ font-size:12px; color:#64748b; }
-  .badge{ display:inline-block; padding:6px 10px; border-radius:999px; font-weight:700; color:#fff; background: var(--risk); }
-  .chip{ font-size:13px; color:#fff; background:#0ea5e9; padding:5px 10px; border-radius:999px; }
-
-  .status{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px }
-  .meta{ display:grid; grid-template-columns: 1fr 1fr; gap:8px 16px; color:var(--muted); font-size:13px; margin-top:14px; }
-
-  .meterRow{ display:flex; align-items:center; gap:12px; }
-  .meter{ width:100%; height:14px; background:#f3f4f6; border-radius:999px; overflow:hidden; border:1px solid var(--line); position:relative; }
-  .meter .fill{ height:100%; background: linear-gradient(90deg,#22c55e,#eab308,#f97316,#ef4444); width:${Math.max(0,Math.min(100,scorePct))}%;}
-  .meterPct{ font-weight:700; color:var(--risk); min-width:48px; text-align:right; }
-  .legend{ font-size:12px; color:var(--muted); margin-top:8px; }
-
-  .domains{ display:flex; flex-direction:column; gap:10px; }
-  .domain{ display:grid; grid-template-columns:140px 1fr 56px; align-items:center; gap:10px; }
-  .domain .bar{ height:10px; background:#f3f4f6; border:1px solid var(--line); border-radius:999px; overflow:hidden; }
-  .domain .pct{ text-align:right; font-size:13px; color:var(--muted); }
-  .domain .label{ font-weight:600; }
-
-  .checklist{ padding-left:18px; }
-  .checklist li::marker{ content:"• "; }
-
-  .footer{ margin-top:8px; color:var(--muted); font-size:12px; text-align:center; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",Arial;background:var(--bg);color:var(--text)}
+  .wrap{max-width:860px;margin:24px auto;padding:0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin:12px 0;box-shadow:0 6px 14px rgba(0,0,0,.06)}
+  .row{display:flex;gap:16px;align-items:center;justify-content:space-between}
+  .logo{display:inline-flex;align-items:center;gap:8px}
+  .logo .mark{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+  .logo span{font-weight:800;letter-spacing:.2px}
+  .divider{height:1px;background:var(--line);margin:12px 0}
+  h1.title{margin:.2rem 0 .35rem;font-size:22px;color:var(--accent)}
+  .tagline{font-size:14px;color:var(--muted)}
+  .status{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+  .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;color:#fff;background:var(--risk)}
+  .chip{font-size:13px;color:#fff;background:#0ea5e9;padding:5px 10px;border-radius:999px}
+  .meta-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:14px}
+  .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:13px;color:var(--muted)}
+  .signals ul{margin:6px 0 0 18px;padding:0}
+  .signals li{margin:6px 0}
+  .meter{width:100%;height:14px;border:1px solid var(--line);border-radius:999px;background:#f3f4f6;overflow:hidden;position:relative}
+  .meter .fill{height:100%;width:${clampPct(scorePct)}%;background:linear-gradient(90deg,#22c55e,#eab308,#f97316,#ef4444)}
+  .ticks{position:absolute;inset:0;display:flex;justify-content:space-between}
+  .ticks span{width:1px;background:#cbd5e1;opacity:.8}
+  .meterSection{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+  .meterLabel{min-width:130px;text-align:right;font-weight:700;color:#ef4444}
+  .legend{font-size:12px;color:var(--muted)}
+  .domains .item{display:grid;grid-template-columns:150px 1fr 56px;gap:10px;align-items:center;margin:10px 0}
+  .domains .bar{height:10px;background:#f3f4f6;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .domains .bar .fill{height:100%;width:72%;background:#16a34a}
+  .domains .pct{text-align:right;font-size:12px;color:var(--muted)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .p{margin:6px 0}
+  .sub{font-weight:700;margin:6px 0 4px;color:#111827}
+  .recs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .recCard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+  .recHead{font-weight:800;margin-bottom:6px}
+  .recCard ul{margin:6px 0 0 18px}
+  .quote{background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px}
+  .foot{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;margin-top:8px}
+  .small{font-size:12px;color:var(--muted)}
+  @media (max-width:680px){
+    .grid2{grid-template-columns:1fr}
+    .recs{grid-template-columns:1fr}
+    .domains .item{grid-template-columns:120px 1fr 46px}
+  }
 </style>
 </head>
 <body>
+  <div class="wrap">
 
-  <!-- COVER -->
-  <section class="card">
-    <div class="row">
-      <img src="https://lifecheck.mn/images/lifechecklogo.svg" alt="LifeCheck" style="height:28px;">
-      <div class="slogan">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
-    </div>
-
-    <h1>${escapeHtml(copyRow.summaryTitle || "LifeCheck Report")}</h1>
-    <p style="margin-top:12px; font-size:14px; line-height:1.6;">${nl2br(escapeHtml(block.intro || ""))}</p>
-
-    <div class="status">
-      <span class="badge">Эрсдэл: ${escapeHtml(riskLabel || riskLevel)}</span>
-      <span class="chip">Оноо: ${Math.round(scorePct)}%</span>
-      ${testId ? `<span class="chip">Тест ID: ${escapeHtml(String(testId))}</span>` : ``}
-    </div>
-
-    ${signalsHTML ? `
-    <div style="margin-top:10px; font-size:14px;">
-      <strong>• Гол дохио:</strong>
-      <ul style="margin:6px 0 0 18px; line-height:1.5;">${signalsHTML}</ul>
-    </div>` : ``}
-
-    <div class="meta">
-      <div>Нэр: <strong>${escapeHtml(name || "-")}</strong></div>
-      <div>Имэйл: <strong>${escapeHtml(email || "-")}</strong></div>
-      <div>Тест: <strong>${escapeHtml(copyRow.testName || testKey)}</strong></div>
-      <div>Огноо: <strong>${escapeHtml(today)}</strong></div>
-    </div>
-
-    <div style="margin-top:12px">
-      <div class="meterRow">
-        <div class="meter" aria-label="Risk meter"><div class="fill"></div></div>
-        <div class="meterPct">${Math.round(scorePct)}%</div>
+    <!-- COVER / HEADER -->
+    <section class="card">
+      <div class="row">
+        <div class="logo"><div class="mark"></div><span>LifeCheck</span></div>
+        <div class="small">Амьдралаа шалга. Эрсдлээ эрт хар.</div>
       </div>
-      <div class="legend">Шкала: 0 / 25 / 50 / 75 / 100 (Ногоон → Улаан)</div>
+      <div class="divider"></div>
+      <h1 class="title">${escapeHtml(copyRow.summaryTitle || "LifeCheck Report")}</h1>
+      <div class="tagline">${escapeHtml(block.intro || "Энэ тайлан таны үнэлгээний гол дохио, эрсдэлийн түвшин, домэйн задрал болон 24/7/30 хоногийн хэрэгжих зөвлөмжийг багтаана.")}</div>
+
+      <div class="status">
+        <span class="badge">Эрсдэл: ${escapeHtml(riskLabel || riskLevel)}</span>
+        <span class="chip">Оноо: ${clampPct(scorePct)}%</span>
+        ${testId ? `<span class="chip">Тест ID: ${escapeHtml(String(testId))}</span>` : ``}
+      </div>
+
+      <div class="meta-card">
+        <div class="meta-grid">
+          <div>Нэр: <strong>${escapeHtml(name || "-")}</strong></div>
+          <div>Имэйл: <strong>${escapeHtml(email || "-")}</strong></div>
+          <div>Тест: <strong>${escapeHtml(copyRow.testName || testKey || "-")}</strong></div>
+          <div>Огноо: <strong>${escapeHtml(today)}</strong></div>
+        </div>
+      </div>
+
+      ${signalsHTML ? `
+      <div class="signals" style="margin-top:10px">
+        <strong>• Гол дохио:</strong>
+        <ul>${signalsHTML}</ul>
+      </div>` : ``}
+    </section>
+
+    <!-- RISK METER -->
+    <section class="card">
+      <h2 style="margin:0 0 8px">Эрсдэлийн хэмжигч</h2>
+      <div class="meterSection">
+        <div class="meter">
+          <div class="fill"></div>
+          <div class="ticks"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="meterLabel">Таны түвшин: ${escapeHtml(riskLabel || "-")}</div>
+      </div>
+      <div class="legend" style="margin-top:8px">Ногоон→Улаан градиент. Тэмдэглэгээ: 0 / 25 / 50 / 75 / 100</div>
+    </section>
+
+    <!-- DOMAINS CHART -->
+    ${(domainScores || []).length ? `
+    <section class="card">
+      <h2 style="margin:0 0 8px">Онооны задаргаа</h2>
+      <div class="legend" style="margin-bottom:8px">Холбоотой домэйнүүдийн сайн % (эрсдэлийн 100 − таны оноо)</div>
+      <div class="domains">
+        ${domainItems}
+      </div>
+    </section>` : ``}
+
+    <!-- ANALYSIS (4 blocks) -->
+    <section class="card">
+      <h2 style="margin:0 0 8px">Шинжилгээ</h2>
+      <div class="grid2">
+        <div>
+          <div class="sub">⚡ Энерги</div>
+          <p class="p">${nl2br(escapeHtml(block.analysis_energy || ""))}</p>
+        </div>
+        <div>
+          <div class="sub">🎯 Төвлөрөл</div>
+          <p class="p">${nl2br(escapeHtml(block.analysis_focus || ""))}</p>
+        </div>
+        <div>
+          <div class="sub">🤝 Харилцаа</div>
+          <p class="p">${nl2br(escapeHtml(block.analysis_relationship || ""))}</p>
+        </div>
+        <div>
+          <div class="sub">🧠 Соматик</div>
+          <p class="p">${nl2br(escapeHtml(block.analysis_somatic || ""))}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECOMMENDATIONS 24/7/30 -->
+    <section class="card">
+      <h2 style="margin:0 0 8px">Зөвлөмж</h2>
+      <div class="recs">
+        ${tips.in24h ? `<div class="recCard"><div class="recHead">⏱ 24 цаг</div><ul><li>${escapeHtml(tips.in24h)}</li></ul></div>` : ``}
+        ${tips.in7d  ? `<div class="recCard"><div class="recHead">📅 7 хоног</div><ul><li>${escapeHtml(tips.in7d)}</li></ul></div>` : ``}
+        ${tips.in30d ? `<div class="recCard"><div class="recHead">🗓 30 хоног</div><ul><li>${escapeHtml(tips.in30d)}</li></ul></div>` : ``}
+      </div>
+    </section>
+
+    <!-- CONCLUSION + MOTIVATION -->
+    <section class="card">
+      <h2 style="margin:0 0 8px">Дүгнэлт</h2>
+      <p class="p">${nl2br(escapeHtml(block.conclusion || ""))}</p>
+      ${(block.motivation || "").trim() ? `
+      <div class="quote" style="margin-top:12px">
+        <strong>Motivation</strong>
+        <div style="margin-top:6px">“${escapeHtml(block.motivation)}”</div>
+      </div>` : ``}
+      <div class="small" style="text-align:center;margin-top:10px">${escapeHtml(copyRow.trustFooter || "LifeCheck ©")}</div>
+    </section>
+
+    <!-- FOOT -->
+    <div class="foot">
+      <div>Нууцлал: Энэхүү тайлан нь мэдээллийн зорилготой.</div>
+      <div>Page 1</div>
     </div>
-  </section>
-
-  <!-- DOMAINS CHART -->
-  ${(domainScores || []).length ? `
-  <section class="card">
-    <h2>Онооны задаргаа</h2>
-    <div class="domains">${domainBars}</div>
-  </section>` : ``}
-
-  <!-- TEXT BLOCKS -->
-  <section class="card">
-    <h2>Шинжилгээ</h2>
-    <h3>Энерги</h3>
-    <p>${nl2br(escapeHtml(block.analysis_energy || ""))}</p>
-
-    <h3>Төвлөрөл</h3>
-    <p>${nl2br(escapeHtml(block.analysis_focus || ""))}</p>
-
-    <h3>Харилцаа</h3>
-    <p>${nl2br(escapeHtml(block.analysis_relationship || ""))}</p>
-
-    <h3>Соматик</h3>
-    <p>${nl2br(escapeHtml(block.analysis_somatic || ""))}</p>
-
-    <h2>Зөвлөмж</h2>
-    <ul class="checklist">
-      ${tips.in24h ? `<li>24 цагт: ${escapeHtml(tips.in24h)}</li>` : ``}
-      ${tips.in7d  ? `<li>7 хоногт: ${escapeHtml(tips.in7d)}</li>` : ``}
-      ${tips.in30d ? `<li>30 хоногт: ${escapeHtml(tips.in30d)}</li>`: ``}
-    </ul>
-
-    <h2>Дүгнэлт</h2>
-    <p>${nl2br(escapeHtml(block.conclusion || ""))}</p>
-
-    <h2>Motivation</h2>
-    <p>${nl2br(escapeHtml(block.motivation || ""))}</p>
-  </section>
-
-  <div class="footer">${escapeHtml(copyRow.trustFooter || "LifeCheck ©")}</div>
+  </div>
 </body>
 </html>`;
 }
