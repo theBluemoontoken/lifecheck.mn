@@ -376,26 +376,28 @@ function escapeHtml(s = "") {
 /**
  * 4) HTML → PDF (Playwright)
  */
-async function htmlToPdfBuffer(html) {
-  const execPath = await chromium.executablePath();
+import chromium from "@sparticuz/chromium";
+import playwright from "playwright-core";
 
-  const browser = await playwrightChromium.launch({
+async function htmlToPdfBuffer(html) {
+  const browser = await playwright.chromium.launch({
     args: chromium.args,
-    executablePath: execPath,
-    headless: true,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
   });
 
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: "networkidle" });
-  // бичгийн хэв маягтай PDF
-  const pdf = await page.pdf({
+
+  const pdfBuffer = await page.pdf({
     format: "A4",
     printBackground: true,
-    margin: { top: "16mm", right: "12mm", bottom: "16mm", left: "12mm" },
   });
+
   await browser.close();
-  return pdf;
+  return pdfBuffer;
 }
+
 
 /**
  * 5) Имэйлээр илгээх
