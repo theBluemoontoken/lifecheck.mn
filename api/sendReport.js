@@ -378,10 +378,11 @@ function escapeHtml(s = "") {
  */
 async function htmlToPdfBuffer(html) {
   const browser = await playwrightChromium.launch({
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
-    headless: chromium.headless,
-  });
+  args: chromium.args,
+  executablePath: await chromium.executablePath(),
+  headless: chromium.headless !== "false", // string → boolean хөрвүүлэлт
+});
+
 
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: "networkidle" });
