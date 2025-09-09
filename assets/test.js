@@ -335,7 +335,6 @@ showStep(1);
     localStorage.setItem('lc_test', testKey);
     localStorage.setItem('lc_risk', sev.key);           // low | mid | high | severe
     localStorage.setItem('lc_score', String(pct));      // 0..100
-    localStorage.setItem('lc_testName', COPY.summaryTitle || 'LifeCheck Test');
     } catch (_) {}
 
     // Test-specific overrides
