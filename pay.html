@@ -379,34 +379,29 @@ main.container.pay-container {
     money:    "Money Mindset Test",
   };
 
-  // 1) URL-аас ?test=... авна
-  const qs = (new URLSearchParams(location.search).get('test')||'').toLowerCase();
-  const key = TEST_NAMES[qs] ? qs : "generic";
+  // localStorage-с тестийн мэдээлэл авч харуулна
+  const key   = localStorage.getItem("lc_test") || "burnout";
+  const name  = TEST_NAMES[key] || "LifeCheck Test";
+  const id    = localStorage.getItem("lc_testId") || "…";
 
-  // 2) Test ID → localStorage дээр counter хадгална
-  let counter = Number(localStorage.getItem("lc_testCounter") || "0");
-  counter++;
-  localStorage.setItem("lc_testCounter", String(counter));
+  const rawEmail = (()=>{ 
+    try{ return localStorage.getItem("lc_email")||"" }catch(_){ return "" } 
+  })();
 
-  const id = "LC-" + counter.toString().padStart(5, "0"); // LC-00001 гэх мэт
-  localStorage.setItem("lc_testId", id);
+  // Тестийн нэр + ID
+  const nameEl  = document.getElementById("test-name");
+  if (nameEl) nameEl.textContent = `${name} — ${id}`;
 
-  // 3) Сонгосон тестийн нэр + ID-г харуулна
-  const nameEl = document.getElementById("test-name");
-  if (nameEl) nameEl.textContent = `${TEST_NAMES[key] || "LifeCheck Test"} — ${id}`;
-
-  // 4) Имэйлийг localStorage–оос авч масклаж харуулах
+  // Имэйл масклах
   function maskEmail(email){
     const [local, domain] = (email||'').split('@');
     if (!domain || local.length <= 4) return email || '(имэйл байхгүй)';
     return `${local.slice(0,2)}${'*'.repeat(local.length-4)}${local.slice(-2)}@${domain}`;
   }
-
-  const rawEmail = (()=>{ try{ return localStorage.getItem("lc_email")||"" }catch(_){ return "" }})();
   const emailEl = document.getElementById("user-email");
   if (emailEl) emailEl.textContent = rawEmail ? maskEmail(rawEmail) : "(имэйл байхгүй)";
 
-  // 4) Countdown (15:00)
+  // Countdown (15:00)
   const countdownEl = document.getElementById("countdown");
   if (countdownEl) {
     let t = 15*60;
@@ -421,6 +416,7 @@ main.container.pay-container {
   }
 })();
 </script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const mailBtn = document.getElementById("test-mail-btn");

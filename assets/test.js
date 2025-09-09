@@ -380,8 +380,8 @@ showStep(1);
     else               level = 'severe';  // 75–100%
 
     const target = summary.querySelector('.analysis-excerpt p') || cliffEl;
-const text = pickCliff(level, testKey);
-if (target && text) target.textContent = text; // хоосон бол бүү дар
+    const text = pickCliff(level, testKey);
+    if (target && text) target.textContent = text; // хоосон бол бүү дар
 
 
     // 5) Countdown (HTML атрибутаас уншина, default 10 минут)
@@ -411,6 +411,36 @@ if (target && text) target.textContent = text; // хоосон бол бүү д�
     summary.classList.add('fade-in');
     summary.scrollIntoView({ behavior: 'smooth' });
     saveDomainScores(testKey);
+
+    // === Серверээс unique testId урьдчилж авах ===
+(async () => {
+  try {
+    const payload = {
+      name: localStorage.getItem("lc_name") || "",
+      email: localStorage.getItem("lc_email") || "",
+      testName: localStorage.getItem("lc_testName") || "LifeCheck Test",
+      testKey: localStorage.getItem("lc_test") || "burnout",
+      scorePct: localStorage.getItem("lc_score") || "",
+      riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
+      topAnswers: JSON.parse(localStorage.getItem("lc_topAnswers") || "[]"),
+      domainsScore: JSON.parse(localStorage.getItem("lc_domainsScore") || "[]"),
+      testId: "" // сервер өөрөө үүсгэнэ
+    };
+
+    const res = await fetch("/api/sendReport", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (data.testId) {
+      localStorage.setItem("lc_testId", data.testId);
+    }
+  } catch (err) {
+    console.error("testId авахад алдаа:", err);
+  }
+})();
+
   }
 
   // Init — эхний active-ийг хүндэлнэ, байхгүй бол 0-оос
@@ -561,36 +591,6 @@ try { localStorage.setItem('lc_test', testKey); } catch(_) {}
   }, 2500);
 })();
 
-function extractTopAnswers() {
-  // Радио сонголтууд дундаас ХАМГИЙН эрсдэлтэй 2–3-г сонгоно (утга их = илүү муу)
-  // Таны асуулт бүр name="q1"..."q14" гэх мэт гэж тооцоолоод:
-  const picked = [];
-  const MAX_Q = 20; // аюулгүй тоо, тест бүр өөр; илүүдлийг өөрөө шүүж авна
-  for (let i = 1; i <= MAX_Q; i++) {
-    const name = `q${i}`;
-    const input = document.querySelector(`input[name="${name}"]:checked`);
-    if (!input) continue;
-
-    const val = parseInt(input.value, 10); // 0 сайн → 4 муу
-    const label = input.closest('label')?.innerText?.trim() || `#${i}`;
-    // Асуултын гарчгийг давхар авчихвал ойлгомжтой болно:
-    const qTitle = input.closest('.question-card')?.querySelector('.question-title')?.innerText?.trim();
-    picked.push({
-      q: i,
-      score: isNaN(val) ? 0 : val,
-      text: qTitle ? `${qTitle} → ${label}` : label
-    });
-  }
-
-  // score-оор нь буулгаж (их оноо = red flag), эхний 3-г авна
-  picked.sort((a, b) => b.score - a.score);
-  return picked.slice(0, 3).map(p => p.text);
-}
-
-try {
-  const topAnswers = extractTopAnswers();
-  localStorage.setItem('lc_topAnswers', JSON.stringify(topAnswers));
-} catch (_) {}
 
 // ===== Domain Breakdown Calculation =====
 const DOMAIN_MAP = {

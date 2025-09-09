@@ -421,32 +421,132 @@ async function sendEmailWithPdf(to, subject, text, pdfBuffer, filename = "report
   });
 }
 
+// === REPLACE the whole handler with this ===
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Only POST allowed" });
 
   try {
-    // Frontend-ээс ирэх dynamic өгөгдөл
-    // жишээ body:
-    // { name, email, testKey, riskLevel, scorePct, topAnswers:[], domainsScore:[{domainKey,scorePct}] }
+    // 1) Payload шалгах
     const payload = req.body || {};
     if (!payload.email) return res.status(400).json({ error: "email is required" });
-    if (!payload.testKey || !payload.riskLevel) return res.status(400).json({ error: "testKey & riskLevel required" });
+    if (!payload.testKey || !payload.riskLevel) {
+      return res.status(400).json({ error: "testKey & riskLevel required" });
+    }
 
-    // Sheets + dynamic → нэгтгэсэн дата
-    const data = await gatherReportData(payload);
+    // 2) Server талд баталгаатай testId үүсгэнэ (хэрэв ирээгүй бол)
+    const serverTestId = payload.testId && String(payload.testId).trim()
+      ? payload.testId.trim()
+      : await generateUniqueTestId(); // <-- 1.1-д нэмсэн функц
 
-    // HTML угсраад PDF болгох
+    // 3) Sheets + dynamic → нэгтгэсэн дата (testId-г оруулж өгнө)
+    const data = await gatherReportData({ ...payload, testId: serverTestId });
+
+    // 4) HTML → PDF
     const html = buildHTML(data);
     const pdfBuffer = await htmlToPdfBuffer(html);
 
-    // Имэйл илгээх
+    // 5) Имэйл илгээх
     const subject = `📊 ${data.copyRow?.summaryTitle || "LifeCheck Report"} — ${Math.round(data.scorePct)}% • ${data.riskLabel}`;
     const text = `${data.name || "Хэрэглэгч"}-ийн тайлан хавсралтад байна.`;
     await sendEmailWithPdf(data.email, subject, text, pdfBuffer, `${data.testKey}-report.pdf`);
 
-    return res.status(200).json({ success: true, message: "Report emailed" });
+    // 6) Лог бичих (Google Sheets → Logs)
+    await appendLog({
+      testId: data.testId,            // LC-xxxxx
+      testKey: data.testKey,          // burnout/redflags/future/money
+      riskLevel: data.riskLevel,      // low/mid/high/severe
+      scorePct: data.scorePct,        // 0..100
+      name: data.name || "",
+      email: data.email || "",
+      extra: {                        // дурын нэмэлт
+        topAnswers: data.topAnswers || [],
+        domainsScore: data.domainScores || []
+      },
+    });
+
+    // 7) testId-тай хамт амжилтын хариу буцаана
+    return res.status(200).json({ success: true, message: "Report emailed", testId: data.testId });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Report generation failed" });
   }
+}
+
+
+// === ADD: Sheets (write) ===
+async function getSheetsClient(scopes = ["https://www.googleapis.com/auth/spreadsheets.readonly"]) {
+  const auth = new google.auth.GoogleAuth({
+    credentials: {
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+      private_key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
+    },
+    scopes,
+  });
+  return google.sheets({ version: "v4", auth });
+}
+
+// === ADD: Logs табаас ашиглагдсан testId-уудыг унших ===
+async function getUsedTestIds() {
+  const sheets = await getSheetsClient();
+  const resp = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: "Logs!A:Z", // бүх мөрийг аваад толгойг алгасна
+  });
+  const rows = resp.data.values || [];
+  if (rows.length <= 1) return new Set(); // толгойгоос өөр мөр алга
+  // Толгой: timestamp | testId | testKey | riskLevel | scorePct | name | email | extra
+  const used = new Set();
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i] || [];
+    const id = row[1] || ""; // 2-р багана = testId
+    if (id) used.add(id);
+  }
+  return used;
+}
+
+// === ADD: LC-00001..LC-99999 random, давхцахгүй үүсгэх ===
+function makeId() {
+  const n = Math.floor(Math.random() * 99999) + 1; // 1..99999
+  return "LC-" + String(n).padStart(5, "0");
+}
+
+async function generateUniqueTestId(maxTries = 50) {
+  const used = await getUsedTestIds();
+  for (let i = 0; i < maxTries; i++) {
+    const id = makeId();
+    if (!used.has(id)) return id;
+  }
+  // fallback — цагийн тамгатай
+  return "LC-" + Date.now().toString().slice(-5);
+}
+
+// === ADD: Logs таб руу мөр нэмэх ===
+async function appendLog({
+  timestamp = new Date().toISOString(),
+  testId,
+  testKey,
+  riskLevel,
+  scorePct,
+  name,
+  email,
+  extra = {},
+}) {
+  const sheets = await getSheetsClient(["https://www.googleapis.com/auth/spreadsheets"]);
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: process.env.SHEET_ID,
+    range: "Logs!A:H",
+    valueInputOption: "USER_ENTERED",
+    requestBody: {
+      values: [[
+        timestamp,
+        testId || "",
+        (testKey || "").toString(),
+        (riskLevel || "").toString(),
+        typeof scorePct === "number" ? scorePct : Number(scorePct || 0),
+        (name || "").toString(),
+        (email || "").toString(),
+        JSON.stringify(extra || {}),
+      ]],
+    },
+  });
 }
