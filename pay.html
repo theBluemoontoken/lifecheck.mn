@@ -371,7 +371,7 @@ main.container.pay-container {
       </footer>
   <script src="/assets/test.js"></script>
   <script>
-(function(){
+(async function(){
   const TEST_NAMES = {
     burnout:  "Burnout Test",
     redflags: "Relationship Red Flags Test",
@@ -379,20 +379,42 @@ main.container.pay-container {
     money:    "Money Mindset Test",
   };
 
-  // localStorage-с тестийн мэдээлэл авч харуулна
-  const key   = localStorage.getItem("lc_test") || "burnout";
-  const name  = TEST_NAMES[key] || "LifeCheck Test";
-  const id    = localStorage.getItem("lc_testId") || "…";
+  // 1) URL-аас ?test=... авна
+  const qs = (new URLSearchParams(location.search).get('test')||'').toLowerCase();
+  const key = TEST_NAMES[qs] ? qs : "generic";
 
+  // 2) Имэйл localStorage-с
   const rawEmail = (()=>{ 
-    try{ return localStorage.getItem("lc_email")||"" }catch(_){ return "" } 
+    try { return localStorage.getItem("lc_email")||"" }catch(_){ return "" }
   })();
 
-  // Тестийн нэр + ID
-  const nameEl  = document.getElementById("test-name");
-  if (nameEl) nameEl.textContent = `${name} — ${id}`;
+  // 3) Backend-ээс шинэ TestID авах
+  let testId = "";
+  try {
+    const res = await fetch("/api/sendReport", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: rawEmail,
+        testKey: key,
+        onlyGenerateId: true
+      }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      testId = data.testId;
+    }
+  } catch (e) {
+    console.error("❌ TestID авахад алдаа:", e);
+  }
 
-  // Имэйл масклах
+  // 4) Тестийн нэр + ID-г харуулах
+  const nameEl = document.getElementById("test-name");
+  if (nameEl) {
+    nameEl.textContent = `${TEST_NAMES[key] || "LifeCheck Test"} — ${testId || "..."}`;
+  }
+
+  // 5) Имэйлийг маскалж харуулах
   function maskEmail(email){
     const [local, domain] = (email||'').split('@');
     if (!domain || local.length <= 4) return email || '(имэйл байхгүй)';
@@ -401,7 +423,7 @@ main.container.pay-container {
   const emailEl = document.getElementById("user-email");
   if (emailEl) emailEl.textContent = rawEmail ? maskEmail(rawEmail) : "(имэйл байхгүй)";
 
-  // Countdown (15:00)
+  // 6) Countdown (15:00)
   const countdownEl = document.getElementById("countdown");
   if (countdownEl) {
     let t = 15*60;
@@ -430,9 +452,7 @@ document.addEventListener("DOMContentLoaded", () => {
       testKey: localStorage.getItem("lc_test") || "burnout",
       scorePct: localStorage.getItem("lc_score") || "",
       riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
-      topAnswers: JSON.parse(localStorage.getItem("lc_topAnswers") || "[]"),
       domainsScore: JSON.parse(localStorage.getItem("lc_domainsScore") || "[]"),
-      testId: localStorage.getItem("lc_testId") || "",
     };
 
     if (!payload.email) {

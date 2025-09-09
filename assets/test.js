@@ -380,8 +380,8 @@ showStep(1);
     else               level = 'severe';  // 75–100%
 
     const target = summary.querySelector('.analysis-excerpt p') || cliffEl;
-    const text = pickCliff(level, testKey);
-    if (target && text) target.textContent = text; // хоосон бол бүү дар
+const text = pickCliff(level, testKey);
+if (target && text) target.textContent = text; // хоосон бол бүү дар
 
 
     // 5) Countdown (HTML атрибутаас уншина, default 10 минут)
@@ -411,36 +411,6 @@ showStep(1);
     summary.classList.add('fade-in');
     summary.scrollIntoView({ behavior: 'smooth' });
     saveDomainScores(testKey);
-
-    // === Серверээс unique testId урьдчилж авах ===
-(async () => {
-  try {
-    const payload = {
-      name: localStorage.getItem("lc_name") || "",
-      email: localStorage.getItem("lc_email") || "",
-      testName: localStorage.getItem("lc_testName") || "LifeCheck Test",
-      testKey: localStorage.getItem("lc_test") || "burnout",
-      scorePct: localStorage.getItem("lc_score") || "",
-      riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
-      topAnswers: JSON.parse(localStorage.getItem("lc_topAnswers") || "[]"),
-      domainsScore: JSON.parse(localStorage.getItem("lc_domainsScore") || "[]"),
-      testId: "" // сервер өөрөө үүсгэнэ
-    };
-
-    const res = await fetch("/api/sendReport", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    if (data.testId) {
-      localStorage.setItem("lc_testId", data.testId);
-    }
-  } catch (err) {
-    console.error("testId авахад алдаа:", err);
-  }
-})();
-
   }
 
   // Init — эхний active-ийг хүндэлнэ, байхгүй бол 0-оос
@@ -590,7 +560,6 @@ try { localStorage.setItem('lc_test', testKey); } catch(_) {}
     slides[i].classList.add('show');
   }, 2500);
 })();
-
 
 // ===== Domain Breakdown Calculation =====
 const DOMAIN_MAP = {
