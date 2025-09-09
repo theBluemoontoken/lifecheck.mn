@@ -1,10 +1,10 @@
 // pages/api/sendReport.js
-import { google } from "googleapis";
-import nodemailer from "nodemailer";
+const { google } = require("googleapis");
+const nodemailer = require("nodemailer");
 
 // Playwright + Sparticuz Chromium (Vercel-д тохиромжтой)
-import chromium from "@sparticuz/chromium";
-import { chromium as playwrightChromium } from "playwright-core";
+const chromium = require("@sparticuz/chromium");
+const { chromium: playwrightChromium } = require("playwright-core");
 
 /**
  * 1) Google Sheets-ээс хүссэн табыг бүхэлд нь уншиж, header-тай нь объектын массив болгоно
@@ -376,11 +376,11 @@ function escapeHtml(s = "") {
 /**
  * 4) HTML → PDF (Playwright)
  */
-import chromium from "@sparticuz/chromium";
-import playwright from "playwright-core";
+const chromium = require("@sparticuz/chromium");
+const { chromium: playwrightChromium } = require("playwright-core");
 
 async function htmlToPdfBuffer(html) {
-  const browser = await playwright.chromium.launch({
+  const browser = await playwrightChromium.launch({
     args: chromium.args,
     executablePath: await chromium.executablePath(),
     headless: chromium.headless,
@@ -397,6 +397,7 @@ async function htmlToPdfBuffer(html) {
   await browser.close();
   return pdfBuffer;
 }
+
 
 
 /**
