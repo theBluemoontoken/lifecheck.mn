@@ -223,22 +223,22 @@ function buildHTML(data) {
 @media print { .pagebreak { page-break-after: always; } }
 
 .section-avoid-break { break-inside: avoid; } /* блок дундуур хуваагдахгүй */
-@media print {
-  .page-group {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-  
-  }
-  .analysis, .advice, .conclusion {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin: auto;
-  }
+.page-group,
+.analysis,
+.advice,
+.conclusion {
+  min-height: 297mm;             /* A4 өндөр */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;       /* босоо төв */
+  align-items: center;           /* хөндлөн төв */
+  gap: 16px;                     /* card хоорондын зай */
 }
+
+.page-group .card {
+  margin: 0 auto;                /* хөндлөн төв */
+}
+
 </style>
 </head>
 <body>
