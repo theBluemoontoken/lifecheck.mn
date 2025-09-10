@@ -243,6 +243,17 @@ function buildHTML(data) {
   flex-direction: column;
   justify-content: center;
 }
+  /* Cover card + Domain card ижил өргөн */
+.page-group .card {
+  width: 100%;
+  max-width: 820px;
+}
+
+/* Domains дотор grid card-ийн өргөнд дүүрнэ */
+.domains {
+  width: 100%;
+}
+
 </style>
 </head>
 <body>
@@ -320,9 +331,8 @@ function buildHTML(data) {
   <p>${nl2br(escapeHtml(block.conclusion||""))}</p>
   <div class="quote"><strong>Motivation</strong><div style="margin-top:6px">“${escapeHtml(block.motivation||"")}”</div></div>
   </section>
+  <div class="footer">${escapeHtml(copyRow.trustFooter||"LifeCheck ©")}</div>
 </section>
-
-<div class="footer">${escapeHtml(copyRow.trustFooter||"LifeCheck ©")}</div>
 </body></html>`;
 }
 
