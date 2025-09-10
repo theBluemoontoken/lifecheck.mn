@@ -227,12 +227,12 @@ function buildHTML(data) {
 .advice,
 .conclusion {
   display: flex;
-  align-items:center;
+  justify-content: center; 
 }
 .page-group {
   gap: 16px;
   flex-direction: column; 
-  align-items:center;
+  justify-content: center; 
   display:flex;
 }
 
