@@ -247,11 +247,12 @@ function buildHTML(data) {
 .page-group .card {
   width: 100%;
   max-width: 820px;
+  margin: 0 auto; 
 }
 
 /* Domains дотор grid card-ийн өргөнд дүүрнэ */
 .domains {
-  width: 100%;
+  width: auto;
 }
 
 </style>
