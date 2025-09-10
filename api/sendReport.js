@@ -190,7 +190,8 @@ function buildHTML(data) {
   body{
   font-family:ui-sans-serif,system-ui,Roboto,Arial; 
   background:#fff4ef; 
-  margin:0; 
+  margin:0;
+  padding:0;
   color:#111827;
   display: flex;
   flex-direction: column;
