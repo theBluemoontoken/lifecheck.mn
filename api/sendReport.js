@@ -231,15 +231,18 @@ function buildHTML(data) {
 @media print { .pagebreak { page-break-after: always; } }
 
 .section-avoid-break { break-inside: avoid; } /* блок дундуур хуваагдахгүй */
+@page { size: A4; margin: 0; }
 .page-group,
 .analysis,
 .advice,
 .conclusion {
+  min-height: 297mm;
   margin-top: auto;
-  margin-bottom: auto;     /* босоо талын auto margin → дунд */
+  margin-bottom: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-
-
 </style>
 </head>
 <body>
