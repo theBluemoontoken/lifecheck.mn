@@ -228,10 +228,10 @@ function buildHTML(data) {
 .conclusion {
   display: flex;
   justify-content: center;     /* босоо төв */
-  align-items: center;         /* хөндлөн төв */
 }
 .page-group {
   gap: 16px;
+  justify-content: center; 
 }
 
 </style>
@@ -280,7 +280,8 @@ function buildHTML(data) {
 </section>
 <div class="pagebreak"></div>
 
-<section class="card analysis">
+<section class="analysis">
+  <section class="card">
   <h2>Шинжилгээ</h2>
   <div class="grid2">
     <div class="anaCard"><h3>⚡ Энерги</h3><p>${nl2br(escapeHtml(block.analysis_energy||""))}</p></div>
@@ -288,23 +289,28 @@ function buildHTML(data) {
     <div class="anaCard"><h3>🤝 Харилцаа</h3><p>${nl2br(escapeHtml(block.analysis_relationship||""))}</p></div>
     <div class="anaCard"><h3>🧠 Соматик</h3><p>${nl2br(escapeHtml(block.analysis_somatic||""))}</p></div>
   </div>
+  </section>
 </section>
 <div class="pagebreak"></div>
 
-<section class="card advice">
+<section class="advice">
+  <section class="card">
   <h2>Зөвлөмж</h2>
   <div class="recs">
     <div class="recCard"><div class="recHead">⏱ 24 цаг</div><p>${escapeHtml(tips.in24h||"")}</p></div>
     <div class="recCard"><div class="recHead">📅 7 хоног</div><p>${escapeHtml(tips.in7d||"")}</p></div>
     <div class="recCard"><div class="recHead">🗓 30 хоног</div><p>${escapeHtml(tips.in30d||"")}</p></div>
   </div>
+  </section>
 </section>
 <div class="pagebreak"></div>
 
-<section class="card conclusion">
+<section class="conclusion">
+  <section class="card">
   <h2>Дүгнэлт</h2>
   <p>${nl2br(escapeHtml(block.conclusion||""))}</p>
   <div class="quote"><strong>Motivation</strong><div style="margin-top:6px">“${escapeHtml(block.motivation||"")}”</div></div>
+  </section>
 </section>
 
 <div class="footer">${escapeHtml(copyRow.trustFooter||"LifeCheck ©")}</div>
