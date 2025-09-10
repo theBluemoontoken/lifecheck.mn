@@ -227,11 +227,13 @@ function buildHTML(data) {
 .advice,
 .conclusion {
   display: flex;
-  justify-content: center;     /* босоо төв */
+  align-items:center;
 }
 .page-group {
   gap: 16px;
-  justify-content: center; 
+  flex-direction: column; 
+  align-items:center;
+  display:flex;
 }
 
 </style>
