@@ -223,20 +223,15 @@ function buildHTML(data) {
 @media print { .pagebreak { page-break-after: always; } }
 
 .section-avoid-break { break-inside: avoid; } /* блок дундуур хуваагдахгүй */
-.page-group,
 .analysis,
 .advice,
 .conclusion {
-  min-height: 297mm;             /* A4 өндөр */
   display: flex;
-  flex-direction: column;
-  justify-content: center;       /* босоо төв */
-  align-items: center;           /* хөндлөн төв */
-  gap: 16px;                     /* card хоорондын зай */
+  justify-content: center;     /* босоо төв */
+  align-items: center;         /* хөндлөн төв */
 }
-
-.page-group .card {
-  margin: 0 auto;                /* хөндлөн төв */
+.page-group {
+  gap: 16px;
 }
 
 </style>
