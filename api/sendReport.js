@@ -187,7 +187,14 @@ function buildHTML(data) {
 <title>${escapeHtml(copyRow.summaryTitle || "LifeCheck Report")}</title>
 <style>
   :root { --accent:#f97316; --risk:${riskColor}; --muted:#6b7280; --line:#e5e7eb; }
-  body{font-family:ui-sans-serif,system-ui,Roboto,Arial; background:#fff4ef; margin:0; padding:24px; color:#111827;}
+  body{
+  font-family:ui-sans-serif,system-ui,Roboto,Arial; 
+  background:#fff4ef; 
+  margin:0; 
+  color:#111827;
+  display: flex;
+  flex-direction: column;
+  }
   .card{background:linear-gradient(315deg,#f8cbab 0%,#ffffff 100%); max-width:820px; margin:0 auto 16px; padding:24px 28px; border:1px solid var(--line); border-radius:16px;}
   h1{font-size:22px;margin:0 0 6px;color:var(--accent);}
   h2{font-size:18px;margin:18px 0 10px;color:var(--accent);}
@@ -223,18 +230,14 @@ function buildHTML(data) {
 @media print { .pagebreak { page-break-after: always; } }
 
 .section-avoid-break { break-inside: avoid; } /* блок дундуур хуваагдахгүй */
+.page-group,
 .analysis,
 .advice,
 .conclusion {
-  display: flex;
-  justify-content: center; 
+  margin-top: auto;
+  margin-bottom: auto;     /* босоо талын auto margin → дунд */
 }
-.page-group {
-  gap: 16px;
-  flex-direction: column; 
-  justify-content: center; 
-  display:flex;
-}
+
 
 </style>
 </head>
