@@ -191,7 +191,7 @@ function buildHTML(data) {
   font-family:ui-sans-serif,system-ui,Roboto,Arial; 
   background:#fff4ef; 
   margin:0;
-  padding:0;
+  padding:0 40px;
   color:#111827;
   display: flex;
   flex-direction: column;
