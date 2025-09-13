@@ -245,7 +245,6 @@ function buildHTML(data) {
 }
   /* Cover card + Domain card ижил өргөн */
 .page-group .card {
-  width: 100%;
   max-width: 820px;
   margin: 0 auto; 
 }
