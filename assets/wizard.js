@@ -260,6 +260,10 @@ document.getElementById("test-send").addEventListener("click", () => {
       alert("❌ Илгээхэд алдаа гарлаа");
     });
 });
+// Popup хаах товч
+document.querySelector(".close-btn").addEventListener("click", () => {
+  document.querySelector(".pay-popup").classList.add("hidden");
+});
 
 
 

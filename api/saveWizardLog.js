@@ -11,9 +11,12 @@ export default async function handler(req, res) {
       return res.status(400).json({ ok: false, error: "WizardId and Email required" });
     }
 
-    const timestamp = new Date().toISOString();
+    // ✅ Монголын цаг (GMT+8) руу хөрвүүлсэн timestamp
+    const now = new Date();
+    const timestamp = now.toLocaleString("en-GB", {
+      timeZone: "Asia/Ulaanbaatar",
+    });
 
-    // ✅ Auth (sendReport.js-тэй ижил)
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -24,7 +27,6 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    // 📌 WizardLogs tab руу бичих
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.SHEET_ID,
       range: "WizardLogs!A:C",
