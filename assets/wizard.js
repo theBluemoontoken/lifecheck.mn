@@ -222,6 +222,7 @@ document.getElementById("test-send").addEventListener("click", () => {
     return;
   }
 
+  // 1. PDF илгээх
   fetch("/api/sendWizardReport", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -231,8 +232,23 @@ document.getElementById("test-send").addEventListener("click", () => {
     .then(data => {
       if (data.ok) {
         alert("✅ Туршилтын PDF амжилттай илгээгдлээ: " + email);
+
+        // 2. PDF илгээсний дараа LOG бүртгэх
+        return fetch("/api/saveWizardLog", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
       } else {
-        alert("❌ Илгээхэд алдаа гарлаа");
+        throw new Error("SendWizardReport failed");
+      }
+    })
+    .then(res => res.json())
+    .then(logData => {
+      if (logData.ok) {
+        console.log("📒 Wizard log saved:", logData);
+      } else {
+        console.error("❌ Wizard log error:", logData.error);
       }
     })
     .catch(err => {
@@ -240,4 +256,5 @@ document.getElementById("test-send").addEventListener("click", () => {
       alert("❌ Илгээхэд алдаа гарлаа");
     });
 });
+
 
