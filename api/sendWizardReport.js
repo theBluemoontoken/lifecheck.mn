@@ -1,15 +1,19 @@
 const nodemailer = require("nodemailer");
 const path = require("path");
 
-module.exports.handler = async (req, res) => {
+export default async function handler(req, res) {
   try {
+    if (req.method !== "POST") {
+      return res.status(405).json({ ok: false, error: "Method not allowed" });
+    }
+
     const { email } = req.body;
 
     if (!email) {
       return res.status(400).json({ ok: false, error: "Email required" });
     }
 
-    // ✉️ Mail transporter (Gmail эсвэл SMTP ашиглаж болно)
+    // ✉️ Mail transporter
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
@@ -18,21 +22,21 @@ module.exports.handler = async (req, res) => {
       },
     });
 
-    // 📂 PDF хавсралтууд (root/api/guides дотор байршуулсан)
+    // 📂 PDF хавсралтууд (api/guides дотор байрласан)
     const attachments = [
-          {
-            filename: "guzeegee-shataa.pdf",
-            path: path.join(__dirname, "guides", "guzeegee-shataa.pdf"),
-          },
-          {
-            filename: "hundreh-philosophy.pdf",
-            path: path.join(__dirname, "guides", "hundreh-philosophy.pdf"),
-          },
-          {
-            filename: "ideed-l-tur.pdf",
-            path: path.join(__dirname, "guides", "ideed-l-tur.pdf"),
-          },
-        ];
+      {
+        filename: "guzeegee-shataa.pdf",
+        path: path.join(process.cwd(), "api", "guides", "guzeegee-shataa.pdf"),
+      },
+      {
+        filename: "hundreh-philosophy.pdf",
+        path: path.join(process.cwd(), "api", "guides", "hundreh-philosophy.pdf"),
+      },
+      {
+        filename: "ideed-l-tur.pdf",
+        path: path.join(process.cwd(), "api", "guides", "ideed-l-tur.pdf"),
+      },
+    ];
 
     // ✨ Email message
     await transporter.sendMail({
@@ -48,4 +52,4 @@ module.exports.handler = async (req, res) => {
     console.error("Wizard send error:", err);
     return res.status(500).json({ ok: false, error: "Send failed" });
   }
-};
+}
