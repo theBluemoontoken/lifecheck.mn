@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 
     // 📌 WizardLogs tab руу бичих
     await sheets.spreadsheets.values.append({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID,
+      spreadsheetId: process.env.SHEET_ID,
       range: "WizardLogs!A:C",
       valueInputOption: "RAW",
       requestBody: {
