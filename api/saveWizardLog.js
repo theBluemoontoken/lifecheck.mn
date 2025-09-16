@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       range: "WizardLogs!A:C",
       valueInputOption: "RAW",
       requestBody: {
-        values: [[email, userId, timestamp]],
+        values: [[timestamp, userId, email]],
       },
     });
 
