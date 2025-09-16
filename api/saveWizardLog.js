@@ -14,13 +14,15 @@ export default async function handler(req, res) {
     const userId = "WIZ-" + Date.now();
     const timestamp = new Date().toISOString();
 
-    // Google Sheets API Auth
-    const auth = new google.auth.JWT(
-      process.env.GOOGLE_CLIENT_EMAIL,
-      null,
-      (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
-      ["https://www.googleapis.com/auth/spreadsheets"]
-    );
+    // ✅ Google Sheets API Auth (sendReport.js-тэй адил)
+    const auth = new google.auth.GoogleAuth({
+      credentials: {
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        private_key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
+      },
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    });
+
     const sheets = google.sheets({ version: "v4", auth });
 
     // 📌 WizardLogs tab руу бичих
