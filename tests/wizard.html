@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wizard Test | LifeCheck</title>
+  <!-- CSS зөв замаар -->
+  <link rel="stylesheet" href="../assets/wizard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main>
+
+  <!-- Intro Section -->
+  <section class="intro">
+    <div class="container">
+      <img src="../images/wizard.png" alt="Wizard" class="wizard-img">
+      <div class="intro-text">
+        <h1 class="typewriter">⚡ Тавтай морил, Mortal...</h1>
+<p>
+  🌌 Би бол <strong>LifeCheck-ийн Шидтэн</strong>,<br>
+
+  📜 Хүмүүний нүднээс далд гурван судар миний мэдэлд буй.<br>
+  Тэдгээр нь хүний бие, сэтгэл, оюун ухааныг эмчлэх увидастай.<br>
+  Эхлээд миний тавьсан сорилын асуултуудад хариу өг.<br>
+  Тэр цагт л судруудын хувь заяа чиний өмнө нээгдэнэ...
+</p>
+<button class="cta start-btn">✨ Сорилыг эхлүүлье</button>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Test Section -->
+  <section class="test hidden">
+  <div class="container">
+    
+    <div class="wizard-section">
+  <div class="wizard-header">
+    <img src="../images/wizard talk.png" alt="Wizard" class="wizard-small">
+
+    <div class="wizard-info">
+      <p id="progress-text">Сорилын эхний алхам</p>
+      <div class="wizard-comment" id="wizard-comment">
+        🧙 Энэ асуулт бол чиний урам зоригт гэрлийн сүүдрийг илрүүлэх болно...
+      </div>
+    </div>
+  </div>
+
+      <!-- Q1 -->
+      <div class="question-card hidden" data-question="1">
+      <p>🍞 Өө mortal минь, талхгүй нэг өдөр амьдрах боломжтой юу?</p>
+      <div class="options">
+        <button data-score="lowcarb">Үгүй ээ, боорцоггүй бол би сүйрнэ!</button>
+        <button data-score="balanced">Жаахан багасгаж чадна.</button>
+        <button data-score="lowcarb">Талхаас аль болох зайлсхийдэг.</button>
+      </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="question-card hidden" data-question="2">
+      <p>🥩 Мах + өндөгний өглөөний цэс сонсоход чиний зүрх юу хэлж байна?</p>
+      <div class="options">
+        <button data-score="lowcarb">Heaven! Би маханд төрсөн.</button>
+        <button data-score="balanced">Яг мэдэхгүй байна.</button>
+        <button data-score="cleanse">Толгой өвдөхөөс өөр зүйл төсөөлөгдөхгүй.</button>
+      </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="question-card hidden" data-question="3">
+      <p>⚖️ Илчлэг тооцох гэдэг үгийг сонсоод...</p>
+      <div class="options">
+        <button data-score="balanced">Excel бол миний амраг.</button>
+        <button data-score="balanced">Хэсэг хугацаанд дагаад чадна.</button>
+        <button data-score="lowcarb">Тоон дээр унтаад өгдөг.</button>
+      </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="question-card hidden" data-question="4">
+      <p>🥗 “Бага идээд тогтмол турна” гэдэг санаа ямар санагдаж байна?</p>
+      <div class="options">
+        <button data-score="balanced">Миний хүсэн хүлээсэн арга!</button>
+        <button data-score="cleanse">Зүгээр л дундаж.</button>
+        <button data-score="lowcarb">Үгүй ээ, би хурдан үр дүн л хүсдэг.</button>
+      </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="question-card hidden" data-question="5">
+      <p>💧 Давстай ус ууж гэдсээ flush хийнэ гэвэл?</p>
+      <div class="options">
+        <button data-score="cleanse">Би туршиж үзсэн, бэлэн байна.</button>
+        <button data-score="balanced">Сонирхолтой ч жаахан айдастай.</button>
+        <button data-score="lowcarb">Coffee flush-aa л сонгоно.</button>
+      </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="question-card hidden" data-question="6">
+      <p>🚽 Гэдэс чинь хөнгөн үед чи юу мэдэрдэг вэ?</p>
+      <div class="options">
+        <button data-score="cleanse">Супермен шиг.</button>
+        <button data-score="balanced">Зүгээр л хэвийн.</button>
+        <button data-score="lowcarb">Ялгааг нь мэдэхгүй дээ.</button>
+      </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="question-card hidden" data-question="7">
+      <p>🔥 “1 долоо хоногт 3кг хаях” гэж сонсоод?</p>
+      <div class="options">
+        <button data-score="lowcarb">Энэ бол миний зам!</button>
+        <button data-score="balanced">Магадгүй, гэхдээ эргэлзээтэй.</button>
+        <button data-score="cleanse">Энэ бол зөвхөн ус л гарах байх даа.</button>
+      </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="question-card hidden" data-question="8">
+      <p>📊 Хоолны апп дээр хоолоо бүртгэх тэвчээр?</p>
+      <div class="options">
+        <button data-score="balanced">MyFitnessPal = soulmate.</button>
+        <button data-score="cleanse">Түр зуур хэрэглэж чадна.</button>
+        <button data-score="lowcarb">Үгүй ээ, үүнийг би тоохгүй.</button>
+      </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="question-card hidden" data-question="9">
+      <p>🧘‍♂️ “Цэвэр бие = Цэвэр тархи” гэдэгт итгэдэг үү?</p>
+      <div class="options">
+        <button data-score="cleanse">Тийм ээ, бүрэн зөвшөөрнө.</button>
+        <button data-score="balanced">Яг тийм ч биш.</button>
+        <button data-score="lowcarb">Ээ энэ бол хэтэрхий deep байна.</button>
+      </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="question-card hidden" data-question="10">
+      <p>🍕 Өөрийн дуртай junk food-оо орхих тухай бодоход?</p>
+      <div class="options">
+        <button data-score="lowcarb">Би шууд орхиж чадна.</button>
+        <button data-score="balanced">Хэсэг хугацаанд бол чадна.</button>
+        <button data-score="cleanse">Яагаад би ийм тамд орно гэж?!</button>
+      </div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+
+        <!-- Result overlay -->
+<div class="result-overlay">
+  <div class="overlay-content">
+    <img src="../images/crystalball.png" alt="Crystal Ball" class="crystal overlay-crystal">
+    <p class="overlay-text">Loading prophecy...</p>
+  </div>
+</div>
+
+      <!-- Result Section -->
+      <section class="result hidden">
+      <div class="container"></div>
+      </section>
+
+      <!-- Footer Logo -->
+
+</main>
+<footer class="site-logo">
+  <a href="https://lifecheck.mn">
+    <img src="../images/lifechecklogowiz.svg" alt="LifeCheck Logo">
+  </a>
+  <p class="site-subtitle">LifeCheck.mn — Unlock Your Inner Scroll ✨</p>
+</footer>
+
+  <!-- Payment Popup -->
+<div class="pay-popup hidden">
+  <div class="pay-content">
+    <span class="close-btn">✖</span>
+    <div class="pay-left">
+      <h3>Adventurer Info</h3>
+      <p><strong>Number:</strong> <span id="pay-number"></span></p>
+      <p><strong>Email:</strong> <span id="pay-email"></span></p>
+      <div class="price-box">
+        <p class="price">Үнэ: 9,900₮ <span class="old">29,900₮</span></p>
+        <p class="bonus">+ 2 үнэгүй гарын авлага 🎁</p>
+        <div class="countdown">Хямдрал дуусахад: <span id="countdown">15:00</span></div>
+      </div>
+    </div>
+    <div class="pay-right">
+      <p>📲 QR кодоор төлбөрөө хийвэл шидэт гарын авлага автоматаар илгээгдэнэ.</p>
+      <div class="qr-placeholder">
+        <img src="../images/blankqr.svg" alt="QR Code" class="qr-img">
+      </div>
+
+      <button class="cta check-btn">Төлбөр шалгах</button>
+      <button id="test-send" class="cta claim-btn">📩 Туршилтын илгээх</button>
+    </div>
+  </div>
+</div>
+
+  
+
+  <!-- JS зөв замаар -->
+  <script src="../assets/wizard.js"></script>
+</body>
+</html>
