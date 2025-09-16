@@ -323,18 +323,20 @@ main.container.pay-container {
     <div class="pay-card">
   <div class="pay-content">
     <div class="pay-left">
-      <h3>Сонгосон тест</h3>
-      <p id="test-name">....</p>
+  <h3>Сонгосон тест</h3>
+  <p id="test-name">....</p>
+  <p id="test-id"></p> <!-- 🆕 Test ID -->
 
-      <h3>Имэйл хаяг</h3>
-      <p id="user-email">hellothere@lifecheck.mn</p>
+  <h3>Имэйл хаяг</h3>
+  <p id="user-email">hellothere@lifecheck.mn</p>
 
-      <p class="price">
-  Төлбөр: <span class="old-price">19,900₮</span> <span class="new-price">6,900₮</span>
-</p>
+  <p class="price">
+    Төлбөр: <span class="old-price">19,900₮</span> <span class="new-price">6,900₮</span>
+  </p>
 
-      <p class="hint">⏳<span id="countdown">13:43</span> хүчинтэй</p>
-    </div>
+  <p class="hint">⏳<span id="countdown">13:43</span> хүчинтэй</p>
+</div>
+
 
     <div class="pay-right">
       <div class="qr-block">
@@ -379,42 +381,18 @@ main.container.pay-container {
     money:    "Money Mindset Test",
   };
 
-  // 1) URL-аас ?test=... авна
-  const qs = (new URLSearchParams(location.search).get('test')||'').toLowerCase();
-  const key = TEST_NAMES[qs] ? qs : "generic";
+  // 1) local/sessionStorage-с Test Key + ID
+  const key    = (sessionStorage.getItem("testKey") || localStorage.getItem("lc_test") || "generic").toLowerCase();
+  const testId = sessionStorage.getItem("testId")   || localStorage.getItem("lc_testId") || "";
+  const rawEmail = sessionStorage.getItem("wizardEmail") || localStorage.getItem("lc_email") || "";
 
-  // 2) Имэйл localStorage-с
-  const rawEmail = (()=>{ 
-    try { return localStorage.getItem("lc_email")||"" }catch(_){ return "" }
-  })();
-
-  // 3) Backend-ээс шинэ TestID авах
-  let testId = "";
-  try {
-    const res = await fetch("/api/sendReport", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: rawEmail,
-        testKey: key,
-        onlyGenerateId: true
-      }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      testId = data.testId;
-    }
-  } catch (e) {
-    console.error("❌ TestID авахад алдаа:", e);
-  }
-
-  // 4) Тестийн нэр + ID-г харуулах
+  // 2) Тестийн нэр + ID-г харуулах
   const nameEl = document.getElementById("test-name");
   if (nameEl) {
     nameEl.textContent = `${TEST_NAMES[key] || "LifeCheck Test"} — ${testId || "..."}`;
   }
 
-  // 5) Имэйлийг маскалж харуулах
+  // 3) Имэйлийг маскалж харуулах
   function maskEmail(email){
     const [local, domain] = (email||'').split('@');
     if (!domain || local.length <= 4) return email || '(имэйл байхгүй)';
@@ -423,7 +401,7 @@ main.container.pay-container {
   const emailEl = document.getElementById("user-email");
   if (emailEl) emailEl.textContent = rawEmail ? maskEmail(rawEmail) : "(имэйл байхгүй)";
 
-  // 6) Countdown (15:00)
+  // 4) Countdown (15:00)
   const countdownEl = document.getElementById("countdown");
   if (countdownEl) {
     let t = 15*60;
@@ -445,44 +423,56 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!mailBtn) return;
 
   mailBtn.addEventListener("click", async () => {
-    const payload = {
-      name: localStorage.getItem("lc_name") || "",
-      email: localStorage.getItem("lc_email") || "",
-      testName: localStorage.getItem("lc_testName") || "LifeCheck Test",
-      testKey: localStorage.getItem("lc_test") || "burnout",
-      scorePct: localStorage.getItem("lc_score") || "",
-      riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
-      domainsScore: JSON.parse(localStorage.getItem("lc_domainsScore") || "[]"),
-    };
+  const payload = {
+    name: localStorage.getItem("lc_name") || "",
+    email: sessionStorage.getItem("wizardEmail") || localStorage.getItem("lc_email") || "",
+    testName: localStorage.getItem("lc_testName") || "LifeCheck Test",
+    testKey: localStorage.getItem("lc_test") || "burnout",
+    testId: sessionStorage.getItem("testId") || localStorage.getItem("lc_testId") || "",
+    scorePct: localStorage.getItem("lc_score") || "",
+    riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
+    domainsScore: JSON.parse(localStorage.getItem("lc_domainsScore") || "[]"),
+  };
 
-    if (!payload.email) {
-      alert("❌ Имэйл олдсонгүй. Та эхлээд имэйлээ оруулна уу.");
-      return;
-    }
+  if (!payload.email) {
+    alert("❌ Имэйл олдсонгүй. Та эхлээд имэйлээ оруулна уу.");
+    return;
+  }
 
-    try {
-      console.log("PAYLOAD ILLUUJ BGA:", payload);
+  try {
+    console.log("PAYLOAD илгээж байна:", payload);
 
-      const res = await fetch("/api/sendReport", {
+    // 1) PDF үүсгээд илгээх
+    const res = await fetch("/api/sendReport", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (data.ok || data.success) {
+      alert("✅ Тайлан имэйлээр илгээгдлээ!");
+
+      // 2) Амжилттай болсон тохиолдолд LOG бүртгэх
+      await fetch("/api/saveReportLog", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          email: payload.email,
+          testId: payload.testId,
+          testKey: payload.testKey,
+          riskLevel: payload.riskLevel
+        }),
       });
-
-      const data = await res.json();
-      if (data.success) {
-        alert("✅ Тайлан имэйлээр илгээгдлээ!");
-      } else {
-        alert("❌ Алдаа: " + (data.error || "PDF илгээхэд алдаа гарлаа"));
-      }
-    } catch (err) {
-      console.error(err);
-      alert("⚠️ Сервертэй холбогдож чадсангүй.");
+    } else {
+      alert("❌ Алдаа: " + (data.error || "PDF илгээхэд алдаа гарлаа"));
     }
-  });
+  } catch (err) {
+    console.error(err);
+    alert("⚠️ Сервертэй холбогдож чадсангүй.");
+  }
+});
 });
 </script>
-
-
 </body>
 </html>

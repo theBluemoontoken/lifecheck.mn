@@ -307,6 +307,24 @@ showStep(1);
     localStorage.setItem('lc_score', String(pct));      // 0..100
     } catch (_) {}
 
+    // Test ID үүсгэх функц
+function generateTestId() {
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return `LC-${yy}${mm}${dd}-${rand}`;
+}
+
+// === showSummaryCard() дотор, localStorage-д хадгалсны дараа:
+const testId = generateTestId();
+try {
+  localStorage.setItem('lc_testId', testId);
+  sessionStorage.setItem('testId', testId); // pay.html дээр хэрэглэхээр
+} catch (_) {}
+
+
     // Test-specific overrides
     const testKey = getCurrentTestKey();
     const COPY = TEST_COPY[testKey] || TEST_COPY.generic;

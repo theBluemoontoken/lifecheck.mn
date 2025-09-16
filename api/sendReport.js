@@ -400,24 +400,7 @@ export default async function handler(req, res) {
   try {
     const payload = req.body || {};
     if (!payload.email) return res.status(400).json({ error: "email is required" });
-
-    // === Шинэ: зөвхөн TestID авах хүсэлт үү? ===
-    if (payload.onlyGenerateId) {
-      const testId = await generateTestId();
-      await appendLog({
-        testId,
-        email: payload.email,
-        testKey: payload.testKey,
-        riskLevel: payload.riskLevel || ""
-      });
-      return res.status(200).json({ success: true, testId });
-    }
-
     if (!payload.testKey || !payload.riskLevel) return res.status(400).json({ error: "testKey & riskLevel required" });
-
-    // Шинэ TestID үүсгэнэ
-    const testId = await generateTestId();
-    payload.testId = testId;
 
     // Тайлан бэлтгэх
     const data = await gatherReportData(payload);
@@ -431,15 +414,7 @@ export default async function handler(req, res) {
     const text = `${data.name || "Хэрэглэгч"}-ийн тайлан хавсралтад байна.`;
     await sendEmailWithPdf(data.email, subject, text, pdfBuffer);
 
-    // Лог хадгалах
-    await appendLog({
-      testId,
-      email: data.email,
-      testKey: data.testKey,
-      riskLevel: data.riskLevel
-    });
-
-    return res.status(200).json({ success: true, testId });
+    return res.status(200).json({ success: true });
 
   } catch (err) {
     console.error(err);
@@ -447,55 +422,6 @@ export default async function handler(req, res) {
   }
 }
 
-// Тестийн дугаар үүсгэх (LC-00001 гэх мэт)
-async function generateTestId() {
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_CLIENT_EMAIL,
-      private_key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
-    },
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-  });
-  const sheets = google.sheets({ version: "v4", auth });
 
-  const resp = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: "Logs!B:B",
-  });
 
-  const rows = resp.data.values || [];
-  let counter = 0;
-  if (rows.length > 1) {
-    const lastId = rows[rows.length - 1][0];
-    counter = parseInt((lastId || "").replace("LC-", ""), 10) || 0;
-  }
-  return "LC-" + String(counter + 1).padStart(5, "0");
-}
-
-// Лог хадгалах (Timestamp | TestID | Email | TestKey | RiskLevel)
-async function appendLog({ testId, email, testKey, riskLevel }) {
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_CLIENT_EMAIL,
-      private_key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
-    },
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-  });
-  const sheets = google.sheets({ version: "v4", auth });
-
-  await sheets.spreadsheets.values.append({
-    spreadsheetId: process.env.SHEET_ID,
-    range: "Logs",
-    valueInputOption: "USER_ENTERED",
-    requestBody: {
-      values: [[
-        new Date().toISOString(),
-        testId,
-        email,
-        testKey,
-        riskLevel
-      ]]
-    }
-  });
-}
 
