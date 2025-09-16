@@ -189,66 +189,56 @@ function startCountdown(duration, display) {
   }, 1000);
 }
 
-// Claim товч дарахад popup нээж, email дамжуулна + countdown эхлүүлнэ
-document.addEventListener("click", e => {
+// Claim товч → Popup нээх
+document.addEventListener("click", (e) => {
   if (e.target.classList.contains("claim-btn")) {
     const emailValue = document.getElementById("email-input").value.trim();
-
     if (!emailValue) {
-      alert("📧 Имэйлээ оруулна уу!");
+      alert("Эхлээд email оруулна уу!");
       return;
     }
 
-    const popup = document.querySelector(".pay-popup");
-    popup.classList.remove("hidden");
+    // ✅ Wizard ID үүсгэнэ
+    const date = new Date();
+    const yyMMdd = date.toISOString().slice(2, 10).replace(/-/g, "");
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    const wizardId = `WIZ-${yyMMdd}-${rand}`;
 
+    // SessionStorage-д хадгална
+    sessionStorage.setItem("wizardId", wizardId);
+    sessionStorage.setItem("wizardEmail", emailValue);
+
+    // Popup дээр харуулна
+    document.getElementById("pay-number").textContent = wizardId;
     document.getElementById("pay-email").textContent = emailValue;
 
-    const advNumber = "LCW-" + new Date().getTime().toString().slice(-6);
-    document.getElementById("pay-number").textContent = advNumber;
-
-    const countdownDisplay = document.getElementById("countdown");
-    startCountdown(15 * 60, countdownDisplay);
-  }
-  if (e.target.classList.contains("close-btn")) {
-    document.querySelector(".pay-popup").classList.add("hidden");
+    // Popup-г нээ
+    document.querySelector(".pay-popup").classList.remove("hidden");
   }
 });
+
+
 // Туршилтын илгээх товч
 document.getElementById("test-send").addEventListener("click", () => {
-  const email = document.getElementById("email-input").value.trim();
-  if (!email) {
-    alert("Эхлээд email оруулна уу!");
+  const wizardId = sessionStorage.getItem("wizardId");
+  const email = sessionStorage.getItem("wizardEmail");
+
+  if (!wizardId || !email) {
+    alert("ID эсвэл Email олдсонгүй!");
     return;
   }
 
-  // 1. PDF илгээх
-  fetch("/api/sendWizardReport", {
+  fetch("/api/saveWizardLog", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email })
+    body: JSON.stringify({ wizardId, email })
   })
     .then(res => res.json())
     .then(data => {
       if (data.ok) {
-        alert("✅ Туршилтын PDF амжилттай илгээгдлээ: " + email);
-
-        // 2. PDF илгээсний дараа LOG бүртгэх
-        return fetch("/api/saveWizardLog", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
-        });
+        alert(`✅ PDF амжилттай илгээгдлээ: ${email}`);
       } else {
-        throw new Error("SendWizardReport failed");
-      }
-    })
-    .then(res => res.json())
-    .then(logData => {
-      if (logData.ok) {
-        console.log("📒 Wizard log saved:", logData);
-      } else {
-        console.error("❌ Wizard log error:", logData.error);
+        alert("❌ Илгээхэд алдаа гарлаа");
       }
     })
     .catch(err => {
@@ -256,5 +246,6 @@ document.getElementById("test-send").addEventListener("click", () => {
       alert("❌ Илгээхэд алдаа гарлаа");
     });
 });
+
 
 

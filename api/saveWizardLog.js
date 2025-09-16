@@ -6,15 +6,14 @@ export default async function handler(req, res) {
       return res.status(405).json({ ok: false, error: "Method not allowed" });
     }
 
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ ok: false, error: "Email required" });
+    const { wizardId, email } = req.body;
+    if (!wizardId || !email) {
+      return res.status(400).json({ ok: false, error: "WizardId and Email required" });
     }
 
-    const userId = "WIZ-" + Date.now();
     const timestamp = new Date().toISOString();
 
-    // ✅ Google Sheets API Auth (sendReport.js-тэй адил)
+    // ✅ Auth (sendReport.js-тэй ижил)
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -31,11 +30,11 @@ export default async function handler(req, res) {
       range: "WizardLogs!A:C",
       valueInputOption: "RAW",
       requestBody: {
-        values: [[timestamp, userId, email]],
+        values: [[timestamp, wizardId, email]],
       },
     });
 
-    return res.status(200).json({ ok: true, userId, timestamp });
+    return res.status(200).json({ ok: true, wizardId, email, timestamp });
   } catch (err) {
     console.error("Wizard log error:", err);
     return res.status(500).json({ ok: false, error: "Log failed" });
