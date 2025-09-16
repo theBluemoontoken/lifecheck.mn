@@ -228,6 +228,7 @@ document.getElementById("test-send").addEventListener("click", () => {
     return;
   }
 
+  // 1. Log хадгална
   fetch("/api/saveWizardLog", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -236,9 +237,22 @@ document.getElementById("test-send").addEventListener("click", () => {
     .then(res => res.json())
     .then(data => {
       if (data.ok) {
+        // 2. PDF илгээнэ
+        return fetch("/api/sendWizardReport", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+      } else {
+        throw new Error("Log хадгалахад алдаа гарлаа");
+      }
+    })
+    .then(res => res.json())
+    .then(report => {
+      if (report.ok) {
         alert(`✅ PDF амжилттай илгээгдлээ: ${email}`);
       } else {
-        alert("❌ Илгээхэд алдаа гарлаа");
+        alert("❌ PDF илгээхэд алдаа гарлаа");
       }
     })
     .catch(err => {
@@ -246,6 +260,7 @@ document.getElementById("test-send").addEventListener("click", () => {
       alert("❌ Илгээхэд алдаа гарлаа");
     });
 });
+
 
 
 
