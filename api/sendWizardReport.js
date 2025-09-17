@@ -42,8 +42,8 @@ export default async function handler(req, res) {
     await transporter.sendMail({
       from: `"LifeCheck Wizard" <${process.env.MAIL_USER}>`,
       to: email,
-      subject: "🔮 Таны Wizard Scrolls",
-      text: "Сонгогдсон гол guide болон бэлгүүдийг хавсаргав.",
+      subject: "🔮 Таны Шидэт гарын авлагууд",
+      text: "Сонгогдсон гол гарын авлага болон бэлгүүдийг хавсаргав.",
       attachments,
     });
 

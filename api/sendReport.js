@@ -281,7 +281,7 @@ function buildHTML(data) {
     <div class="meter"><div class="fill"></div><div class="ticks"><span></span><span></span><span></span><span></span><span></span></div></div>
     <div class="meterPct">${Math.round(scorePct)}%</div>
   </div>
-  <div class="legend">Шкала: 0 / 25 / 50 / 75 / 100 (Ногоон → Улаан)</div>
+  <div class="legend">Онооны мөр: 0 / 25 / 50 / 75 / 100 (Ногоон → Улаан)</div>
   </section>
 
   ${
@@ -289,7 +289,7 @@ function buildHTML(data) {
     ? `<section class="card">
   <h2>Онооны задаргаа</h2>
   <p style="font-size:13px;color:#64748b;margin:4px 0 12px;">
-    Харилцан холбоотой домэйнүүдийн сайн % (эрсдэлийн 100 − таны оноо)
+    Харилцан холбоотой домэйнүүдийн % (0 − 100 таны оноо)
   </p>
   <div class="domains">
     ${domainBars}
@@ -302,12 +302,12 @@ function buildHTML(data) {
 
 <section class="analysis">
   <section class="card">
-  <h2>Шинжилгээ</h2>
+  <h2>Дэлгэрэнгүй шинжилгээ</h2>
   <div class="grid2">
-    <div class="anaCard"><h3>⚡ Энерги</h3><p>${nl2br(escapeHtml(block.analysis_energy||""))}</p></div>
-    <div class="anaCard"><h3>🎯 Төвлөрөл</h3><p>${nl2br(escapeHtml(block.analysis_focus||""))}</p></div>
-    <div class="anaCard"><h3>🤝 Харилцаа</h3><p>${nl2br(escapeHtml(block.analysis_relationship||""))}</p></div>
-    <div class="anaCard"><h3>🧠 Соматик</h3><p>${nl2br(escapeHtml(block.analysis_somatic||""))}</p></div>
+    <div class="anaCard"><h3>Энерги</h3><p>${nl2br(escapeHtml(block.analysis_energy||""))}</p></div>
+    <div class="anaCard"><h3>Төвлөрөл</h3><p>${nl2br(escapeHtml(block.analysis_focus||""))}</p></div>
+    <div class="anaCard"><h3>Харилцаа</h3><p>${nl2br(escapeHtml(block.analysis_relationship||""))}</p></div>
+    <div class="anaCard"><h3>Соматик</h3><p>${nl2br(escapeHtml(block.analysis_somatic||""))}</p></div>
   </div>
   </section>
 </section>
@@ -315,11 +315,11 @@ function buildHTML(data) {
 
 <section class="advice">
   <section class="card">
-  <h2>Зөвлөмж</h2>
+  <h2>Хувийн зөвлөмж</h2>
   <div class="recs">
-    <div class="recCard"><div class="recHead">⏱ 24 цаг</div><p>${escapeHtml(tips.in24h||"")}</p></div>
-    <div class="recCard"><div class="recHead">📅 7 хоног</div><p>${escapeHtml(tips.in7d||"")}</p></div>
-    <div class="recCard"><div class="recHead">🗓 30 хоног</div><p>${escapeHtml(tips.in30d||"")}</p></div>
+    <div class="recCard"><div class="recHead">24 цагт хийх</div><p>${escapeHtml(tips.in24h||"")}</p></div>
+    <div class="recCard"><div class="recHead">7 хоногт хийх</div><p>${escapeHtml(tips.in7d||"")}</p></div>
+    <div class="recCard"><div class="recHead">30 хоногт хийх</div><p>${escapeHtml(tips.in30d||"")}</p></div>
   </div>
   </section>
 </section>
