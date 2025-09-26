@@ -13,10 +13,20 @@
     .banner { margin-top: 20px; padding: 12px; border-radius: 8px; font-weight: 600; display:none; }
     .success { background: #dcfce7; color: #166534; border: 1px solid #16a34a; }
     .error   { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+    #override-form, #login-form { display:none; }
   </style>
 </head>
 <body>
   <h1>🔐 Admin Override</h1>
+
+  <!-- Login Form -->
+  <form id="login-form">
+    <label>Admin Password</label>
+    <input type="password" id="admin-pass" required>
+    <button type="submit">Нэвтрэх</button>
+  </form>
+
+  <!-- Override Form (hidden until login) -->
   <form id="override-form">
     <label>Имэйл</label>
     <input type="email" id="email" required>
@@ -36,37 +46,70 @@
   <div id="banner" class="banner"></div>
 
   <script>
-    document.getElementById('override-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const payload = {
-        email: document.getElementById('email').value,
-        testKey: document.getElementById('testKey').value,
-        testId: document.getElementById('testId').value,
-        riskLevel: document.getElementById('riskLevel').value
-      };
+  const loginForm = document.getElementById('login-form');
+  const overrideForm = document.getElementById('override-form');
+  const banner = document.getElementById('banner');
+  let adminKey = "";
 
-      const banner = document.getElementById('banner');
-      banner.style.display = "none"; // reset
+  // Эхэнд зөвхөн login form
+  loginForm.style.display = "block";
 
-      const res = await fetch('/api/adminSendReport', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + (prompt("Admin Key?") || "")
-        },
-        body: JSON.stringify(payload)
-      });
+  // Login
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pass = document.getElementById('admin-pass').value;
 
-      const data = await res.json();
-      if (data.ok) {
-        banner.textContent = "✅ Report амжилттай илгээгдлээ!";
-        banner.className = "banner success";
-      } else {
-        banner.textContent = "❌ Алдаа: " + (data.error || "Unknown");
-        banner.className = "banner error";
-      }
-      banner.style.display = "block";
+    banner.style.display = "none";
+
+    const res = await fetch('/api/adminLogin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pass })
     });
-  </script>
+
+    const data = await res.json();
+    if (data.ok) {
+      adminKey = pass; // дараагийн fetch-д Authorization header-д ашиглана
+      loginForm.style.display = "none";
+      overrideForm.style.display = "block";
+    } else {
+      banner.textContent = "❌ Буруу password";
+      banner.className = "banner error";
+      banner.style.display = "block";
+    }
+  });
+
+  // Override form submit (өмнөх шиг)
+  overrideForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      email: document.getElementById('email').value,
+      testKey: document.getElementById('testKey').value,
+      testId: document.getElementById('testId').value,
+      riskLevel: document.getElementById('riskLevel').value
+    };
+
+    banner.style.display = "none";
+
+    const res = await fetch('/api/adminSendReport', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + adminKey
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (data.ok) {
+      banner.textContent = "✅ Report амжилттай илгээгдлээ!";
+      banner.className = "banner success";
+    } else {
+      banner.textContent = "❌ Алдаа: " + (data.error || "Unknown");
+      banner.className = "banner error";
+    }
+    banner.style.display = "block";
+  });
+</script>
 </body>
 </html>
