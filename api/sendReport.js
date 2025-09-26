@@ -164,18 +164,25 @@ function buildHTML(data) {
     return               { label: "💪 Сайн",    color: "#16a34a" };
   };
   const domainBars = (domainScores || [])
-    .map((d) => {
-      const raw   = clampPct(d.scorePct);
-      const shown = 100 - raw;
-      const lvl   = domainLevel(shown);
-      return `
-        <div class="domain">
-          <div class="label">${escapeHtml(d.label || d.domainKey)}</div>
-          <div class="bar"><div class="fill" style="width:${shown}%; background:${lvl.color};"></div></div>
-          <div class="pct">${shown}%<br><span style="font-size:12px;color:${lvl.color};">${lvl.label}</span></div>
-        </div>`;
-    })
-    .join("");
+  .filter(d => Number(d.scorePct) > 0)   // ✅ оноо байгаа domain-уудыг л авна
+  .map((d) => {
+    const raw   = clampPct(d.scorePct);
+    const shown = 100 - raw;
+    const lvl   = domainLevel(shown);
+    return `
+      <div class="domain">
+        <div class="label">${escapeHtml(d.label || d.domainKey)}</div>
+        <div class="bar"><div class="fill" style="width:${shown}%; background:${lvl.color};"></div></div>
+        <div class="pct">${shown}%<br><span style="font-size:12px;color:${lvl.color};">${lvl.label}</span></div>
+      </div>`;
+  })
+  .join("");
+
+// ✅ Хэрэв оноотой domain байхгүй бол chart хэсгийг нуух
+const domainSection = domainBars 
+  ? `<div class="domains">${domainBars}</div>` 
+  : `<p style="color:#6b7280;font-size:14px;">Энэ report override-оор илгээгдсэн тул domain chart байхгүй.</p>`;
+
 
   const today = new Date().toISOString().slice(0,10);
 
@@ -414,7 +421,9 @@ export default async function handler(req, res) {
     const text = `${data.name || "Хэрэглэгч"}-ийн тайлан хавсралтад байна.`;
     await sendEmailWithPdf(data.email, subject, text, pdfBuffer);
 
-    return res.status(200).json({ success: true });
+    // ✨ Email амжилттай илгээгдсэн бол
+    return res.status(200).json({ ok: true, sent: true });
+
 
   } catch (err) {
     console.error(err);
