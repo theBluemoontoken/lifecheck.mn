@@ -302,8 +302,13 @@ const domainSection = domainBars
     ${domainBars}
   </div>
   </section>`
-    : ``
-  }
+    : `<section class="card">
+  <h2>Онооны задаргаа</h2>
+  <p style="font-size:13px;color:#64748b;margin:4px 0 12px;">
+    Энэхүү report admin override-р илгээгдсэн тул domain chart харуулах боломжгүй байна.
+  </p>
+  </section>`
+}
 </section>
 <div class="pagebreak"></div>
 
