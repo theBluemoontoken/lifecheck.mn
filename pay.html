@@ -344,7 +344,6 @@ main.container.pay-container {
         <img src="/images/blankqr.svg" alt="QR code" />
       </div>
       <button class="pay-btn">Төлбөр шалгах</button>
-      <button id="test-mail-btn" class="button">📧 Туршилтын имэйл илгээх</button>
     </div>
   </div>
 </div>
@@ -418,60 +417,44 @@ main.container.pay-container {
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const mailBtn = document.getElementById("test-mail-btn");
-  if (!mailBtn) return;
+document.addEventListener("DOMContentLoaded", async () => {
+  const qrImg = document.querySelector(".qr-block img");
 
-  mailBtn.addEventListener("click", async () => {
   const payload = {
-    name: localStorage.getItem("lc_name") || "",
     email: sessionStorage.getItem("wizardEmail") || localStorage.getItem("lc_email") || "",
-    testName: localStorage.getItem("lc_testName") || "LifeCheck Test",
+    amount: 6900, // төгрөгөөр
     testKey: localStorage.getItem("lc_test") || "burnout",
-    testId: sessionStorage.getItem("testId") || localStorage.getItem("lc_testId") || "",
-    scorePct: localStorage.getItem("lc_score") || "",
-    riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
-    domainsScore: JSON.parse(localStorage.getItem("lc_domainsScore") || "[]"),
+    testId: sessionStorage.getItem("lc_testId") || "",
+    riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase()
   };
 
   if (!payload.email) {
-    alert("❌ Имэйл олдсонгүй. Та эхлээд имэйлээ оруулна уу.");
+    alert("❌ Имэйл олдсонгүй.");
     return;
   }
 
   try {
-    console.log("PAYLOAD илгээж байна:", payload);
-
-    // 1) PDF үүсгээд илгээх
-    const res = await fetch("/api/sendReport", {
+    const res = await fetch("https://api.lifecheck.mn/api/qpayCreateInvoice", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-
     const data = await res.json();
-    if (data.ok || data.success) {
-      alert("✅ Тайлан имэйлээр илгээгдлээ!");
 
-      // 2) Амжилттай болсон тохиолдолд LOG бүртгэх
-      await fetch("/api/saveReportLog", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: payload.email,
-          testId: payload.testId,
-          testKey: payload.testKey,
-          riskLevel: payload.riskLevel
-        }),
-      });
+    if (data.ok && data.invoice) {
+      // QPay-ийн invoice дотор qr_base64 эсвэл urls байдаг
+      if (data.invoice.qr_image) {
+        qrImg.src = "data:image/png;base64," + data.invoice.qr_image;
+      } else if (data.invoice.urls && data.invoice.urls[0]) {
+        qrImg.src = data.invoice.urls[0]; // fallback
+      }
     } else {
-      alert("❌ Алдаа: " + (data.error || "PDF илгээхэд алдаа гарлаа"));
+      alert("❌ QPay Invoice үүсгэж чадсангүй: " + (data.error || "Unknown error"));
     }
   } catch (err) {
-    console.error(err);
+    console.error("Invoice алдаа:", err);
     alert("⚠️ Сервертэй холбогдож чадсангүй.");
   }
-});
 });
 </script>
 </body>
