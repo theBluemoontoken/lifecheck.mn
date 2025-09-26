@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     // Logs tab руу бичих
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.SHEET_ID,
-      range: "Logs!A:E", // Timestamp, TestId, Email, TestKey, RiskLevel
+      range: "Logs!A:F", // Timestamp, TestId, Email, TestKey, RiskLevel
       valueInputOption: "RAW",
       requestBody: {
         values: [[
@@ -37,7 +37,8 @@ export default async function handler(req, res) {
           testId,
           email,
           testKey,
-          riskLevel || ""
+          riskLevel || "",
+          "auto"
         ]],
       },
     });

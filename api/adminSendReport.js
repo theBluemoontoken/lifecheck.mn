@@ -18,41 +18,52 @@ export default async function adminSend(req, res) {
     await handler(req, res);
 
     // ✍️ Sheets-д log үлдээх
-    try {
-      const { email, testId, testKey, riskLevel } = req.body;
-      const now = new Date();
-      const timestamp = now.toLocaleString("en-GB", {
-        timeZone: "Asia/Ulaanbaatar",
-      });
+    // ✍️ Sheets-д log үлдээх
+try {
+  const { email, testId, testKey, riskLevel } = req.body;
+  const now = new Date();
+  const timestamp = now.toLocaleString("en-GB", {
+    timeZone: "Asia/Ulaanbaatar",
+  });
 
-      const auth = new google.auth.GoogleAuth({
-        credentials: {
-          client_email: process.env.GOOGLE_CLIENT_EMAIL,
-          private_key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
-        },
-        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-      });
+  // ✅ Хэрэв testId байхгүй бол автоматаар үүсгэнэ
+  const autoId = testId && testId.trim()
+    ? testId
+    : `LC-OVERRIDE-${now.getFullYear().toString().slice(-2)}${String(
+        now.getMonth() + 1
+      ).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${Math.floor(
+        1000 + Math.random() * 9000
+      )}`;
 
-      const sheets = google.sheets({ version: "v4", auth });
+  const auth = new google.auth.GoogleAuth({
+    credentials: {
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+      private_key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
+    },
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
 
-      await sheets.spreadsheets.values.append({
-        spreadsheetId: process.env.SHEET_ID,
-        range: "Logs!A:F", // Timestamp, TestId, Email, TestKey, RiskLevel, Source
-        valueInputOption: "RAW",
-        requestBody: {
-          values: [[
-            timestamp,
-            testId || "",
-            email || "",
-            testKey || "",
-            riskLevel || "",
-            "manual override"
-          ]],
-        },
-      });
-    } catch (logErr) {
-      console.error("⚠️ Admin override log failed:", logErr);
-    }
+  const sheets = google.sheets({ version: "v4", auth });
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: process.env.SHEET_ID,
+    range: "Logs!A:F",
+    valueInputOption: "RAW",
+    requestBody: {
+      values: [[
+        timestamp,
+        autoId,            // ✅ автоматаар генерэйт хийсэн ID
+        email || "",
+        testKey || "",
+        riskLevel || "",
+        "manual override"
+      ]],
+    },
+  });
+} catch (logErr) {
+  console.error("⚠️ Admin override log failed:", logErr);
+}
+
 
   } catch (err) {
     console.error("❌ Admin override error:", err);

@@ -51,14 +51,20 @@
   const banner = document.getElementById('banner');
   let adminKey = "";
 
-  // Эхэнд зөвхөн login form
-  loginForm.style.display = "block";
+  // Хэрэв өмнө нь login хийсэн бол localStorage-оос сэргээх
+  const savedKey = localStorage.getItem("lc_adminKey");
+  if (savedKey) {
+    adminKey = savedKey;
+    loginForm.style.display = "none";
+    overrideForm.style.display = "block";
+  } else {
+    loginForm.style.display = "block";
+  }
 
-  // Login
+  // Login form
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const pass = document.getElementById('admin-pass').value;
-
     banner.style.display = "none";
 
     const res = await fetch('/api/adminLogin', {
@@ -69,7 +75,8 @@
 
     const data = await res.json();
     if (data.ok) {
-      adminKey = pass; // дараагийн fetch-д Authorization header-д ашиглана
+      adminKey = pass;
+      localStorage.setItem("lc_adminKey", pass); // ✅ Session хадгална
       loginForm.style.display = "none";
       overrideForm.style.display = "block";
     } else {
@@ -79,7 +86,7 @@
     }
   });
 
-  // Override form submit (өмнөх шиг)
+  // Override form submit
   overrideForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = {
