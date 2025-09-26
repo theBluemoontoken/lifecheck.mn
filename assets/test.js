@@ -519,30 +519,48 @@ setInterval(() => {
 })();
 
 
-// === payModal form submit → pay.html рүү шилжүүлнэ ===
+// === payModal form submit → эхлээд confirm popup ===
 const payForm = document.querySelector('#payModal .lead-form');
 if (payForm) {
-payForm.addEventListener('submit', (e) => {
-e.preventDefault();
+  payForm.addEventListener('submit', (e) => {
+    e.preventDefault();
 
+    const email = payForm.querySelector('input[type="email"]').value.trim();
+    if (!email) return; // хоосон бол зогсооно
 
-const email = payForm.querySelector('input[type="email"]').value.trim();
-if (!email) return; // хоосон бол зогсооно
+    try { localStorage.setItem('lc_email', email); } catch(_) {}
 
+    // confirm popup руу имэйл харуулна
+    document.getElementById("confirm-email-text").textContent = email;
+    document.getElementById("emailConfirmModal").classList.remove("hidden");
 
-try { localStorage.setItem('lc_email', email); } catch(_) {}
-
-
-// localStorage-д хадгалсан түлхүүрийг эсвэл getCurrentTestKey-г ашиглана
-let testKey = 'burnout';
-try {
-testKey = localStorage.getItem('lc_test') || getCurrentTestKey();
-} catch(e) {}
-
-
-window.location.href = `../pay.html?test=${testKey}`;
-});
+    // redirect хийхэд ашиглах testKey хадгална
+    window._pendingTestKey = localStorage.getItem('lc_test') || getCurrentTestKey() || "burnout";
+  });
 }
+
+// === confirm popup доторх товчлуурууд ===
+const cancelEmailBtn = document.getElementById("cancelEmailBtn");
+const proceedPayBtn = document.getElementById("proceedPayBtn");
+
+// Буцах → popup хаах
+cancelEmailBtn?.addEventListener("click", () => {
+  document.getElementById("emailConfirmModal").classList.add("hidden");
+});
+
+// Зөв → pay.html руу шилжүүлэх
+proceedPayBtn?.addEventListener("click", () => {
+  const email = document.getElementById("confirm-email-text").textContent;
+
+  try {
+    sessionStorage.setItem("wizardEmail", email);
+    localStorage.setItem("lc_email", email);
+  } catch(e) {}
+
+  const testKey = window._pendingTestKey || "burnout";
+  window.location.href = `../pay.html?test=${testKey}`;
+});
+
 
 
 // test.js  (#payModal .lead-form submit дотор)

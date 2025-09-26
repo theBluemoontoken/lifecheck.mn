@@ -436,7 +436,7 @@ p  { font-size: clamp(1rem, 2.5vw, 1.2rem); opacity: 0.9; margin-bottom: 1.2rem;
 }
 .pay-popup.hidden { display: none; }
 .pay-content {
-  background: #1e1b4b;
+  background: linear-gradient(135deg, #4c1d95, #6d28d9, #9333ea);
   padding: 32px;
   border-radius: 16px;
   display: flex;
@@ -512,7 +512,7 @@ p  { font-size: clamp(1rem, 2.5vw, 1.2rem); opacity: 0.9; margin-bottom: 1.2rem;
 }
 .close-btn:hover { opacity: 0.7; }
 .pay-content {
-  background: #1e1b4b;
+  background: linear-gradient(135deg, #4c1d95, #6d28d9, #9333ea);
   padding: 32px;
   border-radius: 16px;
   display: flex;
@@ -988,3 +988,55 @@ main {
   justify-content: center; /* бүх section-үүдийг голлуулна */
   align-items: center;
 }
+
+#wizardConfirmPopup .modal-content {
+  width: 90%;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+  border-radius: 16px;
+  padding: 24px;
+  background: linear-gradient(135deg, #4c1d95, #6d28d9, #9333ea);
+  color: #f3e8ff;
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+}
+
+#wizardConfirmPopup h3 { color: #fff; margin-bottom: 10px; }
+#wizardConfirmPopup p { color: #e9d5ff; font-size: 0.95rem; }
+
+#wizardConfirmPopup .modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+#wizardConfirmPopup .btn-primary,
+#wizardConfirmPopup .btn-secondary {
+  padding: 10px 16px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+#wizardConfirmPopup .btn-primary {
+  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  color: #fff;
+  border: none;
+}
+
+#wizardConfirmPopup .btn-secondary {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #e9d5ff;
+}
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+}
+.modal.show { display: flex; }   /* show үед гарна */
+
+

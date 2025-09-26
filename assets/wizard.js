@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let scores = { lowcarb: 0, balanced: 0, cleanse: 0 };
 
   const wizardComments = [
-    "Сонголт бүр чинь чамайг гэрэл рүү ойртуулах уу, эсвэл харанхуйд түлхэх үү гэдгийг шийднэ.",
+  "Сонголт бүр чинь чамайг гэрэл рүү ойртуулах уу, эсвэл харанхуйд түлхэх үү гэдгийг шийднэ.",
   "Энэ асуултад өгсөн хариулт чинь чиний сэтгэлийн жинхэнэ галыг илчилнэ.",
   "Хэрэв чи энэ асуултаас зугтвал хувь заяа чинь өөрөө чамаас зугтах болно.",
   "Олон үг шаардлагагүй… зөвхөн чиний хариулт л жинхэнэ үнэнийг хэлнэ.",
@@ -189,33 +189,46 @@ function startCountdown(duration, display) {
   }, 1000);
 }
 
-// Claim товч → Popup нээх
+// Claim товч → Confirmation Popup
 document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("claim-btn")) {
+  const btn = e.target.closest(".claim-btn");
+  if (btn) {
     const emailValue = document.getElementById("email-input").value.trim();
     if (!emailValue) {
       alert("Эхлээд email оруулна уу!");
       return;
     }
 
-    // ✅ Wizard ID үүсгэнэ
+    // Wizard ID
     const date = new Date();
     const yyMMdd = date.toISOString().slice(2, 10).replace(/-/g, "");
     const rand = Math.floor(1000 + Math.random() * 9000);
     const wizardId = `WIZ-${yyMMdd}-${rand}`;
 
-    // SessionStorage-д хадгална
     sessionStorage.setItem("wizardId", wizardId);
     sessionStorage.setItem("wizardEmail", emailValue);
 
-    // Popup дээр харуулна
-    document.getElementById("pay-number").textContent = wizardId;
-    document.getElementById("pay-email").textContent = emailValue;
-
-    // Popup-г нээ
-    document.querySelector(".pay-popup").classList.remove("hidden");
+    document.getElementById("wizard-confirm-email").textContent = emailValue;
+    document.getElementById("wizardConfirmPopup").classList.add("show"); // ✨ show class ашигла
+    window._wizardId = wizardId;
   }
 });
+
+// Буцах
+document.getElementById("wizardCancelBtn").addEventListener("click", () => {
+  document.getElementById("wizardConfirmPopup").classList.remove("show");
+});
+
+// Зөв, үргэлжлүүлэх
+document.getElementById("wizardProceedBtn").addEventListener("click", () => {
+  document.getElementById("wizardConfirmPopup").classList.remove("show");
+
+  document.getElementById("pay-number").textContent = window._wizardId;
+  document.getElementById("pay-email").textContent = sessionStorage.getItem("wizardEmail");
+
+  document.querySelector(".pay-popup").classList.remove("hidden");
+});
+
 
 
 // Туршилтын илгээх товч

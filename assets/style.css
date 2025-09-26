@@ -1164,3 +1164,38 @@ background:linear-gradient(90deg, var(--a1, #3b82f6), var(--a2, #10b981), var(--
   opacity: 0.85;          /* арай бүдэг болгож discreet мэдрэмж */
 }
 
+.modal.hidden { 
+  display: none; 
+}
+
+#emailConfirmModal .modal-content {
+  width: 90%;          /* mobile дээр дэлгэцийн 90% */
+  max-width: 420px;    /* desktop дээр дээд тал нь 420px */
+  margin: 0 auto;      /* аль ч breakpoint дээр голлуулна */
+  text-align: center;
+  border-radius: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 10px 16px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  color: #fff;
+  border: none;
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  border: none;
+}
+
