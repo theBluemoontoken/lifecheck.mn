@@ -406,7 +406,7 @@ async function sendEmailWithPdf(to, subject, text, pdfBuffer, filename = "report
   });
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Only POST allowed" });
 
   try {
@@ -426,15 +426,14 @@ export default async function handler(req, res) {
     const text = `${data.name || "Хэрэглэгч"}-ийн тайлан хавсралтад байна.`;
     await sendEmailWithPdf(data.email, subject, text, pdfBuffer);
 
-    // ✨ Email амжилттай илгээгдсэн бол
     return res.status(200).json({ ok: true, sent: true });
-
-
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Report generation failed" });
   }
 }
+
+module.exports = handler;
 
 
 
