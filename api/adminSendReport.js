@@ -18,7 +18,6 @@ export default async function adminSend(req, res) {
     await handler(req, res);
 
     // ✍️ Sheets-д log үлдээх
-    // ✍️ Sheets-д log үлдээх
 try {
   const { email, testId, testKey, riskLevel } = req.body;
   const now = new Date();
