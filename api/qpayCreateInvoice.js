@@ -47,7 +47,7 @@ async function handler(req, res) {
         invoice_description: `LifeCheck Report: ${testKey}`,
         amount,
         callback_url: process.env.QPAY_CALLBACK_URL,
-        invoice_receiver_data: { email },
+        invoice_receiver_code: email,
         note: JSON.stringify({ email, testKey, testId, riskLevel })
       })
     });
