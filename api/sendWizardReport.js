@@ -1,16 +1,10 @@
 const nodemailer = require("nodemailer");
 const path = require("path");
 
-export default async function handler(req, res) {
+async function sendWizardReport(email) {
   try {
-    if (req.method !== "POST") {
-      return res.status(405).json({ ok: false, error: "Method not allowed" });
-    }
-
-    const { email } = req.body;
-
     if (!email) {
-      return res.status(400).json({ ok: false, error: "Email required" });
+      throw new Error("Email required");
     }
 
     // ✉️ Mail transporter
@@ -22,7 +16,7 @@ export default async function handler(req, res) {
       },
     });
 
-    // 📂 PDF хавсралтууд (api/guides дотор байрласан)
+    // 📂 PDF хавсралтууд
     const attachments = [
       {
         filename: "guzeegee-shataa.pdf",
@@ -47,9 +41,12 @@ export default async function handler(req, res) {
       attachments,
     });
 
-    return res.status(200).json({ ok: true, sent: true });
+    console.log(`Wizard report sent to ${email}`);
+    return { ok: true, sent: true };
   } catch (err) {
     console.error("Wizard send error:", err);
-    return res.status(500).json({ ok: false, error: "Send failed" });
+    return { ok: false, error: "Send failed" };
   }
 }
+
+module.exports = sendWizardReport;

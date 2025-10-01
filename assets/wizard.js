@@ -220,63 +220,43 @@ document.getElementById("wizardCancelBtn").addEventListener("click", () => {
 });
 
 // Зөв, үргэлжлүүлэх
-document.getElementById("wizardProceedBtn").addEventListener("click", () => {
+document.getElementById("wizardProceedBtn").addEventListener("click", async () => {
   document.getElementById("wizardConfirmPopup").classList.remove("show");
 
-  document.getElementById("pay-number").textContent = window._wizardId;
-  document.getElementById("pay-email").textContent = sessionStorage.getItem("wizardEmail");
+  const wizardId = window._wizardId;
+  const email = sessionStorage.getItem("wizardEmail");
+
+  document.getElementById("pay-number").textContent = wizardId;
+  document.getElementById("pay-email").textContent = email;
+
+  // ✅ QPay invoice үүсгэх
+  try {
+    const resp = await fetch("/api/qpayCreateInvoice", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        amount: 9900,
+        testKey: "wizard",
+        testId: wizardId,
+        riskLevel: "wizard"
+      })
+    });
+    const data = await resp.json();
+    if (data.ok && data.qr_image) {
+      document.querySelector(".pay-popup .qr-img").src = `data:image/png;base64,${data.qr_image}`;
+    } else {
+      console.error("Invoice error:", data);
+      alert("⚠️ QPay invoice үүсгэхэд алдаа гарлаа!");
+    }
+  } catch (err) {
+    console.error("Fetch error:", err);
+    alert("⚠️ QPay холбоход алдаа гарлаа!");
+  }
 
   document.querySelector(".pay-popup").classList.remove("hidden");
 });
 
-
-
-// Туршилтын илгээх товч
-document.getElementById("test-send").addEventListener("click", () => {
-  const wizardId = sessionStorage.getItem("wizardId");
-  const email = sessionStorage.getItem("wizardEmail");
-
-  if (!wizardId || !email) {
-    alert("ID эсвэл Email олдсонгүй!");
-    return;
-  }
-
-  // 1. Log хадгална
-  fetch("/api/saveWizardLog", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ wizardId, email })
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.ok) {
-        // 2. PDF илгээнэ
-        return fetch("/api/sendWizardReport", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
-        });
-      } else {
-        throw new Error("Log хадгалахад алдаа гарлаа");
-      }
-    })
-    .then(res => res.json())
-    .then(report => {
-      if (report.ok) {
-        alert(`✅ PDF амжилттай илгээгдлээ: ${email}`);
-      } else {
-        alert("❌ PDF илгээхэд алдаа гарлаа");
-      }
-    })
-    .catch(err => {
-      console.error("Send error:", err);
-      alert("❌ Илгээхэд алдаа гарлаа");
-    });
-});
-// Popup хаах товч
-document.querySelector(".close-btn").addEventListener("click", () => {
-  document.querySelector(".pay-popup").classList.add("hidden");
-});
 
 
 
