@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const qpayCreateInvoice = require("./api/qpayCreateInvoice.js");
-const qpayWebhook = require("./api/qpayWebhook.js");
+const qpayCreateInvoice = require("./qpayCreateInvoice.js");
+const qpayWebhook = require("./qpayWebhook.js");
 
 const app = express();
 app.use(express.json());
