@@ -9,12 +9,15 @@ async function sendWizardReport(email) {
 
     // ✉️ Mail transporter
     const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-      },
-    });
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: process.env.MAIL_PORT === "465", // 465 бол SSL, 587 бол TLS
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
+
 
     // 📂 PDF хавсралтууд
     const attachments = [

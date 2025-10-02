@@ -387,9 +387,15 @@ async function htmlToPdfBuffer(html) {
  */
 async function sendEmailWithPdf(to, subject, text, pdfBuffer, filename = "report.pdf") {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
-  });
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: process.env.MAIL_PORT === "465", // 465 бол SSL, 587 бол TLS
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
+
 
   await transporter.sendMail({
     from: `"LifeCheck" <${process.env.MAIL_USER}>`,
