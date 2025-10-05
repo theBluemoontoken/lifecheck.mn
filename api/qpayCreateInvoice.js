@@ -1,4 +1,6 @@
+// qpayCreateInvoice.js — FINAL version
 const fetch = require("node-fetch");
+const saveInvoiceMeta = require("./saveInvoiceMeta");
 
 async function handler(req, res) {
   try {
@@ -8,15 +10,15 @@ async function handler(req, res) {
       return res.status(400).json({ ok: false, error: "Email & amount required" });
     }
 
-    // === 1. Token авах ===
-    const authHeader = "Basic " + Buffer.from(
-      `${process.env.QPAY_USERNAME}:${process.env.QPAY_PASSWORD}`
-    ).toString("base64");
+    // === 1️⃣ Token авах ===
+    const authHeader =
+      "Basic " +
+      Buffer.from(`${process.env.QPAY_USERNAME}:${process.env.QPAY_PASSWORD}`).toString("base64");
 
     const tokenResp = await fetch("https://merchant.qpay.mn/v2/auth/token", {
       method: "POST",
       headers: {
-        "Authorization": authHeader,
+        Authorization: authHeader,
         "Content-Type": "application/json",
       },
     });
@@ -32,10 +34,10 @@ async function handler(req, res) {
       return res.status(401).json({ ok: false, error: "Invalid token data", details: tokenData });
     }
 
-    // === 2. Invoice үүсгэх ===
+    // === 2️⃣ Invoice үүсгэх ===
     const payload = {
       invoice_code: process.env.QPAY_INVOICE_CODE,
-      sender_invoice_no: `LC-${Date.now()}`,
+      sender_invoice_no: testId || `LC-${Date.now()}`,
       invoice_description: `LifeCheck Report: ${testKey || "unknown"}`,
       amount: Number(amount),
       callback_url: process.env.QPAY_CALLBACK_URL,
@@ -46,7 +48,7 @@ async function handler(req, res) {
     const invoiceResp = await fetch("https://merchant.qpay.mn/v2/invoice", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${tokenData.access_token}`,
+        Authorization: `Bearer ${tokenData.access_token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
@@ -55,20 +57,35 @@ async function handler(req, res) {
     if (!invoiceResp.ok) {
       console.error("❌ QPay invoice HTTP error:", invoiceResp.status, invoiceResp.statusText);
       const text = await invoiceResp.text();
-      return res.status(invoiceResp.status).json({ ok: false, error: "Invoice HTTP error", body: text });
+      return res
+        .status(invoiceResp.status)
+        .json({ ok: false, error: "Invoice HTTP error", body: text });
     }
 
     const invoiceData = await invoiceResp.json().catch(() => ({}));
-    if (!invoiceData.qr_image && !invoiceData.urls) {
-      console.warn("⚠️ QPay invoice unusual response:", invoiceData);
+    if (!invoiceData.invoice_id) {
+      console.warn("⚠️ Invoice missing invoice_id:", invoiceData);
     }
 
-    // === 3. Return success ===
-    return res.status(200).json({ ok: true, invoice: invoiceData });
+    // ✅ Invoice metadata-г JSON файлд хадгалах
+    if (invoiceData.invoice_id) {
+      saveInvoiceMeta({
+        invoice_id: invoiceData.invoice_id,
+        email,
+        testKey,
+        riskLevel,
+        testId,
+        amount,
+      });
+    }
 
+    // === 3️⃣ Хариу буцаах ===
+    return res.status(200).json({ ok: true, invoice: invoiceData });
   } catch (err) {
     console.error("❌ QPay invoice exception:", err);
-    return res.status(500).json({ ok: false, error: err.message || "Invoice create failed" });
+    return res
+      .status(500)
+      .json({ ok: false, error: err.message || "Invoice create failed" });
   }
 }
 
