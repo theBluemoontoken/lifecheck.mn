@@ -1,47 +1,31 @@
-const nodemailer = require("nodemailer");
+const postmark = require("postmark");
 const path = require("path");
+const fs = require("fs");
 
 async function sendWizardReport(email) {
   try {
-    if (!email) {
-      throw new Error("Email required");
-    }
+    if (!email) throw new Error("Email required");
 
-    // ✉️ Mail transporter
-    const transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: process.env.MAIL_PORT,
-  secure: process.env.MAIL_PORT === "465", // 465 бол SSL, 587 бол TLS
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+    const client = new postmark.ServerClient(process.env.POSTMARK_TOKEN);
 
-
-    // 📂 PDF хавсралтууд
-    const attachments = [
-      {
-        filename: "guzeegee-shataa.pdf",
-        path: path.join(process.cwd(), "api", "guides", "guzeegee-shataa.pdf"),
-      },
-      {
-        filename: "hundreh-philosophy.pdf",
-        path: path.join(process.cwd(), "api", "guides", "hundreh-philosophy.pdf"),
-      },
-      {
-        filename: "ideed-l-tur.pdf",
-        path: path.join(process.cwd(), "api", "guides", "ideed-l-tur.pdf"),
-      },
+    const files = [
+      "guzeegee-shataa.pdf",
+      "hundreh-philosophy.pdf",
+      "ideed-l-tur.pdf",
     ];
 
-    // ✨ Email message
-    await transporter.sendMail({
-      from: `"LifeCheck Wizard" <${process.env.MAIL_USER}>`,
-      to: email,
-      subject: "🔮 Таны Шидэт гарын авлагууд",
-      text: "Сонгогдсон гол гарын авлага болон бэлгүүдийг хавсаргав.",
-      attachments,
+    const attachments = files.map((name) => ({
+      Name: name,
+      Content: fs.readFileSync(path.join(process.cwd(), "api", "guides", name)).toString("base64"),
+      ContentType: "application/pdf",
+    }));
+
+    await client.sendEmail({
+      From: process.env.POSTMARK_SENDER,
+      To: email,
+      Subject: "🔮 Таны Шидэт гарын авлагууд",
+      TextBody: "Сонгогдсон гол гарын авлага болон бэлгүүдийг хавсаргав.",
+      Attachments: attachments,
     });
 
     console.log(`Wizard report sent to ${email}`);

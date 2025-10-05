@@ -1,6 +1,5 @@
 // pages/api/sendReport.js
 const { google } = require("googleapis");
-const nodemailer = require("nodemailer");
 
 // Playwright + Sparticuz Chromium (Vercel-д тохиромжтой)
 const chromium = require("@sparticuz/chromium");
@@ -386,27 +385,19 @@ async function htmlToPdfBuffer(html) {
  * 5) Имэйлээр илгээх
  */
 async function sendEmailWithPdf(to, subject, text, pdfBuffer, filename = "report.pdf") {
-  const transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: process.env.MAIL_PORT,
-  secure: process.env.MAIL_PORT === "465", // 465 бол SSL, 587 бол TLS
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+  const postmark = require("postmark");
+  const client = new postmark.ServerClient(process.env.POSTMARK_TOKEN);
 
-
-  await transporter.sendMail({
-    from: `"LifeCheck" <${process.env.MAIL_USER}>`,
-    to,
-    subject,
-    text,
-    attachments: [
+  await client.sendEmail({
+    From: process.env.POSTMARK_SENDER,
+    To: to,
+    Subject: subject,
+    TextBody: text,
+    Attachments: [
       {
-        filename,
-        content: pdfBuffer,
-        contentType: "application/pdf",
+        Name: filename,
+        Content: pdfBuffer.toString("base64"),
+        ContentType: "application/pdf",
       },
     ],
   });
