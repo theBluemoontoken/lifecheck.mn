@@ -6,19 +6,20 @@ const postmark = require("postmark");
 
 let cachedAuth;
 
-// 1️⃣ Google Sheets уншигч
+// 1️⃣ Google Sheets уншигч (ADC version)
+const { google } = require("googleapis");
+const { GoogleAuth } = require("google-auth-library");
+
 async function readSheet(tabName) {
   if (!cachedAuth) {
-    cachedAuth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        private_key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
-      },
+    // Application Default Credentials ашиглана
+    cachedAuth = new GoogleAuth({
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
   }
 
-  const sheets = google.sheets({ version: "v4", auth: cachedAuth });
+  const sheets = google.sheets({ version: "v4", auth: await cachedAuth.getClient() });
+
   const resp = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.SHEET_ID,
     range: tabName,
@@ -26,6 +27,7 @@ async function readSheet(tabName) {
 
   const rows = resp.data.values || [];
   if (!rows.length) return [];
+
   const headers = rows[0];
   return rows.slice(1).map((r) => {
     const o = {};
@@ -33,6 +35,7 @@ async function readSheet(tabName) {
     return o;
   });
 }
+
 
 /**
  * 2) Report-д орох бүх өгөгдлийг нэгтгэнэ (Sheets + dynamic)

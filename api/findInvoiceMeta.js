@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 // Файлын байршил
-const filePath = path.join(process.cwd(), "api", "invoiceMeta.json");
+const filePath = path.join(__dirname, "invoiceMeta.json");
 
 function findInvoiceMeta(invoiceId) {
   try {
