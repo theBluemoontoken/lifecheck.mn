@@ -2,72 +2,74 @@ const fetch = require("node-fetch");
 
 async function handler(req, res) {
   try {
-    const { email, amount, testKey, testId, riskLevel } = req.body;
+    const { email, amount, testKey, testId, riskLevel } = req.body || {};
+
     if (!email || !amount) {
       return res.status(400).json({ ok: false, error: "Email & amount required" });
     }
 
-    // 1. Access Token авах
+    // === 1. Token авах ===
+    const authHeader = "Basic " + Buffer.from(
+      `${process.env.QPAY_USERNAME}:${process.env.QPAY_PASSWORD}`
+    ).toString("base64");
+
     const tokenResp = await fetch("https://merchant.qpay.mn/v2/auth/token", {
       method: "POST",
       headers: {
-        "Authorization": "Basic " + Buffer.from(
-          process.env.QPAY_USERNAME + ":" + process.env.QPAY_PASSWORD
-        ).toString("base64"),
-        "Content-Type": "application/json"
-      }
+        "Authorization": authHeader,
+        "Content-Type": "application/json",
+      },
     });
 
-    const tokenText = await tokenResp.text();
-    console.log("🔎 QPay token raw response:", tokenText);
-
-    let tokenData;
-    try {
-      tokenData = JSON.parse(tokenText);
-    } catch (e) {
-      console.error("❌ Invalid JSON from QPay:", tokenText);
-      return res.status(502).json({ ok: false, error: "Invalid JSON from QPay" });
+    if (!tokenResp.ok) {
+      console.error("❌ QPay token HTTP error:", tokenResp.status, tokenResp.statusText);
+      return res.status(tokenResp.status).json({ ok: false, error: "QPay token fetch failed" });
     }
 
+    const tokenData = await tokenResp.json().catch(() => ({}));
     if (!tokenData.access_token) {
-      console.error("❌ QPay auth failed, details:", tokenData);
-      return res.status(401).json({ ok: false, error: "QPay auth failed", details: tokenData });
+      console.error("❌ QPay auth failed:", tokenData);
+      return res.status(401).json({ ok: false, error: "Invalid token data", details: tokenData });
     }
 
-    // 2. Invoice үүсгэх
+    // === 2. Invoice үүсгэх ===
+    const payload = {
+      invoice_code: process.env.QPAY_INVOICE_CODE,
+      sender_invoice_no: `LC-${Date.now()}`,
+      invoice_description: `LifeCheck Report: ${testKey || "unknown"}`,
+      amount: Number(amount),
+      callback_url: process.env.QPAY_CALLBACK_URL,
+      invoice_receiver_code: email,
+      note: JSON.stringify({ email, testKey, testId, riskLevel }),
+    };
+
     const invoiceResp = await fetch("https://merchant.qpay.mn/v2/invoice", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${tokenData.access_token}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        invoice_code: process.env.QPAY_INVOICE_CODE,
-        sender_invoice_no: `LC-${Date.now()}`,
-        invoice_description: `LifeCheck Report: ${testKey}`,
-        amount,
-        callback_url: process.env.QPAY_CALLBACK_URL,
-        invoice_receiver_code: email,
-        note: JSON.stringify({ email, testKey, testId, riskLevel })
-      })
+      body: JSON.stringify(payload),
     });
 
-    const invoiceText = await invoiceResp.text();
-    console.log("🔎 QPay invoice raw response:", invoiceText);
-
-    let invoiceData;
-    try {
-      invoiceData = JSON.parse(invoiceText);
-    } catch (e) {
-      return res.status(502).json({ ok: false, error: "Invalid JSON from QPay invoice" });
+    if (!invoiceResp.ok) {
+      console.error("❌ QPay invoice HTTP error:", invoiceResp.status, invoiceResp.statusText);
+      const text = await invoiceResp.text();
+      return res.status(invoiceResp.status).json({ ok: false, error: "Invoice HTTP error", body: text });
     }
 
+    const invoiceData = await invoiceResp.json().catch(() => ({}));
+    if (!invoiceData.qr_image && !invoiceData.urls) {
+      console.warn("⚠️ QPay invoice unusual response:", invoiceData);
+    }
+
+    // === 3. Return success ===
     return res.status(200).json({ ok: true, invoice: invoiceData });
+
   } catch (err) {
-    console.error("❌ QPay invoice error:", err);
-    return res.status(500).json({ ok: false, error: "Invoice create failed" });
+    console.error("❌ QPay invoice exception:", err);
+    return res.status(500).json({ ok: false, error: err.message || "Invoice create failed" });
   }
 }
 
 module.exports = handler;
-

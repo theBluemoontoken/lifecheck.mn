@@ -1,31 +1,31 @@
-// pages/api/sendReport.js
+// ✅ sendReport.js — Dynamic + PM2 optimized + Postmark SDK version
 const { google } = require("googleapis");
-
-// Playwright + Sparticuz Chromium (Vercel-д тохиромжтой)
+const playwright = require("playwright-core");
 const chromium = require("@sparticuz/chromium");
-const { chromium: playwrightChromium } = require("playwright-core");
+const postmark = require("postmark");
 
-/**
- * 1) Google Sheets-ээс хүссэн табыг бүхэлд нь уншиж, header-тай нь объектын массив болгоно
- */
+let cachedAuth;
+
+// 1️⃣ Google Sheets уншигч
 async function readSheet(tabName) {
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_CLIENT_EMAIL,
-      private_key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
-    },
-    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
-  });
-  const sheets = google.sheets({ version: "v4", auth });
+  if (!cachedAuth) {
+    cachedAuth = new google.auth.GoogleAuth({
+      credentials: {
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        private_key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
+      },
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    });
+  }
 
+  const sheets = google.sheets({ version: "v4", auth: cachedAuth });
   const resp = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.SHEET_ID,
-    range: tabName, // бүхэл таб
+    range: tabName,
   });
 
   const rows = resp.data.values || [];
   if (!rows.length) return [];
-
   const headers = rows[0];
   return rows.slice(1).map((r) => {
     const o = {};
@@ -361,38 +361,28 @@ function escapeHtml(s = "") {
     .replace(/"/g, "&quot;");
 }
 
-/**
- * 4) HTML → PDF (Playwright)
- */
+// 4️⃣ HTML → PDF (PM2-д тохируулсан)
 async function htmlToPdfBuffer(html) {
-  const browser = await playwrightChromium.launch({
+  const browser = await playwright.chromium.launch({
     args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
     executablePath: await chromium.executablePath(),
     headless: true,
   });
-
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: "networkidle" });
   const pdf = await page.pdf({ format: "A4", printBackground: true });
-
   await browser.close();
   return pdf;
 }
 
-
-
-/**
- * 5) Имэйлээр илгээх
- */
+// 5️⃣ Postmark SDK
 async function sendEmailWithPdf(to, subject, text, pdfBuffer, filename = "report.pdf") {
-  const postmark = require("postmark");
   const client = new postmark.ServerClient(process.env.POSTMARK_TOKEN);
-
   await client.sendEmail({
-    From: process.env.POSTMARK_SENDER,
+    From: process.env.POSTMARK_SENDER || "LifeCheck.mn <noreply@lifecheck.mn>",
     To: to,
     Subject: subject,
-    TextBody: text,
+    HtmlBody: text,
     Attachments: [
       {
         Name: filename,
@@ -405,32 +395,57 @@ async function sendEmailWithPdf(to, subject, text, pdfBuffer, filename = "report
 
 async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Only POST allowed" });
+  const start = Date.now();
 
   try {
     const payload = req.body || {};
-    if (!payload.email) return res.status(400).json({ error: "email is required" });
-    if (!payload.testKey || !payload.riskLevel) return res.status(400).json({ error: "testKey & riskLevel required" });
+    if (!payload.email || !payload.testKey || !payload.riskLevel)
+      return res.status(400).json({ error: "email, testKey, riskLevel required" });
 
     // Тайлан бэлтгэх
     const data = await gatherReportData(payload);
 
-    // HTML угсраад PDF болгох
+    // HTML → PDF
     const html = buildHTML(data);
     const pdfBuffer = await htmlToPdfBuffer(html);
 
-    // Имэйл илгээх
+    // Имэйл илгээх (Postmark SDK)
     const subject = `📊 ${data.copyRow?.summaryTitle || "LifeCheck Report"} — ${Math.round(data.scorePct)}% • ${data.riskLabel}`;
-    const text = `${data.name || "Хэрэглэгч"}-ийн тайлан хавсралтад байна.`;
-    await sendEmailWithPdf(data.email, subject, text, pdfBuffer);
+    const text = `<p>Сайн байна уу! Таны LifeCheck тайлан хавсралтад байна.</p>`;
+    await sendEmailWithPdf(data.email, subject, text, pdfBuffer, `${data.testId || "LifeCheck"}.pdf`);
 
-    return res.status(200).json({ ok: true, sent: true });
+    // Google Sheet-д Log бичих
+    const sheets = await getSheets();
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: process.env.SHEET_ID,
+      range: "Logs!A:F",
+      valueInputOption: "RAW",
+      requestBody: {
+        values: [
+          [
+            new Date().toLocaleString("en-GB", { timeZone: "Asia/Ulaanbaatar" }),
+            data.testId || "-",
+            data.email,
+            data.testKey,
+            data.riskLevel,
+            "sent",
+          ],
+        ],
+      },
+    });
+
+    // Амжилттай хариу
+    const took = ((Date.now() - start) / 1000).toFixed(1);
+    console.log(`✅ Report sent to ${data.email} (${data.testKey}) in ${took}s`);
+    return res.status(200).json({ ok: true, sent: true, time: took });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Report generation failed" });
+    console.error("❌ sendReport error:", err);
+    return res.status(500).json({ ok: false, error: err.message });
   }
 }
 
 module.exports = handler;
+
 
 
 
