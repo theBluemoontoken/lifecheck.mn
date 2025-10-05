@@ -4,9 +4,14 @@ const sendWizardReport = require("./sendWizardReport.js");
 
 async function handler(req, res) {
   try {
-    // 🧾 1. Аль төрөл болохыг тодорхойлно (GET эсвэл POST)
     const body = req.method === "POST" ? req.body : req.query || {};
-    let { object_type, payment_status, note, sender_invoice_no, qpay_payment_id } = body;
+    let {
+      object_type,
+      payment_status,
+      note,
+      sender_invoice_no,
+      qpay_payment_id,
+    } = body;
 
     console.log(`📩 Webhook (${req.method}) received:`, {
       object_type,
@@ -15,10 +20,11 @@ async function handler(req, res) {
       qpay_payment_id,
     });
 
-    // 🧩 2. Хэрвээ зөвхөн qpay_payment_id ирсэн бол QPay API-аас төлөв шалгах
+    // 🧩 Хэрвээ зөвхөн qpay_payment_id ирсэн бол төлбөрийн статусыг QPay API-аас шалгах
     if (!payment_status && qpay_payment_id) {
       console.log("🔍 Checking QPay payment status for:", qpay_payment_id);
       try {
+        // 1️⃣ Access token авах
         const tokenResp = await fetch("https://merchant.qpay.mn/v2/auth/token", {
           method: "POST",
           headers: {
@@ -32,22 +38,39 @@ async function handler(req, res) {
         });
         const tokenData = await tokenResp.json();
 
-        const checkResp = await fetch(
-          `https://merchant.qpay.mn/v2/payment/check/${qpay_payment_id}`,
-          { headers: { Authorization: `Bearer ${tokenData.access_token}` } }
-        );
+        // 2️⃣ Төлбөр шалгах — албан ёсны аргаар
+        const checkResp = await fetch("https://merchant.qpay.mn/v2/payment/check", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData.access_token}`,
+          },
+          body: JSON.stringify({
+            object_type: "INVOICE",
+            object_id: qpay_payment_id,
+            offset: { page_number: 1, page_limit: 1 },
+          }),
+        });
 
         const checkData = await checkResp.json();
-        console.log("💡 QPay check result:", checkData.payment_status);
+        console.log("💡 QPay check raw:", checkData);
 
-        payment_status = checkData.payment_status;
-        note = checkData.note;
+        // 🧩 Хариуны бүтэц янз бүр байдаг тул уян хатан шалгах
+        if (checkData.rows && checkData.rows.length > 0) {
+          payment_status = checkData.rows[0].payment_status;
+          note = checkData.rows[0].note;
+        } else {
+          payment_status = checkData.payment_status;
+          note = checkData.note;
+        }
+
+        console.log("💡 QPay check result (parsed):", payment_status);
       } catch (err) {
         console.error("❌ Failed to check QPay payment status:", err);
       }
     }
 
-    // 🧩 3. Төлбөр амжилттай эсэхийг шалгана
+    // 🧩 3️⃣ Төлбөр амжилттай эсэхийг шалгах
     const isPaid =
       payment_status && payment_status.toString().toUpperCase() === "PAID";
     if (!isPaid) {
@@ -55,7 +78,7 @@ async function handler(req, res) {
       return res.status(200).json({ ok: true, ignored: true });
     }
 
-    // 🪄 4. note талбарыг parse хийж metadata гаргана
+    // 🪄 4️⃣ note талбарыг parse хийх
     let meta = {};
     try {
       meta = typeof note === "string" ? JSON.parse(note) : note || {};
@@ -68,7 +91,7 @@ async function handler(req, res) {
       `✅ Payment confirmed → ${email || "no email"} (${testKey || "unknown"})`
     );
 
-    // 🧙 5. Wizard эсвэл бусад тестийг ялгаж имэйл илгээнэ
+    // 🧙 5️⃣ Тайлан илгээх
     if (testKey === "wizard") {
       await sendWizardReport(email);
     } else {
