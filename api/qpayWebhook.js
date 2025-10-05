@@ -3,45 +3,43 @@ const sendWizardReport = require("./sendWizardReport.js");
 
 async function handler(req, res) {
   try {
-    const { object_type, payment_status, note, sender_invoice_no } = req.body || {};
+    // 🧾 1. QPay webhook аль төрөл болохыг тодорхойлно (GET эсвэл POST)
+    const body = req.method === "POST" ? req.body : req.query || {};
 
-    // 1️⃣ QPay webhook basic log
-    console.log("📩 Webhook received:", object_type, payment_status, sender_invoice_no);
+    const { object_type, payment_status, note, sender_invoice_no, qpay_payment_id } = body;
 
-    // 2️⃣ Зөв төрлийн webhook эсэх
-    if (object_type !== "INVOICE" || payment_status !== "PAID") {
+    console.log(`📩 Webhook (${req.method}) received:`, { object_type, payment_status, sender_invoice_no, qpay_payment_id });
+
+    // 🧩 2. Төлбөр батлагдсан эсэхийг шалгана
+    const isPaid = (payment_status && payment_status.toUpperCase() === "PAID");
+    if (!isPaid) {
+      console.log("⚠️ Payment not yet paid or invalid status:", payment_status);
       return res.status(200).json({ ok: true, ignored: true });
     }
 
-    // 3️⃣ Metadata parse (note → JSON)
+    // 🪄 3. note талбарыг parse хийж metadata гаргана
     let meta = {};
     try {
-      meta = JSON.parse(note || "{}");
-    } catch (err) {
-      console.error("❌ Invalid note JSON:", note);
-      return res.status(400).json({ ok: false, error: "Invalid note JSON" });
+      meta = typeof note === "string" ? JSON.parse(note) : note || {};
+    } catch {
+      console.warn("⚠️ Could not parse note JSON:", note);
     }
 
-    console.log(`✅ Payment confirmed: ${sender_invoice_no} → ${meta.email || "no email"} (${meta.testKey || "-"})`);
+    const { email, testKey, testId, riskLevel } = meta;
+    console.log(`✅ Payment confirmed → ${email || "no email"} (${testKey || "unknown"})`);
 
-    // 4️⃣ Email илгээх
-    if (meta.testKey === "wizard") {
-      // 🧙 Wizard report илгээх
-      sendWizardReport(meta.email)
-        .then(() => console.log(`📨 Wizard guides sent → ${meta.email}`))
-        .catch(err => console.error("Wizard send error:", err));
+    // 🧙 4. Wizard эсвэл бусад тестийг ялгаж имэйл илгээнэ
+    if (testKey === "wizard") {
+      await sendWizardReport(email);
     } else {
-      // 📊 LifeCheck Report илгээх
-      sendReport(
+      await sendReport(
         { method: "POST", body: meta },
         { status: () => ({ json: () => ({}) }) }
-      )
-        .then(() => console.log(`📨 LifeCheck report sent → ${meta.email}`))
-        .catch(err => console.error("Report send error:", err));
+      );
     }
 
-    // 5️⃣ Хариу буцаах (QPay retry-ээс сэргийлэх)
-    return res.status(200).json({ ok: true });
+    console.log("📨 Report sent successfully.");
+    return res.status(200).json({ ok: true, delivered: true });
 
   } catch (err) {
     console.error("❌ QPay webhook fatal error:", err);
