@@ -244,11 +244,21 @@ document.getElementById("wizardProceedBtn").addEventListener("click", async () =
     });
     const data = await resp.json();
     if (data.ok && data.qr_image) {
-      document.querySelector(".pay-popup .qr-img").src = `data:image/png;base64,${data.qr_image}`;
-    } else {
-      console.error("Invoice error:", data);
-      alert("⚠️ QPay invoice үүсгэхэд алдаа гарлаа!");
-    }
+  document.querySelector(".pay-popup .qr-img").src = `data:image/png;base64,${data.qr_image}`;
+
+  // 🧾 Invoice number хадгалах
+  const payNumEl = document.getElementById("pay-number");
+  if (payNumEl)
+    payNumEl.textContent =
+      data.sender_invoice_no ||
+      data.invoice_id ||
+      data.id ||
+      "";
+} else {
+  console.error("Invoice error:", data);
+  alert("⚠️ QPay invoice үүсгэхэд алдаа гарлаа!");
+}
+
   } catch (err) {
     console.error("Fetch error:", err);
     alert("⚠️ QPay холбоход алдаа гарлаа!");
