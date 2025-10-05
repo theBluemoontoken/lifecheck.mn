@@ -243,17 +243,19 @@ document.getElementById("wizardProceedBtn").addEventListener("click", async () =
       })
     });
     const data = await resp.json();
-    if (data.ok && data.qr_image) {
-  document.querySelector(".pay-popup .qr-img").src = `data:image/png;base64,${data.qr_image}`;
+    if (data.ok && data.invoice?.qr_image) {
+      document.querySelector(".pay-popup .qr-img").src = `data:image/png;base64,${data.invoice.qr_image}`;
+
 
   // 🧾 Invoice number хадгалах
   const payNumEl = document.getElementById("pay-number");
-  if (payNumEl)
-    payNumEl.textContent =
-      data.sender_invoice_no ||
-      data.invoice_id ||
-      data.id ||
-      "";
+if (payNumEl)
+  payNumEl.textContent =
+    data.invoice?.sender_invoice_no ||
+    data.invoice?.invoice_id ||
+    data.invoice?.id ||
+    "";
+
 } else {
   console.error("Invoice error:", data);
   alert("⚠️ QPay invoice үүсгэхэд алдаа гарлаа!");
@@ -273,6 +275,7 @@ document.addEventListener("click", async (e) => {
   if (!btn) return;
 
   const payNumber = document.getElementById("pay-number")?.textContent?.trim();
+  const resp = await fetch(`/api/qpayCheckStatus?invoice=${payNumber}`);
   if (!payNumber) {
     alert("⚠️ Төлбөрийн дугаар олдсонгүй.");
     return;
