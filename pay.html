@@ -450,11 +450,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       // 🆕 Invoice number-ийг нуусан element-д хадгалах
-  const payNumEl = document.getElementById("pay-number");
-  if (payNumEl) payNumEl.textContent = data.invoice.sender_invoice_no || "";
+    const payNumEl = document.getElementById("pay-number");
+    if (payNumEl) payNumEl.textContent = data.invoice.sender_invoice_no || "";
     } else {
       alert("❌ QPay Invoice үүсгэж чадсангүй: " + (data.error || "Unknown error"));
     }
+    console.log("🧾 QPay invoice full response:", data);
   } catch (err) {
     console.error("Invoice алдаа:", err);
     alert("⚠️ Сервертэй холбогдож чадсангүй.");
