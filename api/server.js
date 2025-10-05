@@ -28,6 +28,7 @@ app.get("/", (req, res) => {
 // === Public API ===
 app.post("/api/qpayCreateInvoice", qpayCreateInvoice);
 app.post("/api/qpayWebhook", qpayWebhook);
+app.get("/api/qpayWebhook", qpayWebhook);
 
 const qpayCheckStatus = require("./qpayCheckStatus.js");
 app.get("/api/qpayCheckStatus", qpayCheckStatus);
