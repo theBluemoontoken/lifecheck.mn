@@ -219,19 +219,27 @@ document.getElementById("wizardCancelBtn").addEventListener("click", () => {
   document.getElementById("wizardConfirmPopup").classList.remove("show");
 });
 
-// Зөв, үргэлжлүүлэх
+// ✅ QPay invoice үүсгэх
 document.getElementById("wizardProceedBtn").addEventListener("click", async () => {
   document.getElementById("wizardConfirmPopup").classList.remove("show");
 
   const wizardId = window._wizardId;
   const email = sessionStorage.getItem("wizardEmail");
+  const payPopup = document.querySelector(".pay-popup");
+  const qrImg = payPopup.querySelector(".qr-img");
+  const payNumEl = document.getElementById("pay-number");
+  const payEmailEl = document.getElementById("pay-email");
 
-  document.getElementById("pay-number").textContent = wizardId;
-  document.getElementById("pay-email").textContent = email;
+  if (!email) {
+    alert("⚠️ Имэйл олдсонгүй. Дахин оролдоно уу!");
+    return;
+  }
 
-  // ✅ QPay invoice үүсгэх
+  payEmailEl.textContent = email;
+  payNumEl.textContent = wizardId;
+
   try {
-    const resp = await fetch("/api/qpayCreateInvoice", {
+    const resp = await fetch("https://api.lifecheck.mn/api/qpayCreateInvoice", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -239,62 +247,62 @@ document.getElementById("wizardProceedBtn").addEventListener("click", async () =
         amount: 9900,
         testKey: "wizard",
         testId: wizardId,
-        riskLevel: "wizard"
-      })
+        riskLevel: "wizard",
+      }),
     });
+
     const data = await resp.json();
+    console.log("🔎 Invoice response:", data);
+
     if (data.ok && data.invoice?.qr_image) {
-      document.querySelector(".pay-popup .qr-img").src = `data:image/png;base64,${data.invoice.qr_image}`;
+      // QR зурагаа харуулах
+      qrImg.src = `data:image/png;base64,${data.invoice.qr_image}`;
 
-
-  // 🧾 Invoice number хадгалах
-  const payNumEl = document.getElementById("pay-number");
-if (payNumEl)
-  payNumEl.textContent =
-    data.invoice?.sender_invoice_no ||
-    data.invoice?.invoice_id ||
-    data.invoice?.id ||
-    "";
-
-} else {
-  console.error("Invoice error:", data);
-  alert("⚠️ QPay invoice үүсгэхэд алдаа гарлаа!");
-}
-
+      // 🧾 Invoice number хадгалах
+      payNumEl.textContent =
+        data.invoice?.sender_invoice_no ||
+        data.invoice?.invoice_id ||
+        data.invoice?.id ||
+        wizardId;
+    } else {
+      console.error("❌ Invoice error:", data);
+      alert("⚠️ QPay invoice үүсгэхэд алдаа гарлаа!");
+    }
   } catch (err) {
-    console.error("Fetch error:", err);
+    console.error("❌ Fetch error:", err);
     alert("⚠️ QPay холбоход алдаа гарлаа!");
   }
 
-  document.querySelector(".pay-popup").classList.remove("hidden");
+  payPopup.classList.remove("hidden");
 });
 
-// === Төлбөр шалгах товч ===
+// === 🧾 Төлбөр шалгах товч ===
 document.addEventListener("click", async (e) => {
   const btn = e.target.closest(".check-btn");
   if (!btn) return;
 
   const payNumber = document.getElementById("pay-number")?.textContent?.trim();
-  const resp = await fetch(`/api/qpayCheckStatus?invoice=${payNumber}`);
   if (!payNumber) {
     alert("⚠️ Төлбөрийн дугаар олдсонгүй.");
     return;
   }
 
   try {
-    const resp = await fetch(`/api/qpayCheckStatus?invoice=${payNumber}`);
+    const resp = await fetch(`https://api.lifecheck.mn/api/qpayCheckStatus?invoice=${encodeURIComponent(payNumber)}`);
     const data = await resp.json();
+    console.log("🔎 CheckStatus response:", data);
 
     if (data.ok && data.paid) {
-      alert("✅ Төлбөр амжилттай! Тайлан имэйл рүү илгээгдлээ.");
+      alert("✅ Төлбөр амжилттай! Таны шидэт гарын авлагууд имэйл рүү илгээгдлээ.");
     } else {
-      alert("⌛ Төлбөр хийгдээгүй байна. Дахин шалгаарай.");
+      alert("⌛ Төлбөр хараахан хийгдээгүй байна. Дахин шалгаарай.");
     }
   } catch (err) {
-    console.error("Check error:", err);
-    alert("⚠️ Алдаа гарлаа. Сүлжээг шалгаарай.");
+    console.error("❌ Check error:", err);
+    alert("⚠️ Төлбөр шалгахад алдаа гарлаа. Сүлжээг шалгаарай.");
   }
 });
+
 
 
 
