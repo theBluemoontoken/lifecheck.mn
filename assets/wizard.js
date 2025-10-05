@@ -258,12 +258,9 @@ document.getElementById("wizardProceedBtn").addEventListener("click", async () =
       // QR зурагаа харуулах
       qrImg.src = `data:image/png;base64,${data.invoice.qr_image}`;
 
-      // 🧾 Invoice number хадгалах
-      payNumEl.textContent =
-        data.invoice?.sender_invoice_no ||
-        data.invoice?.invoice_id ||
-        data.invoice?.id ||
-        wizardId;
+      // 🧾 Invoice number-г харуулахгүй, зөвхөн wizard ID-г үлдээе
+      console.log("🧾 Invoice created:", data.invoice?.sender_invoice_no || "no sender_invoice_no");
+
     } else {
       console.error("❌ Invoice error:", data);
       alert("⚠️ QPay invoice үүсгэхэд алдаа гарлаа!");
@@ -302,6 +299,22 @@ document.addEventListener("click", async (e) => {
     alert("⚠️ Төлбөр шалгахад алдаа гарлаа. Сүлжээг шалгаарай.");
   }
 });
+
+// === ❌ Төлбөрийн popup хаах товч ===
+document.addEventListener("click", (e) => {
+  const closeBtn = e.target.closest(".close-btn");
+  if (closeBtn) {
+    document.querySelector(".pay-popup").classList.add("hidden");
+  }
+});
+
+// popup гадна дархад хаах
+document.querySelector(".pay-popup").addEventListener("click", (e) => {
+  if (e.target.classList.contains("pay-popup")) {
+    e.target.classList.add("hidden");
+  }
+});
+
 
 
 
