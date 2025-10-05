@@ -1,5 +1,4 @@
 // ✅ sendReport.js — Dynamic + PM2 optimized + Postmark SDK version
-const { google } = require("googleapis");
 const playwright = require("playwright-core");
 const chromium = require("@sparticuz/chromium");
 const postmark = require("postmark");
