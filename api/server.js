@@ -29,6 +29,9 @@ app.get("/", (req, res) => {
 app.post("/api/qpayCreateInvoice", qpayCreateInvoice);
 app.post("/api/qpayWebhook", qpayWebhook);
 
+const qpayCheckStatus = require("./qpayCheckStatus.js");
+app.get("/api/qpayCheckStatus", qpayCheckStatus);
+
 // === Admin API ===
 app.post("/api/admin/login", adminLogin);
 app.post("/api/admin/sendReport", adminSendReport);

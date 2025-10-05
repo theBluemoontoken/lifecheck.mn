@@ -257,6 +257,31 @@ document.getElementById("wizardProceedBtn").addEventListener("click", async () =
   document.querySelector(".pay-popup").classList.remove("hidden");
 });
 
+// === Төлбөр шалгах товч ===
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".check-btn");
+  if (!btn) return;
+
+  const payNumber = document.getElementById("pay-number")?.textContent?.trim();
+  if (!payNumber) {
+    alert("⚠️ Төлбөрийн дугаар олдсонгүй.");
+    return;
+  }
+
+  try {
+    const resp = await fetch(`/api/qpayCheckStatus?invoice=${payNumber}`);
+    const data = await resp.json();
+
+    if (data.ok && data.paid) {
+      alert("✅ Төлбөр амжилттай! Тайлан имэйл рүү илгээгдлээ.");
+    } else {
+      alert("⌛ Төлбөр хийгдээгүй байна. Дахин шалгаарай.");
+    }
+  } catch (err) {
+    console.error("Check error:", err);
+    alert("⚠️ Алдаа гарлаа. Сүлжээг шалгаарай.");
+  }
+});
 
 
 

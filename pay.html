@@ -326,6 +326,7 @@ main.container.pay-container {
   <h3>Сонгосон тест</h3>
   <p id="test-name">....</p>
   <p id="test-id"></p> <!-- 🆕 Test ID -->
+  <p id="pay-number" style="display:none;"></p> <!-- 🆕 Invoice number -->
 
   <h3>Имэйл хаяг</h3>
   <p id="user-email">hellothere@lifecheck.mn</p>
@@ -447,6 +448,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       } else if (data.invoice.urls && data.invoice.urls[0]) {
         qrImg.src = data.invoice.urls[0]; // fallback
       }
+
+      // 🆕 Invoice number-ийг нуусан element-д хадгалах
+  const payNumEl = document.getElementById("pay-number");
+  if (payNumEl) payNumEl.textContent = data.invoice.sender_invoice_no || "";
     } else {
       alert("❌ QPay Invoice үүсгэж чадсангүй: " + (data.error || "Unknown error"));
     }
@@ -455,6 +460,33 @@ document.addEventListener("DOMContentLoaded", async () => {
     alert("⚠️ Сервертэй холбогдож чадсангүй.");
   }
 });
+
+// === Төлбөр шалгах товч ===
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".pay-btn");
+  if (!btn) return;
+
+  const payNumber = document.getElementById("pay-number")?.textContent?.trim();
+  if (!payNumber) {
+    alert("⚠️ Төлбөрийн дугаар олдсонгүй.");
+    return;
+  }
+
+  try {
+    const resp = await fetch(`/api/qpayCheckStatus?invoice=${payNumber}`);
+    const data = await resp.json();
+
+    if (data.ok && data.paid) {
+      alert("✅ Төлбөр амжилттай! Тайлан имэйл рүү илгээгдлээ.");
+    } else {
+      alert("⌛ Төлбөр хийгдээгүй байна. Дахин шалгаарай.");
+    }
+  } catch (err) {
+    console.error("Check error:", err);
+    alert("⚠️ Алдаа гарлаа. Сүлжээг шалгаарай.");
+  }
+});
+
 </script>
 </body>
 </html>
