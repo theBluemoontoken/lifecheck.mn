@@ -16,8 +16,7 @@ async function sendWizardReport(email) {
     ];
 
     // === 2️⃣ Файл аюулгүй унших
-    const baseDir = path.join(process.cwd(), "api", "guides");
-
+    const baseDir = path.join(process.cwd(), "guides");
     const attachments = [];
 
     for (const name of files) {
