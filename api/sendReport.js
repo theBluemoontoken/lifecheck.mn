@@ -417,24 +417,29 @@ async function handler(req, res) {
     await sendEmailWithPdf(data.email, subject, text, pdfBuffer, `${data.testId || "LifeCheck"}.pdf`);
 
     // Google Sheet-д Log бичих
-    const sheets = await getSheets();
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: process.env.SHEET_ID,
-      range: "Logs!A:F",
-      valueInputOption: "RAW",
-      requestBody: {
-        values: [
-          [
-            new Date().toLocaleString("en-GB", { timeZone: "Asia/Ulaanbaatar" }),
-            data.testId || "-",
-            data.email,
-            data.testKey,
-            data.riskLevel,
-            "sent",
-          ],
-        ],
-      },
-    });
+const auth = new GoogleAuth({
+  scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+});
+const sheets = google.sheets({ version: "v4", auth: await auth.getClient() });
+
+await sheets.spreadsheets.values.append({
+  spreadsheetId: process.env.SHEET_ID,
+  range: "Logs!A:F",
+  valueInputOption: "RAW",
+  requestBody: {
+    values: [
+      [
+        new Date().toLocaleString("en-GB", { timeZone: "Asia/Ulaanbaatar" }),
+        data.testId || "-",
+        data.email,
+        data.testKey,
+        data.riskLevel,
+        "sent",
+      ],
+    ],
+  },
+});
+
 
     // Амжилттай хариу
     const took = ((Date.now() - start) / 1000).toFixed(1);
