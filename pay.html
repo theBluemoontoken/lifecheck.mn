@@ -278,6 +278,46 @@ main.container.pay-container {
     font-style: italic; 
   }
 }
+.fade-in {
+  animation: fadeIn 0.8s ease forwards;
+  text-align:center;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+#payment-success img { margin-bottom: 12px; }
+#payment-success h3 { color:#16a34a; margin-bottom:8px; }
+#payment-success p { color:#334155; font-size:0.95rem; }
+#payment-success .cta {
+  display:inline-block;
+  margin-top:12px;
+  background:linear-gradient(90deg,#f97316,#fb923c);
+  color:#fff;
+  padding:10px 18px;
+  border-radius:20px;
+  text-decoration:none;
+  font-weight:600;
+}
+.hidden { display:none; }
+
+/* Spinner styles for the loading indicator. The spinner uses borders to create a
+   circular rotating animation. The size and border colors can be adjusted via
+   CSS variables or inline styles if needed. */
+.spinner {
+  border: 4px solid rgba(0,0,0,0.1);
+  border-top: 4px solid var(--accent1);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 
   </style>
 </head>
@@ -342,6 +382,25 @@ main.container.pay-container {
       <div class="qr-block">
         <p class="qr-note">Та QR код уншуулж төлбөрөө төлнө үү</p>
         <img src="/images/blankqr.svg" alt="QR code" />
+        <!--
+          During payment processing we show a loading indicator below the QR code. Once the invoice is
+          actually paid (checked via the /api/qpayCheckStatus endpoint) the loading indicator will
+          be hidden and a success message will replace it. Initially both the loading and success
+          containers are hidden; they become visible via JavaScript.
+        -->
+        <div id="payment-loading" class="hidden" style="text-align:center; margin-top:10px;">
+          <!-- CSS spinner implemented via borders so there is no need for an external image -->
+          <div class="spinner" style="margin:0 auto 8px;"></div>
+          <p style="font-size:0.9rem; color:#334155;">Төлбөр баталгаажиж байна...</p>
+        </div>
+        <div id="payment-success" class="fade-in hidden">
+          <img src="/images/mail-sent.gif" alt="Mail Sent" style="max-width:180px;margin:auto;">
+          <h3>✅ Төлбөр амжилттай!</h3>
+          <p>Таны хувийн тайлан имэйл рүү илгээгдлээ.<br>
+          ✉️ Хэрэв харагдахгүй бол Spam эсвэл Promotions хэсгээс шалгаарай.</p>
+          <a href="/" class="cta">🏠 Нүүр хуудас руу буцах</a>
+        </div>
+
       </div>
       <button class="pay-btn">Төлбөр шалгах</button>
     </div>
@@ -452,14 +511,45 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       // 🆕 Invoice number-ийг нуусан element-д хадгалах
-    const payNumEl = document.getElementById("pay-number");
-    if (payNumEl)
-  payNumEl.textContent =
-    data.invoice.sender_invoice_no ||
-    data.invoice.invoice_id ||
-    data.invoice.id ||
-    "";
+      const payNumEl = document.getElementById("pay-number");
+      const payNumber =
+        data.invoice.sender_invoice_no ||
+        data.invoice.invoice_id ||
+        data.invoice.id ||
+        "";
+      if (payNumEl) payNumEl.textContent = payNumber;
 
+      // Start polling QPay status for this invoice. While pending we show a loading spinner.
+      if (payNumber) {
+        const loadingEl = document.getElementById("payment-loading");
+        const successEl = document.getElementById("payment-success");
+        const qrBlockEl = document.querySelector(".qr-block");
+        // Hide manual check button since auto polling is used
+        const payBtn = document.querySelector(".pay-btn");
+        if (payBtn) payBtn.style.display = "none";
+        // Show loading spinner
+        if (loadingEl) loadingEl.classList.remove("hidden");
+
+        const poller = setInterval(async () => {
+          try {
+            const resp = await fetch(`/api/qpayCheckStatus?invoice=${payNumber}`);
+            const statusData = await resp.json();
+            if (statusData.ok && statusData.paid) {
+              clearInterval(poller);
+              // hide QR and loading spinner
+              if (qrBlockEl) {
+                const img = qrBlockEl.querySelector("img");
+                if (img) img.style.display = "none";
+              }
+              if (loadingEl) loadingEl.classList.add("hidden");
+              // show success
+              if (successEl) successEl.classList.remove("hidden");
+            }
+          } catch (err) {
+            console.error("Polling error:", err);
+          }
+        }, 5000);
+      }
     } else {
       alert("❌ QPay Invoice үүсгэж чадсангүй: " + (data.error || "Unknown error"));
     }
