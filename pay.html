@@ -278,6 +278,29 @@ main.container.pay-container {
     font-style: italic; 
   }
 }
+.fade-in {
+  animation: fadeIn 0.8s ease forwards;
+  text-align:center;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+#payment-success img { margin-bottom: 12px; }
+#payment-success h3 { color:#16a34a; margin-bottom:8px; }
+#payment-success p { color:#334155; font-size:0.95rem; }
+#payment-success .cta {
+  display:inline-block;
+  margin-top:12px;
+  background:linear-gradient(90deg,#f97316,#fb923c);
+  color:#fff;
+  padding:10px 18px;
+  border-radius:20px;
+  text-decoration:none;
+  font-weight:600;
+}
+.hidden { display:none; }
+
 
   </style>
 </head>
@@ -342,8 +365,16 @@ main.container.pay-container {
       <div class="qr-block">
         <p class="qr-note">Та QR код уншуулж төлбөрөө төлнө үү</p>
         <img src="/images/blankqr.svg" alt="QR code" />
+        <div id="payment-success" class="fade-in hidden">
+  <img src="/images/mail-sent.gif" alt="Mail Sent" style="max-width:180px;margin:auto;">
+  <h3>✅ Төлбөр амжилттай!</h3>
+  <p>Таны хувийн тайлан имэйл рүү илгээгдлээ.<br>
+  ✉️ Хэрэв харагдахгүй бол Spam эсвэл Promotions хэсгээс шалгаарай.</p>
+  <a href="/" class="cta">🏠 Нүүр хуудас руу буцах</a>
+</div>
+
       </div>
-      <button class="pay-btn">Төлбөр шалгах</button>
+      <!-- <button class="pay-btn">Төлбөр шалгах</button> -->
     </div>
   </div>
 </div>
@@ -450,6 +481,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       } else if (data.invoice.urls && data.invoice.urls[0]) {
         qrImg.src = data.invoice.urls[0]; // fallback
       }
+    
+    // 🕒 5 секундийн дараа төлбөрийг автоматаар баталгаажсан гэж үзээд animation үзүүлэх
+setTimeout(() => {
+  document.querySelector(".qr-block").style.display = "none";
+  document.querySelector(".pay-btn").style.display = "none";
+  const success = document.getElementById("payment-success");
+  if (success) success.classList.remove("hidden");
+}, 5000);
+
 
       // 🆕 Invoice number-ийг нуусан element-д хадгалах
     const payNumEl = document.getElementById("pay-number");
