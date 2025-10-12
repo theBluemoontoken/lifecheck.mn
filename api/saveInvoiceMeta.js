@@ -16,13 +16,16 @@ function saveInvoiceMeta(meta) {
 
     // Шинэ invoice_id-г түлхүүр болгон хадгалах
     all[meta.invoice_id] = {
-      email: meta.email || "",
-      testKey: meta.testKey || "",
-      riskLevel: meta.riskLevel || "",
-      testId: meta.testId || "",
-      amount: meta.amount || "",
-      createdAt: new Date().toISOString(),
-    };
+  email: meta.email || "",
+  testKey: meta.testKey || "",
+  riskLevel: meta.riskLevel || "",
+  testId: meta.testId || "",
+  amount: meta.amount || "",
+  scorePct: meta.scorePct || 0,
+  domainsScore: meta.domainsScore || [],
+  createdAt: new Date().toISOString()
+};
+
 
     // Файлыг overwrite хийх
     fs.writeFileSync(filePath, JSON.stringify(all, null, 2));

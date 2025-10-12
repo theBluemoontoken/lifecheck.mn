@@ -4,7 +4,7 @@ const saveInvoiceMeta = require("./saveInvoiceMeta");
 
 async function handler(req, res) {
   try {
-    const { email, amount, testKey, testId, riskLevel } = req.body || {};
+    const { email, amount, testKey, testId, riskLevel, scorePct, domainsScore } = req.body || {};
 
     if (!email || !amount) {
       return res.status(400).json({ ok: false, error: "Email & amount required" });
@@ -69,15 +69,17 @@ async function handler(req, res) {
 
     // ✅ Invoice metadata-г JSON файлд хадгалах
     if (invoiceData.invoice_id) {
-      saveInvoiceMeta({
-        invoice_id: invoiceData.invoice_id,
-        email,
-        testKey,
-        riskLevel,
-        testId,
-        amount,
-      });
-    }
+  saveInvoiceMeta({
+    invoice_id: invoiceData.invoice_id,
+    email,
+    testKey,
+    riskLevel,
+    testId,
+    amount,
+    scorePct,
+    domainsScore
+  });
+}
 
     // === 3️⃣ Хариу буцаах ===
     return res.status(200).json({ ok: true, invoice: invoiceData });

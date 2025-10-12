@@ -421,12 +421,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const qrImg = document.querySelector(".qr-block img");
 
   const payload = {
-    email: sessionStorage.getItem("wizardEmail") || localStorage.getItem("lc_email") || "",
-    amount: 6900, // төгрөгөөр
-    testKey: localStorage.getItem("lc_test") || "burnout",
-    testId: sessionStorage.getItem("lc_testId") || "",
-    riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase()
-  };
+  email: sessionStorage.getItem("wizardEmail") || localStorage.getItem("lc_email") || "",
+  amount: 6900,
+  testKey: localStorage.getItem("lc_test") || "burnout",
+  testId: sessionStorage.getItem("lc_testId") || "",
+  riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
+  scorePct: localStorage.getItem("lc_score") || 0,
+  domainsScore: JSON.parse(localStorage.getItem("lc_domainsScore") || "[]")
+};
 
   if (!payload.email) {
     alert("❌ Имэйл олдсонгүй.");

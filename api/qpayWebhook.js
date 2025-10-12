@@ -47,7 +47,7 @@ async function handler(req, res) {
       return res.json({ ok: false, error: "Meta not found" });
     }
 
-    const { email, testKey, riskLevel, testId } = meta;
+    const { email, testKey, riskLevel, testId, scorePct, domainsScore } = meta;
 
     // 3️⃣ Хэрвээ төлөгдөөгүй бол /payment/check-р баталгаажуулах
     if (status !== "PAID" && payData?.object_id) {
