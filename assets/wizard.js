@@ -255,16 +255,21 @@ document.getElementById("wizardProceedBtn").addEventListener("click", async () =
     console.log("🔎 Invoice response:", data);
 
     if (data.ok && data.invoice?.qr_image) {
-      // QR зурагаа харуулах
-      qrImg.src = `data:image/png;base64,${data.invoice.qr_image}`;
+  // QR зурагаа харуулах
+  qrImg.src = `data:image/png;base64,${data.invoice.qr_image}`;
 
-      // 🧾 Invoice number-г харуулахгүй, зөвхөн wizard ID-г үлдээе
-      console.log("🧾 Invoice created:", data.invoice?.sender_invoice_no || "no sender_invoice_no");
+  // 🏦 Банк аппуудын icon-уудыг харуулах
+  renderBankIcons(data.invoice);
 
-    } else {
-      console.error("❌ Invoice error:", data);
-      alert("⚠️ QPay invoice үүсгэхэд алдаа гарлаа!");
-    }
+  // 🧾 Invoice number-г харуулахгүй, зөвхөн wizard ID-г үлдээе
+  console.log("🧾 Invoice created:", data.invoice?.sender_invoice_no || "no sender_invoice_no");
+
+} else {
+  console.error("❌ Invoice error:", data);
+  alert("⚠️ QPay invoice үүсгэхэд алдаа гарлаа!");
+}
+
+
   } catch (err) {
     console.error("❌ Fetch error:", err);
     alert("⚠️ QPay холбоход алдаа гарлаа!");
@@ -314,6 +319,28 @@ document.querySelector(".pay-popup").addEventListener("click", (e) => {
     e.target.classList.add("hidden");
   }
 });
+
+// 🏦 QPay банк апп icon render хийх функц
+function renderBankIcons(invoice){
+  const icons = invoice?.urls || [];
+  const bankDiv = document.getElementById("bank-icons");
+  if (!bankDiv) return;
+  bankDiv.innerHTML = "";
+  icons.forEach(u=>{
+    const img=document.createElement("img");
+    img.src=u.logo;
+    img.alt=u.name;
+    img.title=u.name;
+    img.style.width="50px";
+    img.style.height="50px";
+    img.style.cursor="pointer";
+    img.style.borderRadius="12px";
+    img.style.boxShadow="0 2px 6px rgba(0,0,0,0.1)";
+    img.onclick=()=>window.open(u.link,"_blank");
+    bankDiv.appendChild(img);
+  });
+}
+
 
 
 
