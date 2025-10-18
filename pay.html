@@ -349,8 +349,6 @@ main.container.pay-container {
       </p>
 
       <div id="bank-icons" style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
-
-      <button class="pay-btn">Төлбөр шалгах</button>
     </div>
   </div>
 </div>
@@ -495,32 +493,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (err) {
     console.error("Invoice алдаа:", err);
     alert("⚠️ Сервертэй холбогдож чадсангүй.");
-  }
-});
-
-// === Төлбөр шалгах товч ===
-document.addEventListener("click", async (e) => {
-  const btn = e.target.closest(".pay-btn");
-  if (!btn) return;
-
-  const payNumber = document.getElementById("pay-number")?.textContent?.trim();
-  if (!payNumber) {
-    alert("⚠️ Төлбөрийн дугаар олдсонгүй.");
-    return;
-  }
-
-  try {
-    const resp = await fetch(`/api/qpayCheckStatus?invoice=${payNumber}`);
-    const data = await resp.json();
-
-    if (data.ok && data.paid) {
-      alert("✅ Төлбөр амжилттай! Тайлан имэйл рүү илгээгдлээ.");
-    } else {
-      alert("⌛ Төлбөр хийгдээгүй байна. Дахин шалгаарай.");
-    }
-  } catch (err) {
-    console.error("Check error:", err);
-    alert("⚠️ Алдаа гарлаа. Сүлжээг шалгаарай.");
   }
 });
 

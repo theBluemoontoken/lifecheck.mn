@@ -278,32 +278,6 @@ document.getElementById("wizardProceedBtn").addEventListener("click", async () =
   payPopup.classList.remove("hidden");
 });
 
-// === 🧾 Төлбөр шалгах товч ===
-document.addEventListener("click", async (e) => {
-  const btn = e.target.closest(".check-btn");
-  if (!btn) return;
-
-  const payNumber = document.getElementById("pay-number")?.textContent?.trim();
-  if (!payNumber) {
-    alert("⚠️ Төлбөрийн дугаар олдсонгүй.");
-    return;
-  }
-
-  try {
-    const resp = await fetch(`https://api.lifecheck.mn/api/qpayCheckStatus?invoice=${encodeURIComponent(payNumber)}`);
-    const data = await resp.json();
-    console.log("🔎 CheckStatus response:", data);
-
-    if (data.ok && data.paid) {
-      alert("✅ Төлбөр амжилттай! Таны шидэт гарын авлагууд имэйл рүү илгээгдлээ.");
-    } else {
-      alert("⌛ Төлбөр хараахан хийгдээгүй байна. Дахин шалгаарай.");
-    }
-  } catch (err) {
-    console.error("❌ Check error:", err);
-    alert("⚠️ Төлбөр шалгахад алдаа гарлаа. Сүлжээг шалгаарай.");
-  }
-});
 
 // === ❌ Төлбөрийн popup хаах товч ===
 document.addEventListener("click", (e) => {
