@@ -343,6 +343,8 @@ main.container.pay-container {
         <p class="qr-note">Та QR код уншуулж төлбөрөө төлнө үү</p>
         <img src="/images/blankqr.svg" alt="QR code" />
       </div>
+      <div id="bank-icons" style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
+
       <button class="pay-btn">Төлбөр шалгах</button>
     </div>
   </div>
@@ -372,7 +374,7 @@ main.container.pay-container {
       </footer>
   <script src="/assets/test.js"></script>
   <script>
-(async function(){
+  (async function(){
   const TEST_NAMES = {
     burnout:  "Burnout Test",
     redflags: "Relationship Red Flags Test",
@@ -417,6 +419,25 @@ main.container.pay-container {
 </script>
 
 <script>
+function renderBankIcons(invoice){
+  const icons=invoice?.urls||[];
+  const bankDiv=document.getElementById("bank-icons");
+  bankDiv.innerHTML="";
+  icons.forEach(u=>{
+    const img=document.createElement("img");
+    img.src=u.logo;
+    img.alt=u.name;
+    img.title=u.name;
+    img.style.width="50px";
+    img.style.height="50px";
+    img.style.cursor="pointer";
+    img.style.borderRadius="12px";
+    img.style.boxShadow="0 2px 6px rgba(0,0,0,0.1)";
+    img.onclick=()=>window.open(u.link,"_blank");
+    bankDiv.appendChild(img);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const qrImg = document.querySelector(".qr-block img");
 
@@ -444,12 +465,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const data = await res.json();
 
     if (data.ok && data.invoice) {
-      // QPay-ийн invoice дотор qr_base64 эсвэл urls байдаг
-      if (data.invoice.qr_image) {
-        qrImg.src = "data:image/png;base64," + data.invoice.qr_image;
-      } else if (data.invoice.urls && data.invoice.urls[0]) {
-        qrImg.src = data.invoice.urls[0]; // fallback
-      }
+  // QPay-ийн invoice дотор qr_base64 эсвэл urls байдаг
+  if (data.invoice.qr_image) {
+    qrImg.src = "data:image/png;base64," + data.invoice.qr_image;
+  } else if (data.invoice.urls && data.invoice.urls[0]) {
+    qrImg.src = data.invoice.urls[0]; // fallback
+  }
+
+  // 🏦 Банк аппуудын icon-уудыг render хийх
+  renderBankIcons(data.invoice);
 
       // 🆕 Invoice number-ийг нуусан element-д хадгалах
     const payNumEl = document.getElementById("pay-number");
