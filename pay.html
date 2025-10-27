@@ -350,14 +350,14 @@ main.container.pay-container {
 
       <div id="bank-icons" style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
       <!-- Loading / Success блок -->
-<div id="loading-block" style="display:none; text-align:center; margin-top:16px;">
-  <p>Тайланг бэлдэж байна. Түр хүлээнэ үү…</p>
-</div>
+      <div id="loading-block" style="display:none; text-align:center; margin-top:16px;">
+      <p>Тайланг бэлдэж байна. Түр хүлээнэ үү…</p>
+      </div>
 
-<div id="success-block" style="display:none; text-align:center; margin-top:16px;">
-  <p>Тайлан амжилттай илгээгдлээ.</p>
-  <p>Имэйлээ шалгана уу. Харагдахгүй бол Spam/Junk болон Gmail-ийн Promotions табыг бас шалгаарай.</p>
-</div>
+      <div id="success-block" style="display:none; text-align:center; margin-top:16px;">
+      <p>Тайлан амжилттай илгээгдлээ.</p>
+      <p>Имэйлээ шалгана уу. Харагдахгүй бол Spam/Junk болон Gmail-ийн Promotions табыг бас шалгаарай.</p>
+      </div>
 
     </div>
   </div>
@@ -529,9 +529,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function showSuccess() {
   if (loading) loading.style.display = "none";
+  if (payContent) payContent.style.display = "flex";   // 🆕 энэ мөрийг нэм
   if (success) success.style.display = "block";
   try { localStorage.removeItem("lc_pay_started"); } catch(_) {}
 }
+
 
   async function waitReportOnce() {
     const invoiceId = localStorage.getItem("lc_invoice_id");

@@ -337,10 +337,11 @@ function renderBankIcons(invoice){
 
   function showSuccess() {
   if (loading) loading.style.display = "none";
+  if (payContent) payContent.style.display = "flex";   // 🆕 энэ мөрийг нэм
   if (success) success.style.display = "block";
   try {
     localStorage.removeItem("lc_pay_started");
-    localStorage.removeItem("lc_invoice_id"); // сонголттой
+    localStorage.removeItem("lc_invoice_id"); // (сонголттой)
   } catch(_) {}
 }
 
