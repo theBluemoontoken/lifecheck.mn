@@ -279,6 +279,18 @@ main.container.pay-container {
   }
 }
 
+/* Solo төлөв: зөвхөн loading/success харуулна */
+.pay-content.solo { flex-direction: column; align-items: center; gap: 16px; }
+.pay-content.solo .pay-left,
+.pay-content.solo .qr-block,
+.pay-content.solo .bank-title,
+.pay-content.solo #bank-icons { display: none !important; }
+
+/* Solo үед message блок харагдана */
+.pay-content.solo #loading-block,
+.pay-content.solo #success-block { display: block !important; }
+
+
   </style>
 </head>
 <body>
@@ -436,6 +448,7 @@ function renderBankIcons(invoice) {
   const icons = invoice?.urls || [];
   const bankDiv = document.getElementById("bank-icons");
   bankDiv.innerHTML = "";
+
   icons.forEach((u) => {
     const img = document.createElement("img");
     img.src = u.logo;
@@ -446,8 +459,8 @@ function renderBankIcons(invoice) {
     img.style.cursor = "pointer";
     img.style.borderRadius = "12px";
     img.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
-    
-    // 🆕 Энэ нэг мөрийг нэмж өг
+
+    // 🆕 Банкны icon дарвал төлбөр эхэлсэн гэж тэмдэглэнэ
     img.onclick = () => {
       localStorage.setItem("lc_pay_started", "1");
       window.open(u.link, "_blank");
@@ -455,7 +468,12 @@ function renderBankIcons(invoice) {
 
     bankDiv.appendChild(img);
   });
+
+  // ✅ Энэ мөрийг яг ЭНД нэмнэ — render хийж дууссаны дараа
+  const payContent = document.querySelector(".pay-content");
+  payContent?.classList.remove("solo");
 }
+
 
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -522,18 +540,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const payContent = document.querySelector(".pay-content");
 
   function showLoading() {
-    if (payContent) payContent.style.display = "none";
-    if (success) success.style.display = "none";
-    if (loading) loading.style.display = "block";
-  }
+  if (payContent) payContent.style.display = "flex";
+  payContent?.classList.add("solo");
+  if (success) success.style.display = "none";
+  if (loading) loading.style.display = "block";
+}
 
-  function showSuccess() {
+function showSuccess() {
   if (loading) loading.style.display = "none";
-  if (payContent) payContent.style.display = "flex";   // 🆕 энэ мөрийг нэм
+  if (payContent) payContent.style.display = "flex";
+  payContent?.classList.add("solo");
   if (success) success.style.display = "block";
   try { localStorage.removeItem("lc_pay_started"); } catch(_) {}
 }
-
 
   async function waitReportOnce() {
     const invoiceId = localStorage.getItem("lc_invoice_id");

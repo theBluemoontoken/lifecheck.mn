@@ -265,6 +265,9 @@ localStorage.setItem("lc_invoice_id", data.invoice.invoice_id || "");
   // 🏦 Банк аппуудын icon-уудыг харуулах
   renderBankIcons(data.invoice);
 
+  // ⬇️ ЭНЭ МӨР НЭМ — QR үе шатанд бүрэн карт харагдуулна
+  document.querySelector(".pay-popup .pay-content")?.classList.remove("solo");
+
   // 🧾 Invoice number-г харуулахгүй, зөвхөн wizard ID-г үлдээе
   console.log("🧾 Invoice created:", data.invoice?.sender_invoice_no || "no sender_invoice_no");
 
@@ -321,36 +324,47 @@ function renderBankIcons(invoice){
 };
     bankDiv.appendChild(img);
   });
+  const payContent = document.querySelector(".pay-popup .pay-content");
+  payContent?.classList.remove("solo");
 }
 
 // === WaitReport урсгал (loading → success) ===
 (function () {
-  const loading = document.getElementById("loading-block");
-  const success = document.getElementById("success-block");
-  const payContent = document.querySelector(".pay-content");
+  const loading  = document.getElementById("loading-block");
+  const success  = document.getElementById("success-block");
+
+  function getPopupContent() {
+    return document.querySelector(".pay-popup .pay-content") || document.querySelector(".pay-content");
+  }
 
   function showLoading() {
-    if (payContent) payContent.style.display = "none";
+    const payContent = getPopupContent();
+    if (payContent) {
+      payContent.classList.add("solo");       // зөв: зөвхөн loading блок харагдана
+      payContent.style.display = "block";
+    }
     if (success) success.style.display = "none";
     if (loading) loading.style.display = "block";
   }
 
   function showSuccess() {
-  if (loading) loading.style.display = "none";
-  if (payContent) payContent.style.display = "flex";   // 🆕 энэ мөрийг нэм
-  if (success) success.style.display = "block";
-  try {
-    localStorage.removeItem("lc_pay_started");
-    localStorage.removeItem("lc_invoice_id"); // (сонголттой)
-  } catch(_) {}
-}
-
+    const payContent = getPopupContent();
+    if (loading) loading.style.display = "none";
+    if (payContent) {
+      payContent.classList.add("solo");       // зөв: зөвхөн success блок харагдана
+      payContent.style.display = "block";
+    }
+    if (success) success.style.display = "block";
+    try {
+      localStorage.removeItem("lc_pay_started");
+      localStorage.removeItem("lc_invoice_id");
+    } catch (_) {}
+  }
 
   async function waitReportOnce() {
     const invoiceId = localStorage.getItem("lc_invoice_id");
     if (!invoiceId) return;
     showLoading();
-
     try {
       const res = await fetch(`https://api.lifecheck.mn/api/waitReport?invoice=${encodeURIComponent(invoiceId)}`, {
         method: "GET",
@@ -359,35 +373,22 @@ function renderBankIcons(invoice){
       const data = await res.json();
       if (data && data.sent) {
         showSuccess();
-      } else {
-        if (loading) {
-          loading.innerHTML = `<p>Тайланг илгээж байна. Та meantime имэйлээ шалгаарай.</p>`;
-        }
-        // (сонголт) 60 сек дараа тайван нэг удаа дахин шалгах
-        setTimeout(() => {
-          const notShownYet = !success?.offsetParent;
-          if (localStorage.getItem("lc_pay_started") === "1" && notShownYet) {
-            waitReportOnce();
-          }
-        }, 60000);
+      } else if (loading) {
+        loading.innerHTML = `<p>Тайланг илгээж байна. Та meantime имэйлээ шалгаарай.</p>`;
       }
-    } catch (_) {
-      if (loading) {
-        loading.innerHTML = `<p>Сервертэй холбогдоход алдаа гарлаа. Та имэйлээ шалгана уу.</p>`;
-      }
+    } catch {
+      if (loading) loading.innerHTML = `<p>Сервертэй холбогдоход алдаа гарлаа. Та имэйлээ шалгана уу.</p>`;
     }
   }
 
   let tried = false;
   function triggerOnce() {
     if (tried) return;
-    // Зөвхөн төлбөр эхлүүлсэн үед (reload дээр ажиллуулахгүй)
     if (localStorage.getItem("lc_pay_started") !== "1") return;
     tried = true;
     waitReportOnce();
   }
 
-  // QR кейс: хуудас hidden болох мөчид төлбөр эхэлснийг тэмдэглэе
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
       const inv = localStorage.getItem("lc_invoice_id");
@@ -397,12 +398,12 @@ function renderBankIcons(invoice){
     }
   });
 
-  // Буцаж ирэхэд trigger хийх (iOS-д focus ганцаараа хангалтгүй байдаг)
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") triggerOnce();
   });
   window.addEventListener("focus", triggerOnce);
 })();
+
 
 
 
