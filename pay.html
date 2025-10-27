@@ -349,6 +349,16 @@ main.container.pay-container {
       </p>
 
       <div id="bank-icons" style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
+      <!-- Loading / Success блок -->
+<div id="loading-block" style="display:none; text-align:center; margin-top:16px;">
+  <p>Тайланг бэлдэж байна. Түр хүлээнэ үү…</p>
+</div>
+
+<div id="success-block" style="display:none; text-align:center; margin-top:16px;">
+  <p>Тайлан амжилттай илгээгдлээ.</p>
+  <p>Имэйлээ шалгана уу. Харагдахгүй бол Spam/Junk болон Gmail-ийн Promotions табыг бас шалгаарай.</p>
+</div>
+
     </div>
   </div>
 </div>
@@ -422,24 +432,31 @@ main.container.pay-container {
 </script>
 
 <script>
-function renderBankIcons(invoice){
-  const icons=invoice?.urls||[];
-  const bankDiv=document.getElementById("bank-icons");
-  bankDiv.innerHTML="";
-  icons.forEach(u=>{
-    const img=document.createElement("img");
-    img.src=u.logo;
-    img.alt=u.name;
-    img.title=u.name;
-    img.style.width="50px";
-    img.style.height="50px";
-    img.style.cursor="pointer";
-    img.style.borderRadius="12px";
-    img.style.boxShadow="0 2px 6px rgba(0,0,0,0.1)";
-    img.onclick=()=>window.open(u.link,"_blank");
+function renderBankIcons(invoice) {
+  const icons = invoice?.urls || [];
+  const bankDiv = document.getElementById("bank-icons");
+  bankDiv.innerHTML = "";
+  icons.forEach((u) => {
+    const img = document.createElement("img");
+    img.src = u.logo;
+    img.alt = u.name;
+    img.title = u.name;
+    img.style.width = "50px";
+    img.style.height = "50px";
+    img.style.cursor = "pointer";
+    img.style.borderRadius = "12px";
+    img.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+    
+    // 🆕 Энэ нэг мөрийг нэмж өг
+    img.onclick = () => {
+      localStorage.setItem("lc_pay_started", "1");
+      window.open(u.link, "_blank");
+    };
+
     bankDiv.appendChild(img);
   });
 }
+
 
 document.addEventListener("DOMContentLoaded", async () => {
   const qrImg = document.querySelector(".qr-block img");
@@ -448,7 +465,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   email: sessionStorage.getItem("wizardEmail") || localStorage.getItem("lc_email") || "",
   amount: 6900,
   testKey: localStorage.getItem("lc_test") || "burnout",
-  testId: sessionStorage.getItem("lc_testId") || "",
+  testId: sessionStorage.getItem("testId") || localStorage.getItem("lc_testId") || "",
   riskLevel: (localStorage.getItem("lc_risk") || "low").toLowerCase(),
   scorePct: localStorage.getItem("lc_score") || 0,
   domainsScore: JSON.parse(localStorage.getItem("lc_domainsScore") || "[]")
@@ -468,6 +485,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const data = await res.json();
 
     if (data.ok && data.invoice) {
+    localStorage.setItem("lc_invoice_id", data.invoice.invoice_id || "");
   // QPay-ийн invoice дотор qr_base64 эсвэл urls байдаг
   if (data.invoice.qr_image) {
     qrImg.src = "data:image/png;base64," + data.invoice.qr_image;
@@ -496,6 +514,84 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+</script>
+<script>
+(function () {
+  const loading = document.getElementById("loading-block");
+  const success = document.getElementById("success-block");
+  const payContent = document.querySelector(".pay-content");
+
+  function showLoading() {
+    if (payContent) payContent.style.display = "none";
+    if (success) success.style.display = "none";
+    if (loading) loading.style.display = "block";
+  }
+
+  function showSuccess() {
+  if (loading) loading.style.display = "none";
+  if (success) success.style.display = "block";
+  try { localStorage.removeItem("lc_pay_started"); } catch(_) {}
+}
+
+  async function waitReportOnce() {
+    const invoiceId = localStorage.getItem("lc_invoice_id");
+    if (!invoiceId) return; // invoice үүсээгүй бол шалгах шаардлагагүй
+
+    showLoading();
+    try {
+      const res = await fetch(`https://api.lifecheck.mn/api/waitReport?invoice=${encodeURIComponent(invoiceId)}`, {
+        method: "GET",
+        headers: { "Cache-Control": "no-store" },
+      });
+      const data = await res.json();
+      if (data && data.sent) {
+        showSuccess();
+      } else {
+        // timeout эсвэл алдаа тохиолдолд мэдээллийг зөөлөн хэлнэ
+        if (loading) {
+          loading.innerHTML = `
+            <p>Тайланг илгээж байна. Та meantime имэйлээ шалгаарай.</p>
+          `;
+        }
+      }
+    } catch (_) {
+      if (loading) {
+        loading.innerHTML = `<p>Сервертэй холбогдоход алдаа гарлаа. Та имэйлээ шалгана уу.</p>`;
+      }
+    }
+  }
+
+  // Буцаж ирэх үед нэг удаа шалгана
+  let tried = false;
+function triggerOnce() {
+  if (tried) return;
+  // 🧩 Зөвхөн төлбөр эхлүүлсэн хэрэглэгчийн үед шалгана
+  if (localStorage.getItem("lc_pay_started") !== "1") return;
+  tried = true;
+  waitReportOnce();
+}
+
+  // QR уншуулж app руу орсон үед хуудас ихэвчлэн hidden болно.
+// Тэр мөчид invoice_id байвал төлбөр эхэлснийг тэмдэглэе.
+// QR уншуулж app руу орсон үед хуудас ихэвчлэн hidden болно.
+// Тэр үед төлбөр эхэлсэн гэж тэмдэглэнэ.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    const inv = localStorage.getItem("lc_invoice_id");
+    if (inv && !localStorage.getItem("lc_pay_started")) {
+      localStorage.setItem("lc_pay_started", "1");
+    }
+  }
+});
+
+// Буцаж ирэхэд (visible болбол) waitReport trigger хийнэ
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") triggerOnce();
+});
+
+
+  window.addEventListener("focus", triggerOnce);
+})();
 </script>
 </body>
 </html>

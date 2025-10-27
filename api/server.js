@@ -8,6 +8,7 @@ const qpayCreateInvoice = require("./qpayCreateInvoice.js");
 const qpayWebhook = require("./qpayWebhook.js");
 const adminLogin = require("./adminLogin.js");
 const adminSendReport = require("./adminSendReport.js");
+const waitReport = require("./waitReport.js");
 
 const app = express();
 
@@ -36,6 +37,8 @@ app.get("/api/qpayCheckStatus", qpayCheckStatus);
 // === Admin API ===
 app.post("/api/admin/login", adminLogin);
 app.post("/api/admin/sendReport", adminSendReport);
+
+app.get("/api/waitReport", waitReport);
 
 // === 404 fallback ===
 app.use((req, res) => {

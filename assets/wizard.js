@@ -255,6 +255,10 @@ document.getElementById("wizardProceedBtn").addEventListener("click", async () =
     console.log("🔎 Invoice response:", data);
 
     if (data.ok && data.invoice?.qr_image) {
+
+    // 🆕 Invoice ID хадгалах
+localStorage.setItem("lc_invoice_id", data.invoice.invoice_id || "");
+
   // QR зурагаа харуулах
   qrImg.src = `data:image/png;base64,${data.invoice.qr_image}`;
 
@@ -310,10 +314,94 @@ function renderBankIcons(invoice){
     img.style.cursor="pointer";
     img.style.borderRadius="12px";
     img.style.boxShadow="0 2px 6px rgba(0,0,0,0.1)";
-    img.onclick=()=>window.open(u.link,"_blank");
+    img.onclick = () => {
+  // 🆕 Төлбөр эхэлснийг тэмдэглэнэ (QR биш, icon дарсан кейс)
+  localStorage.setItem("lc_pay_started", "1");
+  window.open(u.link, "_blank");
+};
     bankDiv.appendChild(img);
   });
 }
+
+// === WaitReport урсгал (loading → success) ===
+(function () {
+  const loading = document.getElementById("loading-block");
+  const success = document.getElementById("success-block");
+  const payContent = document.querySelector(".pay-content");
+
+  function showLoading() {
+    if (payContent) payContent.style.display = "none";
+    if (success) success.style.display = "none";
+    if (loading) loading.style.display = "block";
+  }
+
+  function showSuccess() {
+  if (loading) loading.style.display = "none";
+  if (success) success.style.display = "block";
+  try {
+    localStorage.removeItem("lc_pay_started");
+    localStorage.removeItem("lc_invoice_id"); // сонголттой
+  } catch(_) {}
+}
+
+
+  async function waitReportOnce() {
+    const invoiceId = localStorage.getItem("lc_invoice_id");
+    if (!invoiceId) return;
+    showLoading();
+
+    try {
+      const res = await fetch(`https://api.lifecheck.mn/api/waitReport?invoice=${encodeURIComponent(invoiceId)}`, {
+        method: "GET",
+        headers: { "Cache-Control": "no-store" },
+      });
+      const data = await res.json();
+      if (data && data.sent) {
+        showSuccess();
+      } else {
+        if (loading) {
+          loading.innerHTML = `<p>Тайланг илгээж байна. Та meantime имэйлээ шалгаарай.</p>`;
+        }
+        // (сонголт) 60 сек дараа тайван нэг удаа дахин шалгах
+        setTimeout(() => {
+          const notShownYet = !success?.offsetParent;
+          if (localStorage.getItem("lc_pay_started") === "1" && notShownYet) {
+            waitReportOnce();
+          }
+        }, 60000);
+      }
+    } catch (_) {
+      if (loading) {
+        loading.innerHTML = `<p>Сервертэй холбогдоход алдаа гарлаа. Та имэйлээ шалгана уу.</p>`;
+      }
+    }
+  }
+
+  let tried = false;
+  function triggerOnce() {
+    if (tried) return;
+    // Зөвхөн төлбөр эхлүүлсэн үед (reload дээр ажиллуулахгүй)
+    if (localStorage.getItem("lc_pay_started") !== "1") return;
+    tried = true;
+    waitReportOnce();
+  }
+
+  // QR кейс: хуудас hidden болох мөчид төлбөр эхэлснийг тэмдэглэе
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      const inv = localStorage.getItem("lc_invoice_id");
+      if (inv && !localStorage.getItem("lc_pay_started")) {
+        localStorage.setItem("lc_pay_started", "1");
+      }
+    }
+  });
+
+  // Буцаж ирэхэд trigger хийх (iOS-д focus ганцаараа хангалтгүй байдаг)
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") triggerOnce();
+  });
+  window.addEventListener("focus", triggerOnce);
+})();
 
 
 

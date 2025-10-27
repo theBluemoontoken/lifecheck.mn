@@ -3,6 +3,7 @@ const fetch = require("node-fetch");
 const sendReport = require("./sendReport");
 const sendWizardReport = require("./sendWizardReport");
 const findInvoiceMeta = require("./findInvoiceMeta");
+const { notify } = require("./reportNotifier");
 
 async function handler(req, res) {
   try {
@@ -87,6 +88,10 @@ async function handler(req, res) {
         );
         console.log("📊 Report sent:", email);
       }
+
+      // 🆕 энд нэм
+      notify(invoiceId);
+      console.log("📢 Notified waiters:", invoiceId);
 
       return res.json({ ok: true, paid: true });
     } else {
