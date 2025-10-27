@@ -1,8 +1,9 @@
 {
-  "functions": {
-    "api/**.js": {
-      "memory": 1536,
-      "maxDuration": 30
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://api.lifecheck.mn/api/$1"
     }
-  }
+  ]
 }
