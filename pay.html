@@ -341,7 +341,7 @@ main.container.pay-container {
     <div class="pay-right">
       <div class="qr-block">
         <p class="qr-note">Та QR код уншуулж төлбөрөө төлнө үү</p>
-        <img src="/images/blankqr.svg" alt="QR code" />
+        <img src="" alt="QR code" />
       </div>
 
       <p class="bank-title" style="font-weight:600;color:#334155;margin-top:8px;margin-bottom:4px;font-size:0.9rem;text-align:center;">
@@ -571,8 +571,6 @@ function triggerOnce() {
   waitReportOnce();
 }
 
-  // QR уншуулж app руу орсон үед хуудас ихэвчлэн hidden болно.
-// Тэр мөчид invoice_id байвал төлбөр эхэлснийг тэмдэглэе.
 // QR уншуулж app руу орсон үед хуудас ихэвчлэн hidden болно.
 // Тэр үед төлбөр эхэлсэн гэж тэмдэглэнэ.
 document.addEventListener("visibilitychange", () => {

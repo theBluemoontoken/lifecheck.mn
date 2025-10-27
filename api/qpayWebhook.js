@@ -38,7 +38,7 @@ async function handler(req, res) {
     const payData = await payResp.json();
     console.log("💡 payment_get:", payData);
 
-    const invoiceId = payData?.object_id;
+    const invoiceId = payData?.invoice_id || payData?.object_id;
     const status = payData?.payment_status;
 
     // ✅ Invoice metadata-г JSON store-оос сэргээх

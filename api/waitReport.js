@@ -6,7 +6,7 @@ async function handler(req, res) {
     if (!invoice) return res.status(400).json({ ok: false, error: "invoice required" });
 
     res.setHeader("Cache-Control", "no-store");
-    const result = await wait(invoice, 90000);
+    const result = await wait(invoice, 180000);
     return res.status(200).json(result);
   } catch (err) {
     console.error("waitReport error:", err);
