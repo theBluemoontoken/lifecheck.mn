@@ -39,10 +39,11 @@ async function saveLog({ email, testId, testKey, riskLevel, type = "report" }) {
       : `LC-${now.getFullYear().toString().slice(-2)}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}-${Math.floor(1000 + Math.random()*9000)}`;
 
     // 🧾 Бичих мөр
-    const values =
-      type === "wizard"
-        ? [[timestamp, email || "", autoId]]
-        : [[timestamp, autoId, email || "", testKey || "", riskLevel || "", type]];
+const values =
+  type === "wizard"
+    ? [[timestamp, autoId, email || ""]]
+    : [[timestamp, autoId, email || "", testKey || "", riskLevel || "", type]];
+
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,

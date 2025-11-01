@@ -1,6 +1,7 @@
 const postmark = require("postmark");
 const path = require("path");
 const fs = require("fs");
+const saveLog = require("./saveLog");
 
 async function sendWizardReport(email) {
   try {
@@ -45,23 +46,35 @@ async function sendWizardReport(email) {
       Subject: "🔮 Таны Шидэт гарын авлагууд",
       HtmlBody: `
         <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6">
-          <h2>✨ Mortal, чиний судрууд бэлэн боллоо</h2>
-          <p>Доорх 3 шидэт гарын авлага хавсаргасан байна:</p>
+          <h2>Mortal, чиний судрууд бэлэн болжээ...</h2>
+          <p>Дараах 3 шидэт гарын авлагыг хавсаргасан байгаа:</p>
           <ul>
             <li>🔥 Гүзээгээ шатаа</li>
             <li>🥗 Идээд л тур</li>
             <li>💧 Хөнгөрөх философи</li>
           </ul>
-          <p>Хавсралт нээгдэхгүй бол имэйлийн “Download attachments” товчийг дар.</p>
+          <p>Хавсралт нээгдэхгүй бол имэйлийн “Download attachments” товчийг дараарай.</p>
           <hr/>
-          <p style="font-size:13px;color:#555">LifeCheck.mn — Unlock Your Inner Scroll 🔮</p>
+          <p style="font-size:13px;color:#555">LifeCheck.mn — Амьдралаа шалга, эрсдэлээ эрт хар 🔮</p>
         </div>
       `,
       Attachments: attachments,
     });
 
     console.log(`✅ Wizard guides sent to ${email}`, result.MessageID);
-    return { ok: true, sent: true };
+    // ✅ Wizard log → Google Sheets
+try {
+  await saveLog({
+    type: "wizard",
+    email,
+    // testId байгаа бол дамжуулж болно: testId,
+    // source талбарыг мэдэж байвал нэмэж болно: source: payload?.source || "qpay",
+  });
+} catch (e) {
+  console.error("saveLog(wizard) failed:", e);
+}
+
+return { ok: true, sent: true };
   } catch (err) {
     console.error("❌ Wizard send error:", err.message || err);
     return { ok: false, error: err.message || "Send failed" };

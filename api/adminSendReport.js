@@ -1,7 +1,6 @@
-const handler = require("./sendReport");     // үндсэн тайлан илгээгч
-const saveLog = require("./saveLog");        // нэгтгэсэн лог бичигч
+import handler from "./sendReport"; // тайлан илгээх үндсэн функц
 
-async function adminSend(req, res) {
+export default async function adminSend(req, res) {
   try {
     if (req.method !== "POST") {
       return res.status(405).json({ ok: false, error: "Method not allowed" });
@@ -14,38 +13,13 @@ async function adminSend(req, res) {
       return res.status(403).json({ ok: false, error: "Unauthorized" });
     }
 
-    // 📤 Report илгээх (sendReport.js ашиглана)
-    await handler(req, {
-      status: (code) => ({
-        json: (obj) => ({ code, ...obj }),
-      }),
-    });
+    // sendReport-д дамжуулахдаа "source" талбарыг admin гэж тэмдэглэе
+    req.body = { ...(req.body || {}), source: "admin" };
 
-    // ✍️ Google Sheets-д лог үлдээх (saveLog ашиглан)
-    const { email, testId, testKey, riskLevel } = req.body || {};
-    const logResult = await saveLog({
-      email,
-      testId,
-      testKey,
-      riskLevel,
-      type: "admin",
-    });
-
-    if (!logResult.ok) {
-      console.warn("⚠️ Admin log append failed:", logResult.error);
-    }
-
-    return res.status(200).json({
-      ok: true,
-      message: "Admin override report sent and logged",
-    });
+    // ✅ ТАЙЛАНГ sendReport-оор илгээнэ (sendReport дотор saveLog дуудна)
+    return await handler(req, res);
   } catch (err) {
     console.error("❌ Admin override error:", err);
-    return res.status(500).json({
-      ok: false,
-      error: err.message || "Admin override failed",
-    });
+    return res.status(500).json({ ok: false, error: "Admin override failed" });
   }
 }
-
-module.exports = adminSend;

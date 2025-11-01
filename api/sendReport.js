@@ -2,6 +2,7 @@
 const playwright = require("playwright-core");
 const chromium = require("@sparticuz/chromium");
 const postmark = require("postmark");
+const saveLog = require("./saveLog");
 
 let cachedAuth;
 
@@ -413,34 +414,27 @@ async function handler(req, res) {
 
     // Имэйл илгээх (Postmark SDK)
     const subject = `📊 ${data.copyRow?.summaryTitle || "LifeCheck Report"} — ${Math.round(data.scorePct)}% • ${data.riskLabel}`;
-    const text = `<p>Сайн байна уу! Таны LifeCheck тайлан хавсралтад байна.</p>`;
+    const text = `<p>Сайн байна уу!</p>
+<p>Таны LifeCheck бүрэн тайлан хавсралтад байна. Тайлангаа нээгээд эрсдэл, давуу тал болон зөвлөмжүүдээ дэлгэрэнгүй үзээрэй.</p>
+<p>Хэрэв хавсралт нээгдэхгүй байвал имэйл доторх “Download attachments” товчийг дарна уу.</p>
+<p style="font-size:13px;color:#555;">Хүндэтгэсэн,<br/>LifeCheck.mn баг</p>
+`;
     await sendEmailWithPdf(data.email, subject, text, pdfBuffer, `${data.testId || "LifeCheck"}.pdf`);
 
-    // Google Sheet-д Log бичих
-const auth = new GoogleAuth({
-  scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-});
-const sheets = google.sheets({ version: "v4", auth: await auth.getClient() });
-
-await sheets.spreadsheets.values.append({
-  spreadsheetId: process.env.SHEET_ID,
-  range: "Logs!A:F",
-  valueInputOption: "RAW",
-  requestBody: {
-    values: [
-      [
-        new Date().toLocaleString("en-GB", { timeZone: "Asia/Ulaanbaatar" }),
-        data.testId || "-",
-        data.email,
-        data.testKey,
-        data.riskLevel,
-        "sent",
-      ],
-    ],
-  },
-});
-
-
+    // ✅ Report log → Google Sheets (төвлөрсөн)
+try {
+  await saveLog({
+    type: "report",
+    email: data.email,
+    testId: data.testId,      // байхгүй бол saveLog өөрөө үүсгэнэ
+    testKey: data.testKey,
+    riskLevel: data.riskLevel,
+    source: (payload && payload.source) || "qpay", // admin урсгал дээр "admin" гэж дамжина
+  });
+} catch (e) {
+  console.error("saveLog(report) failed:", e);
+}
+    
     // Амжилттай хариу
     const took = ((Date.now() - start) / 1000).toFixed(1);
     console.log(`✅ Report sent to ${data.email} (${data.testKey}) in ${took}s`);
