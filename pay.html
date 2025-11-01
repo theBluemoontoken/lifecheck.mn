@@ -279,16 +279,47 @@ main.container.pay-container {
   }
 }
 
-/* Solo төлөв: зөвхөн loading/success харуулна */
-.pay-content.solo { flex-direction: column; align-items: center; gap: 16px; }
-.pay-content.solo .pay-left,
-.pay-content.solo .qr-block,
-.pay-content.solo .bank-title,
-.pay-content.solo #bank-icons { display: none !important; }
+/* Solo төлөв: зөвхөн loading ИЛТЭЙ эсвэл success ИЛТЭЙ байлгах */
+.pay-content.solo { 
+  flex-direction: column; 
+  align-items: center; 
+  gap: 16px; 
+}
 
-/* Solo үед message блок харагдана */
-.pay-content.solo #loading-block,
-.pay-content.solo #success-block { display: block !important; }
+/* Төлөв тус бүр */
+.pay-content.solo.state-loading #loading-block { display: block !important; }
+.pay-content.solo.state-loading #success-block { display: none !important; }
+
+.pay-content.solo.state-success #loading-block { display: none !important; }
+.pay-content.solo.state-success #success-block { display: block !important; }
+
+/* Spinner */
+.spinner {
+  width: 32px; height: 32px;
+  border: 3px solid rgba(0,0,0,0.15);
+  border-top-color: var(--accent1);
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Checkmark animation */
+.checkmark {
+  width: 42px; height: 42px; 
+  margin: 0 auto 8px;
+}
+.checkmark path {
+  stroke: #16a34a; /* ногоон */
+  stroke-width: 4;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: dash .6s ease forwards;
+}
+@keyframes dash { to { stroke-dashoffset: 0; } }
 
 
   </style>
@@ -363,13 +394,20 @@ main.container.pay-container {
       <div id="bank-icons" style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
       <!-- Loading / Success блок -->
       <div id="loading-block" style="display:none; text-align:center; margin-top:16px;">
-      <p>Тайланг бэлдэж байна. Түр хүлээнэ үү…</p>
-      </div>
+  <div class="spinner"></div>
+  <p>Тайланг бэлдэж байна. Түр хүлээнэ үү…</p>
+</div>
 
-      <div id="success-block" style="display:none; text-align:center; margin-top:16px;">
-      <p>Тайлан амжилттай илгээгдлээ.</p>
-      <p>Имэйлээ шалгана уу. Харагдахгүй бол Spam/Junk болон Gmail-ийн Promotions табыг бас шалгаарай.</p>
-      </div>
+<div id="success-block" style="display:none; text-align:center; margin-top:16px;">
+  <div class="checkmark">
+    <svg viewBox="0 0 24 24">
+      <path d="M4 12l6 6L20 6"/>
+    </svg>
+  </div>
+  <p>Тайлан амжилттай илгээгдлээ.</p>
+  <p>Имэйлээ шалгана уу. Харагдахгүй бол Spam/Junk болон Gmail-ийн Promotions табыг бас шалгаарай.</p>
+</div>
+
 
     </div>
   </div>
@@ -427,10 +465,10 @@ main.container.pay-container {
   const emailEl = document.getElementById("user-email");
   if (emailEl) emailEl.textContent = rawEmail ? maskEmail(rawEmail) : "(имэйл байхгүй)";
 
-  // 4) Countdown (15:00)
+  // 4) Countdown (30:00)
   const countdownEl = document.getElementById("countdown");
   if (countdownEl) {
-    let t = 15*60;
+    let t = 30*60;
     const tick = () => {
       const m = String(Math.floor(t/60)).padStart(2,"0");
       const s = String(t%60).padStart(2,"0");
@@ -540,19 +578,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const payContent = document.querySelector(".pay-content");
 
   function showLoading() {
-  if (payContent) payContent.style.display = "flex";
-  payContent?.classList.add("solo");
-  if (success) success.style.display = "none";
-  if (loading) loading.style.display = "block";
+  const payContent = document.querySelector(".pay-content");
+  payContent?.classList.add("solo", "state-loading");
+  payContent?.classList.remove("state-success");
 }
 
 function showSuccess() {
-  if (loading) loading.style.display = "none";
-  if (payContent) payContent.style.display = "flex";
-  payContent?.classList.add("solo");
-  if (success) success.style.display = "block";
+  const payContent = document.querySelector(".pay-content");
+  payContent?.classList.add("solo", "state-success");
+  payContent?.classList.remove("state-loading");
   try { localStorage.removeItem("lc_pay_started"); } catch(_) {}
 }
+
 
   async function waitReportOnce() {
     const invoiceId = localStorage.getItem("lc_invoice_id");

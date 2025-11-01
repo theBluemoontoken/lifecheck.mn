@@ -1039,4 +1039,38 @@ main {
 }
 .modal.show { display: flex; }   /* show үед гарна */
 
+/* Solo төлөв: зөвхөн loading ИЛТЭЙ эсвэл success ИЛТЭЙ байлгах */
+.pay-content.solo { 
+  flex-direction: column; 
+  align-items: center; 
+  gap: 16px; 
+}
+
+/* Төлөв тус бүр */
+.pay-content.solo.state-loading #loading-block { display: block !important; }
+.pay-content.solo.state-loading #success-block { display: none !important; }
+
+.pay-content.solo.state-success #loading-block { display: none !important; }
+.pay-content.solo.state-success #success-block { display: block !important; }
+
+/* Spinner */
+.spinner {
+  width: 32px; height: 32px;
+  border: 3px solid rgba(0,0,0,0.15);
+  border-top-color: var(--accent1, #6366f1);
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Checkmark animation */
+.checkmark { width: 42px; height: 42px; margin: 0 auto 8px; }
+.checkmark path{
+  stroke: #16a34a; stroke-width: 4; fill: none;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 48; stroke-dashoffset: 48;
+  animation: dash .6s ease forwards;
+}
+@keyframes dash { to { stroke-dashoffset: 0; } }
 

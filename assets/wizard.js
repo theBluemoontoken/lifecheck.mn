@@ -334,32 +334,27 @@ function renderBankIcons(invoice){
   const success  = document.getElementById("success-block");
 
   function getPopupContent() {
-    return document.querySelector(".pay-popup .pay-content") || document.querySelector(".pay-content");
-  }
+  return document.querySelector(".pay-popup .pay-content") || document.querySelector(".pay-content");
+}
 
-  function showLoading() {
-    const payContent = getPopupContent();
-    if (payContent) {
-      payContent.classList.add("solo");       // зөв: зөвхөн loading блок харагдана
-      payContent.style.display = "block";
-    }
-    if (success) success.style.display = "none";
-    if (loading) loading.style.display = "block";
-  }
+function showLoading() {
+  const payContent = getPopupContent();
+  if (!payContent) return;
+  payContent.classList.add("solo", "state-loading");
+  payContent.classList.remove("state-success");
+}
 
-  function showSuccess() {
-    const payContent = getPopupContent();
-    if (loading) loading.style.display = "none";
-    if (payContent) {
-      payContent.classList.add("solo");       // зөв: зөвхөн success блок харагдана
-      payContent.style.display = "block";
-    }
-    if (success) success.style.display = "block";
-    try {
-      localStorage.removeItem("lc_pay_started");
-      localStorage.removeItem("lc_invoice_id");
-    } catch (_) {}
-  }
+function showSuccess() {
+  const payContent = getPopupContent();
+  if (!payContent) return;
+  payContent.classList.add("solo", "state-success");
+  payContent.classList.remove("state-loading");
+  try {
+    localStorage.removeItem("lc_pay_started");
+    localStorage.removeItem("lc_invoice_id");
+  } catch (_) {}
+}
+
 
   async function waitReportOnce() {
     const invoiceId = localStorage.getItem("lc_invoice_id");
